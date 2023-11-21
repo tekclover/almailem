@@ -1,5 +1,6 @@
 package com.almailem.ams.api.connector.controller;
 
+import com.almailem.ams.api.connector.model.b2b.B2BHeader;
 import com.almailem.ams.api.connector.model.transferin.TransferInHeader;
 import com.almailem.ams.api.connector.service.B2BTransferInService;
 import io.swagger.annotations.Api;
@@ -34,10 +35,10 @@ public class B2BTransferInController {
      *
      * @return
      */
-    @ApiOperation(response = TransferInHeader.class, value = "Get All B2BTransferIn Details")
+    @ApiOperation(response = B2BHeader.class, value = "Get All B2BTransferIn Details")
     @GetMapping("")
     public ResponseEntity<?> getAllB2BTransferIns() {
-        List<TransferInHeader> transferIns = b2BTransferInService.getAllB2BTransferInDetails();
+        List<B2BHeader> transferIns = b2BTransferInService.getAllB2BTransferInDetails();
         return new ResponseEntity<>(transferIns, HttpStatus.OK);
     }
 }

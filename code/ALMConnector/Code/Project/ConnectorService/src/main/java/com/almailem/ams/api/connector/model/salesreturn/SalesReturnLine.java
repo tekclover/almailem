@@ -1,11 +1,15 @@
 package com.almailem.ams.api.connector.model.salesreturn;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -23,7 +27,7 @@ public class SalesReturnLine {
     private Long salesReturnHeaderId;
 
     @NotNull(message = "Line No of Each Item is mandatory")
-    private Long lineNoForEachItem;
+    private Long lineNoOfEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
     @Column(name = "ITEM_CODE", columnDefinition = "nvarchar(50)")
@@ -69,4 +73,9 @@ public class SalesReturnLine {
     @Column(name = "MANUFACTURER_FULL_NAME", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
+    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    private String isCompleted;
+
+    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    private String isCancelled;
 }

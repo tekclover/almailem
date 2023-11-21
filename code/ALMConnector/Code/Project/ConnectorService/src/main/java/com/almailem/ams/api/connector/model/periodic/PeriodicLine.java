@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblperiodicline")
+@Table(name = "tblmwperiodicline")
 public class PeriodicLine {
 
     @Id
@@ -21,23 +21,37 @@ public class PeriodicLine {
 
     private Long periodicHeaderId;
 
-    @NotBlank(message = "CycleCount Number is mandatory")
-    private String cycleCountNumber;
+    @NotBlank(message = "Cycle Count No is mandatory")
+    @Column(name = "CYCLE_COUNT_NO", columnDefinition = "nvarchar(50)")
+    private String cycleCountNo;
 
-    @NotNull(message = "line Number Of Each Item Code is mandatory")
+    @NotNull(message = "line NO Of Each Item Code is mandatory")
     private Long lineNoOfEachItemCode;
 
-    @NotBlank(message = "itemCode is mandatory")
+    @NotBlank(message = "Item Code is mandatory")
+    @Column(name = "ITEM_CODE", columnDefinition = "nvarchar(50)")
     private String itemCode;
 
+    @Column(name = "ITEM_DESCRIPTION", columnDefinition = "nvarchar(500)")
     private String itemDescription;
 
-    @NotBlank(message = "Unit Of Measure is mandatory")
-    private String uom;
+    @NotBlank(message = "Unit of Measure is mandatory")
+    @Column(name = "UNIT_OF_MEASURE", columnDefinition = "nvarchar(50)")
+    private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
+    @Column(name = "MANUFACTURER_CODE", columnDefinition = "nvarchar(200)")
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Name is mandatory")
+    @Column(name = "MANUFACTURER_NAME", columnDefinition = "nvarchar(200)")
     private String manufacturerName;
+
+    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    private String isCompleted;
+
+    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(20)")
+    private String isCancelled;
+
+    private Double countedQty;
 }

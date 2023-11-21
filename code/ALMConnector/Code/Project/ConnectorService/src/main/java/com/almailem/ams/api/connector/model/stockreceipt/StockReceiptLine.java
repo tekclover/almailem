@@ -4,7 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -34,7 +39,7 @@ public class StockReceiptLine {
     @Column(name = "RECEIPT_NO", columnDefinition = "nvarchar(50)")
     private String receiptNo;
 
-    @NotNull(message = "Line Number for Each Item is mandatory")
+    @NotNull(message = "Line No for Each Item is mandatory")
     private Long lineNoForEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
@@ -74,6 +79,9 @@ public class StockReceiptLine {
 
     @Column(name = "MANUFACTURER_FULL_NAME", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
+
+    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    private String isCompleted;
 
     //MiddleWare Fields
     private Long middlewareId;

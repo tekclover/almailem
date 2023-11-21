@@ -1,18 +1,11 @@
-package com.almailem.ams.api.connector.model.transferin;
+package com.almailem.ams.api.connector.model.b2b;
 
+import com.almailem.ams.api.connector.model.transferin.TransferInLine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -22,12 +15,12 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tbltransferinheader")
-public class TransferInHeader {
+@Table(name = "tblb2binheader")
+public class B2BHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long transferInHeaderId;
+    private Long b2bInHeaderId;
 
     @NotBlank(message = "SourceCompanyCode is mandatory")
     @Column(name = "SOURCE_COMPANY_CODE", columnDefinition = "nvarchar(25)")
@@ -52,11 +45,6 @@ public class TransferInHeader {
     @NotBlank(message = "TransferOrder Date is mandatory")
     private Date transferOrderDate;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
-    private String isCompleted;
-
-    private Date updatedOn;
-
     //ProcessedStatusIdOrderByOrderReceivedOn
 
     @NotNull
@@ -65,6 +53,6 @@ public class TransferInHeader {
     private Date orderReceivedOn;
     private Date orderProcessedOn;
 
-    @OneToMany(mappedBy = "transferInHeaderId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<TransferInLine> transferInLines;
+    @OneToMany(mappedBy = "b2bInHeaderId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<B2BLine> b2BLines;
 }

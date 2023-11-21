@@ -3,7 +3,6 @@ package com.almailem.ams.api.connector.service;
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.controller.exception.BadRequestException;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
-import com.almailem.ams.api.connector.model.supplierinvoice.SupplierInvoiceHeader;
 import com.almailem.ams.api.connector.model.transferin.TransferInHeader;
 import com.almailem.ams.api.connector.model.wms.*;
 import com.almailem.ams.api.connector.repository.InboundIntegrationLogRepository;
@@ -81,26 +80,6 @@ public class InterWarehouseTransferInV2Service {
 
     /**
      *
-     * @param b2bTransferIn
-     * @return
-     */
-    public WarehouseApiResponse postB2BTransferIn(B2bTransferIn b2bTransferIn) {
-        AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("User-Agent", "ClassicWMS RestTemplate");
-        headers.add("Authorization", "Bearer " + authToken.getAccess_token());
-        UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/inbound/b2bTransferIn");
-        HttpEntity<?> entity = new HttpEntity<>(b2bTransferIn, headers);
-        ResponseEntity<WarehouseApiResponse> result =
-                getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
-        log.info("result : " + result.getStatusCode());
-        return result.getBody();
-    }
-
-    /**
-     *
      * @param interWarehouseTransferIn
      * @return
      */
@@ -117,47 +96,6 @@ public class InterWarehouseTransferInV2Service {
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result : " + result.getStatusCode());
         return result.getBody();
-    }
-
-    /**
-     *
-     * @param inbound
-     * @return
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     */
-    public InboundIntegrationLog createInboundIntegrationLog(B2bTransferIn inbound) {
-        Warehouse warehouse =
-                getWarehouse(inbound.getB2bTransferInHeader().getCompanyCode(), inbound.getB2bTransferInHeader().getBranchCode());
-        if (warehouse == null) {
-            throw new BadRequestException("Warehouse Id not found ! ");
-        }
-        InboundIntegrationLog dbInboundIntegrationLog = new InboundIntegrationLog();
-        dbInboundIntegrationLog.setLanguageId("EN");
-        dbInboundIntegrationLog.setCompanyCodeId(warehouse.getCompanyCodeId());
-        dbInboundIntegrationLog.setPlantId(warehouse.getPlantId());
-        dbInboundIntegrationLog.setWarehouseId(warehouse.getWarehouseId());
-        dbInboundIntegrationLog.setIntegrationLogNumber(String.valueOf(System.currentTimeMillis()));
-        dbInboundIntegrationLog.setRefDocNumber(inbound.getB2bTransferInHeader().getTransferOrderNumber());
-
-        Date date = null;
-        try {
-            if (inbound.getB2bTransferLine().get(0).getExpectedDate() != null) {
-                date = DateUtils.convertStringToDateByYYYYMMDD(inbound.getB2bTransferLine().get(0).getExpectedDate());
-            } else {
-                date = new Date();
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        dbInboundIntegrationLog.setOrderReceiptDate(date);
-        dbInboundIntegrationLog.setIntegrationStatus("FAILED");
-        dbInboundIntegrationLog.setDeletionIndicator(0L);
-        dbInboundIntegrationLog.setCreatedBy("MW_B2B");
-        dbInboundIntegrationLog.setCreatedOn(new Date());
-        dbInboundIntegrationLog = inboundIntegrationLogRepository.save(dbInboundIntegrationLog);
-        log.info("dbInboundIntegrationLog : " + dbInboundIntegrationLog);
-        return dbInboundIntegrationLog;
     }
 
     /**

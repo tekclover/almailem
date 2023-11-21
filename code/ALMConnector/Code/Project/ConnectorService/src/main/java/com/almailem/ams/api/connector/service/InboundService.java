@@ -1,6 +1,8 @@
 package com.almailem.ams.api.connector.service;
 
 
+import com.almailem.ams.api.connector.model.b2b.B2BHeader;
+import com.almailem.ams.api.connector.model.b2b.B2BLine;
 import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
 import com.almailem.ams.api.connector.model.salesreturn.SalesReturnLine;
 import com.almailem.ams.api.connector.model.stockreceipt.StockReceiptHeader;
@@ -10,10 +12,7 @@ import com.almailem.ams.api.connector.model.supplierinvoice.SupplierInvoiceLine;
 import com.almailem.ams.api.connector.model.transferin.TransferInHeader;
 import com.almailem.ams.api.connector.model.transferin.TransferInLine;
 import com.almailem.ams.api.connector.model.wms.*;
-import com.almailem.ams.api.connector.repository.SalesReturnHeaderRepository;
-import com.almailem.ams.api.connector.repository.StockReceiptHeaderRepository;
-import com.almailem.ams.api.connector.repository.SupplierInvoiceHeaderRepository;
-import com.almailem.ams.api.connector.repository.TransferInHeaderRepository;
+import com.almailem.ams.api.connector.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +36,9 @@ public class InboundService {
     SalesReturnService salesReturnService;
 
     @Autowired
+    B2BTransferInService b2BTransferInService;
+
+    @Autowired
     InterWarehouseTransferInV2Service interWarehouseTransferInV2Service;
 
     //-------------------------------------------------------------------------------------------
@@ -49,6 +51,9 @@ public class InboundService {
 
     @Autowired
     SalesReturnHeaderRepository salesReturnHeaderRepository;
+
+    @Autowired
+    B2BInHeaderRepository b2BInHeaderRepository;
 
     @Autowired
     TransferInHeaderRepository transferInHeaderRepository;
@@ -229,7 +234,7 @@ public class InboundService {
                 for (SalesReturnLine line : dbIBOrder.getSalesReturnLines()) {
                     SOReturnLineV2 salesReturnLine = new SOReturnLineV2();
 
-                    salesReturnLine.setLineReference(line.getLineNoForEachItem());
+                    salesReturnLine.setLineReference(line.getLineNoOfEachItem());
                     salesReturnLine.setSku(line.getItemCode());
                     salesReturnLine.setSkuDescription(line.getItemDescription());
                     salesReturnLine.setInvoiceNumber(line.getReferenceInvoiceNo());
@@ -288,20 +293,20 @@ public class InboundService {
     //=====================================================b2b============================================================
     public WarehouseApiResponse processInboundOrderB2B() throws IllegalAccessException, InvocationTargetException {
         if (inboundB2BList == null || inboundB2BList.isEmpty()) {
-            List<TransferInHeader> transferInHeaders = transferInHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
+            List<B2BHeader> b2BHeaders = b2BInHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
             inboundB2BList = new ArrayList<>();
-            for (TransferInHeader dbIBOrder : transferInHeaders) {
+            for (B2BHeader dbIBOrder : b2BHeaders) {
                 B2bTransferIn b2bTransferIn = new B2bTransferIn();
                 B2bTransferInHeader b2bTransferInHeader = new B2bTransferInHeader();
 
                 b2bTransferInHeader.setCompanyCode(dbIBOrder.getTargetCompanyCode());
                 b2bTransferInHeader.setBranchCode(dbIBOrder.getTargetBranchCode());
                 b2bTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
-                b2bTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
+                b2bTransferInHeader.setMiddlewareId(dbIBOrder.getB2bInHeaderId());
                 b2bTransferInHeader.setMiddlewareTable("IB_B2B");
 
                 List<B2bTransferInLine> b2bTransferInLines = new ArrayList<>();
-                for (TransferInLine line : dbIBOrder.getTransferInLines()) {
+                for (B2BLine line : dbIBOrder.getB2BLines()) {
                     B2bTransferInLine b2bTransferInLine = new B2bTransferInLine();
 
                     b2bTransferInLine.setLineReference(line.getLineNoForEachItem());
@@ -319,8 +324,8 @@ public class InboundService {
                     if(line.getTransferQty() != null) {
                         b2bTransferInLine.setPackQty(Long.valueOf(String.valueOf(line.getTransferQty())));
                     }
-                    b2bTransferInLine.setMiddlewareId(line.getTransferInLineId());
-                    b2bTransferInLine.setMiddlewareHeaderId(dbIBOrder.getTransferInHeaderId());
+                    b2bTransferInLine.setMiddlewareId(line.getB2bInLineId());
+                    b2bTransferInLine.setMiddlewareHeaderId(dbIBOrder.getB2bInHeaderId());
                     b2bTransferInLine.setMiddlewareTable("IB_B2B");
 
                     b2bTransferInLines.add(b2bTransferInLine);
@@ -338,10 +343,10 @@ public class InboundService {
             for (B2bTransferIn inbound : spB2BList) {
                 try {
                     log.info("B2B Transfer Order Number : " + inbound.getB2bTransferInHeader().getTransferOrderNumber());
-                    WarehouseApiResponse inboundHeader = interWarehouseTransferInV2Service.postB2BTransferIn(inbound);
+                    WarehouseApiResponse inboundHeader = b2BTransferInService.postB2BTransferIn(inbound);
                     if (inboundHeader != null) {
                         // Updating the Processed Status
-                        interWarehouseTransferInV2Service.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
+                        b2BTransferInService.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
                         inboundB2BList.remove(inbound);
                         return inboundHeader;
                     }
@@ -349,8 +354,8 @@ public class InboundService {
                     e.printStackTrace();
                     log.error("Error on inbound processing : " + e.toString());
                     // Updating the Processed Status
-                    interWarehouseTransferInV2Service.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
-                    interWarehouseTransferInV2Service.createInboundIntegrationLog(inbound);
+                    b2BTransferInService.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
+                    b2BTransferInService.createInboundIntegrationLog(inbound);
                     inboundB2BList.remove(inbound);
                     throw new RuntimeException(e);
                 }

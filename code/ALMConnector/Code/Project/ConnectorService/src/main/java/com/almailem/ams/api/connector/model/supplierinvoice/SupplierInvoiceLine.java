@@ -4,7 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -63,13 +68,13 @@ public class SupplierInvoiceLine {
     @Column(name = "MANUFACTURER_CODE", columnDefinition = "nvarchar(200)")
     private String manufacturerCode;
 
-    @NotNull(message = "Invoice Date is mandatory")
+    @NotBlank(message = "Invoice Date is mandatory")
     private Date invoiceDate;
 
     @NotNull(message = "Invoice Qty is mandatory")
     private Double invoiceQty;
 
-    @NotBlank(message = "UOM is mandatory")
+    @NotBlank(message = "Unit Of Measure is mandatory")
     @Column(name = "UNIT_OF_MEASURE", columnDefinition = "nvarchar(50)")
     private String unitOfMeasure;
 
@@ -79,4 +84,16 @@ public class SupplierInvoiceLine {
     @Column(name = "MANUFACTURER_FULL_NAME", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
+    private Date receivedDate;
+
+    private Double receivedQty;
+
+    @Column(name = "RECEIVED_BY", columnDefinition = "nvarchar(50)")
+    private String receivedBy;
+
+    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    private String isCompleted;
+
+    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    private String isCancelled;
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
 
@@ -20,19 +21,39 @@ public class PurchaseReturnHeader {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long purchaseReturnHeaderId;
 
-    @NotBlank(message = "CompanyCode is mandatory")
+    @NotBlank(message = "Company Code is mandatory")
+    @Column(name = "COMPANY_CODE", columnDefinition = "nvarchar(50)")
     private String companyCode;
 
-    @NotBlank(message = "BranchCode is mandatory")
+    @NotBlank(message = "Branch Code is mandatory")
+    @Column(name = "BRANCH_CODE", columnDefinition = "nvarchar(50)")
     private String branchCode;
 
-    @NotBlank(message = "ReturnOrderNumber is mandatory")
-    private String returnOrderNumber;
+    @NotBlank(message = "Return Order No is mandatory")
+    @Column(name = "RETURN_ORDER_NO", columnDefinition = "nvarchar(50)")
+    private String returnOrderNo;
 
-    @NotBlank(message = "ReturnOrder Date is mandatory")
+    @NotBlank(message = "Return Order Date is mandatory")
     private Date returnOrderDate;
 
-    private String supplierInvoiceNumber;
+    @Column(name = "SUPPLIER_INVOICE_NO", columnDefinition = "nvarchar(50)")
+    private String supplierInvoiceNo;
+
+    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    private String isCompleted;
+
+    private Date updatedOn;
+
+    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    private String isCancelled;
+
+    //ProcessedStatusIdOrderByOrderReceivedOn
+    @NotNull
+    private Long processedStatusId = 0L;
+
+    private Date orderReceivedOn;
+    private Date orderProcessedOn;
+
 
     @OneToMany(mappedBy = "purchaseReturnHeaderId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<PurchaseReturnLine> purchaseReturnLines;
