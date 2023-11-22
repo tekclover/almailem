@@ -5,9 +5,7 @@ import com.almailem.ams.api.connector.controller.exception.BadRequestException;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.transferin.TransferInHeader;
 import com.almailem.ams.api.connector.model.wms.*;
-import com.almailem.ams.api.connector.repository.InboundIntegrationLogRepository;
 import com.almailem.ams.api.connector.repository.TransferInHeaderRepository;
-import com.almailem.ams.api.connector.repository.WarehouseRepository;
 import com.almailem.ams.api.connector.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -33,12 +30,6 @@ public class InterWarehouseTransferInV2Service {
 
     @Autowired
     PropertiesConfig propertiesConfig;
-
-    @Autowired
-    InboundIntegrationLogRepository inboundIntegrationLogRepository;
-
-    @Autowired
-    WarehouseRepository warehouseRepository;
 
     private String getTransactionServiceApiUrl() {
         return propertiesConfig.getTransactionServiceUrl();
@@ -98,60 +89,4 @@ public class InterWarehouseTransferInV2Service {
         return result.getBody();
     }
 
-    /**
-     *
-     * @param inbound
-     * @return
-     */
-    public InboundIntegrationLog createInboundIntegrationLog(InterWarehouseTransferInV2 inbound) {
-        Warehouse warehouse =
-                getWarehouse(inbound.getInterWarehouseTransferInHeader().getToCompanyCode(), inbound.getInterWarehouseTransferInHeader().getToBranchCode());
-        if (warehouse == null) {
-            throw new BadRequestException("Warehouse Id not found ! ");
-        }
-        InboundIntegrationLog dbInboundIntegrationLog = new InboundIntegrationLog();
-        dbInboundIntegrationLog.setLanguageId("EN");
-        dbInboundIntegrationLog.setCompanyCodeId(warehouse.getCompanyCodeId());
-        dbInboundIntegrationLog.setPlantId(warehouse.getPlantId());
-        dbInboundIntegrationLog.setWarehouseId(warehouse.getWarehouseId());
-        dbInboundIntegrationLog.setIntegrationLogNumber(String.valueOf(System.currentTimeMillis()));
-        dbInboundIntegrationLog.setRefDocNumber(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
-
-        Date date = null;
-        try {
-            if (inbound.getInterWarehouseTransferInLine().get(0).getExpectedDate() != null) {
-                date = DateUtils.convertStringToDateByYYYYMMDD(inbound.getInterWarehouseTransferInLine().get(0).getExpectedDate());
-            } else {
-                date = new Date();
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        dbInboundIntegrationLog.setOrderReceiptDate(date);
-        dbInboundIntegrationLog.setIntegrationStatus("FAILED");
-        dbInboundIntegrationLog.setDeletionIndicator(0L);
-        dbInboundIntegrationLog.setCreatedBy("MW_IWT");
-        dbInboundIntegrationLog.setCreatedOn(new Date());
-        dbInboundIntegrationLog = inboundIntegrationLogRepository.save(dbInboundIntegrationLog);
-        log.info("dbInboundIntegrationLog : " + dbInboundIntegrationLog);
-        return dbInboundIntegrationLog;
-    }
-
-    /**
-     *
-     * @param companyCode
-     * @param branchCode
-     * @return
-     */
-    private Warehouse getWarehouse(String companyCode, String branchCode) {
-        Optional<Warehouse> optWarehouse =
-                warehouseRepository.findByCompanyCodeIdAndPlantIdAndLanguageIdAndDeletionIndicator(
-                        companyCode, branchCode, "EN", 0L);
-        if (optWarehouse.isEmpty()) {
-            log.info("dbWarehouse not found for companyCode & branchCode: " + companyCode + "," + branchCode);
-            return null;
-        }
-
-        return optWarehouse.get();
-    }
 }

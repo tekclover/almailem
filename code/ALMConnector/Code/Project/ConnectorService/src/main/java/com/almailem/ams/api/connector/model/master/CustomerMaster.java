@@ -11,56 +11,57 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblcustomermaster")
+@Table(name = "CUSTOMERMASTER")
 public class CustomerMaster {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CustomerMasterId")
     private Long customerMasterId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "COMPANY_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)")
     private String companyCode;
 
-    @Column(name = "BRANCH_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(50)")
     private String branchCode;
 
     @NotBlank(message = "Customer Code is mandatory")
-    @Column(name = "CUSTOMER_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "Customercode", columnDefinition = "nvarchar(50)")
     private String customerCode;
 
     @NotBlank(message = "Customer Name is mandatory")
-    @Column(name = "CUSTOMER_NAME", columnDefinition = "nvarchar(50)")
+    @Column(name = "CustomerName", columnDefinition = "nvarchar(50)")
     private String customerName;
 
     @NotBlank(message = "HomeAddress1 is mandatory")
-    @Column(name = "HOME_ADDRESS_1", columnDefinition = "nvarchar(3999)")
+    @Column(name = "HomeAddress1", columnDefinition = "nvarchar(3999)")
     private String homeAddress1;
 
-    @Column(name = "HOME_ADDRESS_2", columnDefinition = "nvarchar(3999)")
+    @Column(name = "HomeAddress2", columnDefinition = "nvarchar(3999)")
     private String homeAddress2;
 
-    @Column(name = "HOME_TEL_NUMBER", columnDefinition = "nvarchar(500)")
+    @Column(name = "HomeTelNumber", columnDefinition = "nvarchar(500)")
     private String homeTelNumber;
 
-    @Column(name = "CIVIL_ID_NUMBER", columnDefinition = "nvarchar(200)")
+    @Column(name = "CivilIDNumber", columnDefinition = "nvarchar(200)")
     private String civilIdNumber;
 
-    @Column(name = "MOBILE_NUMBER", columnDefinition = "nvarchar(200)")
+    @Column(name = "MobileNumber", columnDefinition = "nvarchar(200)")
     private String mobileNumber;
 
     @NotBlank(message = "Created Username is mandatory")
-    @Column(name = "CREATED_USER_NAME", columnDefinition = "nvarchar(50)")
+    @Column(name = "CreatedUsername", columnDefinition = "nvarchar(50)")
     private String createdUsername;
 
     @NotBlank(message = "Customer Creation Date is mandatory")
+    @Column(name = "Customercreationdate")
     private Date customerCreationDate;
 
     @Column(name = "IS_NEW", columnDefinition = "nvarchar(20)")
@@ -72,12 +73,11 @@ public class CustomerMaster {
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
+    @Column(name = "Updatedon")
     private Date updatedOn;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @NotNull
     private Long processedStatusId = 0L;
-
     private Date orderReceivedOn;
     private Date orderProcessedOn;
 }

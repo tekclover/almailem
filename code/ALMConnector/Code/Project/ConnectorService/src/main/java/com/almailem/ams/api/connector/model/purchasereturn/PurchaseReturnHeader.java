@@ -14,43 +14,44 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblpurchasereturnheader")
+@Table(name = "PURCHASERETURNHEADER")
 public class PurchaseReturnHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PurchaseReturnHeaderId")
     private Long purchaseReturnHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "COMPANY_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)")
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "BRANCH_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(50)")
     private String branchCode;
 
     @NotBlank(message = "Return Order No is mandatory")
-    @Column(name = "RETURN_ORDER_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "ReturnorderNo", columnDefinition = "nvarchar(50)")
     private String returnOrderNo;
 
     @NotBlank(message = "Return Order Date is mandatory")
+    @Column(name = "Returnorderdate")
     private Date returnOrderDate;
 
-    @Column(name = "SUPPLIER_INVOICE_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)")
     private String supplierInvoiceNo;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
+    @Column(name = "Updatedon")
     private Date updatedOn;
 
     @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
     private String isCancelled;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @NotNull
     private Long processedStatusId = 0L;
-
     private Date orderReceivedOn;
     private Date orderProcessedOn;
 

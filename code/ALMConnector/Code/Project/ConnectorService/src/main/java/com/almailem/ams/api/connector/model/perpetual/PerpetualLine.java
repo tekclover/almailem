@@ -12,39 +12,42 @@ import javax.validation.constraints.NotNull;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblmwperpetualline")
+@Table(name = "PERPETUALLINE")
 public class PerpetualLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PerpetualLineId")
     private Long perpetualLineId;
 
+    @Column(name = "PerpetualHeaderId")
     private Long perpetualHeaderId;
 
     @NotBlank(message = "Cycle Count No is mandatory")
-    @Column(name = "CYCLE_COUNT_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "CycleCountNo", columnDefinition = "nvarchar(50)")
     private String cycleCountNo;
 
     @NotNull(message = "line No Of Each Item Code is mandatory")
+    @Column(name = "Linenoofeachitemcode")
     private Long lineNoOfEachItemCode;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "ITEM_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
     private String itemCode;
 
-    @Column(name = "ITEM_DESCRIPTION", columnDefinition = "nvarchar(500)")
+    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)")
     private String itemDescription;
 
     @NotBlank(message = "Unit of Measure is mandatory")
-    @Column(name = "UNIT_OF_MEASURE", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "MANUFACTURER_CODE", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Name is mandatory")
-    @Column(name = "MANUFACTURER_NAME", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerName", columnDefinition = "nvarchar(200)")
     private String manufacturerName;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
@@ -53,5 +56,6 @@ public class PerpetualLine {
     @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
     private String isCancelled;
 
+    @Column(name = "CountedQty")
     private Double countedQty;
 }

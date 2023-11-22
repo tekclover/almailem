@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -22,46 +21,47 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tbltransferinheader")
+@Table(name = "TRANSFERINHEADER")
 public class TransferInHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "TransferInHeaderId")
     private Long transferInHeaderId;
 
     @NotBlank(message = "SourceCompanyCode is mandatory")
-    @Column(name = "SOURCE_COMPANY_CODE", columnDefinition = "nvarchar(25)")
+    @Column(name = "SourceCompanyCode", columnDefinition = "nvarchar(25)")
     private String sourceCompanyCode;
 
     @NotBlank(message = "TargetCompanyCode is mandatory")
-    @Column(name = "TARGET_COMPANY_CODE", columnDefinition = "nvarchar(25)")
+    @Column(name = "TargetCompanyCode", columnDefinition = "nvarchar(25)")
     private String targetCompanyCode;
 
     @NotBlank(message = "TransferOrderNo is mandatory")
-    @Column(name = "TRANSFER_ORDER_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "TransferOrderNo", columnDefinition = "nvarchar(50)")
     private String transferOrderNo;
 
     @NotBlank(message = "SourceBranchCode is mandatory")
-    @Column(name = "SOURCE_BRANCH_CODE", columnDefinition = "nvarchar(25)")
+    @Column(name = "SourceBranchCode", columnDefinition = "nvarchar(25)")
     private String sourceBranchCode;
 
     @NotBlank(message = "TargetBranchCode is mandatory")
-    @Column(name = "TARGET_BRANCH_CODE", columnDefinition = "nvarchar(25)")
+    @Column(name = "TargetBranchcode", columnDefinition = "nvarchar(25)")
     private String targetBranchCode;
 
     @NotBlank(message = "TransferOrder Date is mandatory")
+    @Column(name = "transferOrderdate")
     private Date transferOrderDate;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
+    @Column(name = "Updatedon")
     private Date updatedOn;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
 
-    @NotNull
     private Long processedStatusId = 0L;
-
     private Date orderReceivedOn;
     private Date orderProcessedOn;
 

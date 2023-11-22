@@ -1,8 +1,7 @@
 package com.almailem.ams.api.connector.controller;
 
 
-import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
-import com.almailem.ams.api.connector.model.stockAdjustment.StockAdjustment;
+import com.almailem.ams.api.connector.model.stockadjustment.StockAdjustment;
 import com.almailem.ams.api.connector.service.StockAdjustmentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

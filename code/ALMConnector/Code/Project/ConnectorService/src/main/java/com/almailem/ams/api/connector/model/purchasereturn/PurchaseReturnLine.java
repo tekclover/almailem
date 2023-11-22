@@ -12,45 +12,49 @@ import javax.validation.constraints.NotNull;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblpurchasereturnline")
+@Table(name = "PURCHASERETURNLINE")
 public class PurchaseReturnLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PurchaseReturnLineId")
     private Long purchaseReturnLineId;
 
+    @Column(name = "PurchaseReturnHeaderId")
     private Long purchaseReturnHeaderId;
 
     @NotBlank(message = "Return Order No is mandatory")
-    @Column(name = "RETURN_ORDER_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "ReturnorderNo", columnDefinition = "nvarchar(50)")
     private String returnOrderNo;
 
     @NotNull(message = "Line No 0f Each Item Code is mandatory")
+    @Column(name = "Linenoofeachitemcode")
     private Long lineNoOfEachItemCode;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "ITEM_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
     private String itemCode;
 
-    @Column(name = "ITEM_DESCRIPTION", columnDefinition = "nvarchar(500)")
+    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)")
     private String itemDescription;
 
     @NotNull(message = "Return Order Qty is mandatory")
+    @Column(name = "Returnorderqty")
     private Double returnOrderQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UNIT_OF_MEASURE", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "MANUFACTURER_CODE", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "MANUFACTURER_SHORT_NAME", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
     private String manufacturerShortName;
 
-    @Column(name = "MANUFACTURER_FULL_NAME", columnDefinition = "nvarchar(250)")
+    @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")

@@ -1,6 +1,6 @@
 package com.almailem.ams.api.connector.service;
 
-import com.almailem.ams.api.connector.model.stockAdjustment.StockAdjustment;
+import com.almailem.ams.api.connector.model.stockadjustment.StockAdjustment;
 import com.almailem.ams.api.connector.repository.StockAdjustmentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

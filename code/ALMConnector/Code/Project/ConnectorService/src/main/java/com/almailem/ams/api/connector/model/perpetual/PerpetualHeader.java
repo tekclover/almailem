@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
 
@@ -22,29 +21,31 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblmwperpetualheader")
+@Table(name = "PERPETUALHEADER")
 public class PerpetualHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PerpetualHeaderId")
     private Long perpetualHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "COMPANY_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)")
     private String companyCode;
 
     @NotBlank(message = "Cycle Count No is mandatory")
-    @Column(name = "CYCLE_COUNT_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "CycleCountNo", columnDefinition = "nvarchar(50)")
     private String cycleCountNo;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "BRANCH_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(50)")
     private String branchCode;
 
-    @Column(name = "BRANCH_NAME", columnDefinition = "nvarchar(500)")
+    @Column(name = "BranchName", columnDefinition = "nvarchar(500)")
     private String branchName;
 
     @NotBlank(message = "Cycle Count Creation Date is mandatory")
+    @Column(name = "Cyclecountcreationdate")
     private Date cycleCountCreationDate;
 
     @Column(name = "IS_NEW", columnDefinition = "nvarchar(20)")
@@ -56,12 +57,11 @@ public class PerpetualHeader {
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
+    @Column(name = "Updatedon")
     private Date updatedOn;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @NotNull
     private Long processedStatusId = 0L;
-
     private Date orderReceivedOn;
     private Date orderProcessedOn;
 

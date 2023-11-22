@@ -48,15 +48,15 @@ public class ScheduleAsyncService {
         return CompletableFuture.completedFuture(salesReturn);
 
     }
-    @Async("asyncTaskExecutor")
-    public CompletableFuture<WarehouseApiResponse> scheduleB2BTransfer() throws InterruptedException, InvocationTargetException, IllegalAccessException {
-
-        log.info("B2B Transfer Started Processing");
-        WarehouseApiResponse b2btransfer = inboundService.processInboundOrderB2B();
-        log.info("B2B Transfer finished Processing");
-        return CompletableFuture.completedFuture(b2btransfer);
-
-    }
+//    @Async("asyncTaskExecutor")
+//    public CompletableFuture<WarehouseApiResponse> scheduleB2BTransfer() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+//
+//        log.info("B2B Transfer Started Processing");
+//        WarehouseApiResponse b2btransfer = inboundService.processInboundOrderB2B();
+//        log.info("B2B Transfer finished Processing");
+//        return CompletableFuture.completedFuture(b2btransfer);
+//
+//    }
 
     @Async("asyncTaskExecutor")
     public CompletableFuture<WarehouseApiResponse> scheduleIWTTransfer() throws InterruptedException, InvocationTargetException, IllegalAccessException {

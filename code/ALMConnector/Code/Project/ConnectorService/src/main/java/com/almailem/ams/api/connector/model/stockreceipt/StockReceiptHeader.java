@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -22,41 +21,36 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblstockreceiptheader")
+@Table(name = "STOCKRECEIPTHEADER")
 public class StockReceiptHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "StockReceiptHeaderId")
     private Long stockReceiptHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "COMPANY_CODE", columnDefinition = "nvarchar(25)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)")
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "BRANCH_CODE", columnDefinition = "nvarchar(25)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(25)")
     private String branchCode;
 
     @NotBlank(message = "Receipt Number is mandatory")
-    @Column(name = "RECEIPT_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "ReceiptNo", columnDefinition = "nvarchar(50)")
     private String receiptNo;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
+    @Column(name = "Updatedon")
     private Date updatedOn;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @NotNull
     private Long processedStatusId = 0L;
-
     private Date orderReceivedOn;
     private Date orderProcessedOn;
-
-    //MiddleWare Fields
-    private Long middlewareId;
-    private String middlewareTable;
-
 
     @OneToMany(mappedBy = "stockReceiptHeaderId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<StockReceiptLine> stockReceiptLines;

@@ -12,49 +12,53 @@ import javax.validation.constraints.NotNull;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblpicklistline")
+@Table(name = "PICKLISTLINE")
 public class PickListLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PickListLineId")
     private Long pickListLineId;
 
+    @Column(name = "PickListHeaderId")
     private Long pickListHeaderId;
 
     @NotBlank(message = "Sales Order No is mandatory")
-    @Column(name = "SALES_ORDER_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "SalesOrderNo", columnDefinition = "nvarchar(50)")
     private String salesOrderNo;
 
     @NotBlank(message = "Pick List No is mandatory")
-    @Column(name = "PICK_LIST_NO", columnDefinition = "nvarchar(50)")
+    @Column(name = "Picklistno", columnDefinition = "nvarchar(50)")
     private String pickListNo;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "ITEM_CODE", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "ITEM_DESCRIPTION", columnDefinition = "nvarchar(500)")
+    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)")
     private String itemDescription;
 
     @NotNull(message = "Pick List Qty is mandatory")
+    @Column(name = "Picklistqty")
     private Double pickListQty;
 
     @NotBlank(message = "Unit of Measure is mandatory")
-    @Column(name = "UNIT_OF_MEASURE", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "MANUFACTURER_CODE", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "MANUFACTURER_SHORT_NAME", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
     private String manufacturerShortName;
 
-    @Column(name = "MANUFACTURER_FULL_NAME", columnDefinition = "nvarchar(250)")
+    @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
+    @Column(name = "Pickedqty")
     private Double pickedQty;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
