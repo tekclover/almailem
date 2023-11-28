@@ -57,7 +57,7 @@ public class StockReceiptService {
     }
 
     public StockReceiptHeader updateProcessedInboundOrder(String receiptNumber) {
-        StockReceiptHeader dbInboundOrder = stockReceiptHeaderRepo.findByReceiptNo(receiptNumber);
+        StockReceiptHeader dbInboundOrder = stockReceiptHeaderRepo.findTopByReceiptNoOrderByOrderReceivedOnDesc(receiptNumber);
         log.info("orderId : " + receiptNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {

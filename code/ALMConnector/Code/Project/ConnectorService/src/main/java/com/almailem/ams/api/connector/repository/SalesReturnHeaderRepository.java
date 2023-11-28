@@ -12,4 +12,6 @@ public interface SalesReturnHeaderRepository extends JpaRepository<SalesReturnHe
     SalesReturnHeader findByReturnOrderNo(String returnOrderNo);
 
     List<SalesReturnHeader> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
+
+    SalesReturnHeader findTopByReturnOrderNoOrderByOrderReceivedOnDesc(String returnOrderNo);
 }

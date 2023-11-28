@@ -93,14 +93,14 @@ public class IDMasterService {
 
 	/**
 	 * createAuditLogRecord
-	 * 
-	 * @param loginUserID
-	 * @param pkField
+	 * @param warehouseId
 	 * @param tableName
+	 * @param screenNo
+	 * @param subScreenNo
 	 * @param modifiedField
 	 * @param oldValue
 	 * @param newValue
-	 * @param authToken
+	 * @param loginUserID
 	 */
 	public void createAuditLogRecord(String warehouseId, String tableName, Integer screenNo, Integer subScreenNo, 
 			String modifiedField, String oldValue, String newValue, String loginUserID) {

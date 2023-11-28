@@ -37,9 +37,9 @@ public class SupplierInvoiceHeader {
     @Column(name = "Branchcode", columnDefinition = "nvarchar(25)")
     private String branchCode;
 
-    @NotBlank(message = "Purchase Order No is mandatory")
-    @Column(name = "PurchaseorderNo", columnDefinition = "nvarchar(50)")
-    private String purchaseOrderNo;
+//    @NotBlank(message = "Purchase Order No is mandatory")
+//    @Column(name = "PurchaseorderNo", columnDefinition = "nvarchar(50)")
+//    private String purchaseOrderNo;
 
     @NotBlank(message = "Supplier Invoice No is mandatory")
     @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)")
@@ -55,7 +55,9 @@ public class SupplierInvoiceHeader {
     private String isCancelled;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
+    @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+    @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
     private Date orderProcessedOn;
 

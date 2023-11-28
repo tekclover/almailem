@@ -77,7 +77,9 @@ public class SalesInvoice {
     private String status;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
+    @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+    @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
     private Date orderProcessedOn;
 }

@@ -17,7 +17,7 @@ public class ASNHeaderV2  {
 	private String asnNumber;
 
 	//almailem fields
-	private String purchaseOrderNumber;
+//	private String purchaseOrderNumber;
 
 	//MiddleWare Fields
 	private Long middlewareId;

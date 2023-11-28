@@ -62,4 +62,7 @@ public class PurchaseReturnLine {
 
     @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
     private String isCancelled;
+
+    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)")
+    private String supplierInvoiceNo;
 }

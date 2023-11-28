@@ -62,7 +62,7 @@ public class SupplierInvoiceService {
      * @return
      */
     public SupplierInvoiceHeader updateProcessedInboundOrder(String asnNumber) {
-        SupplierInvoiceHeader dbInboundOrder = supplierInvoiceHeaderRepository.findBySupplierInvoiceNo(asnNumber);
+        SupplierInvoiceHeader dbInboundOrder = supplierInvoiceHeaderRepository.findTopBySupplierInvoiceNoOrderByOrderReceivedOnDesc(asnNumber);
         log.info("orderId : " + asnNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {

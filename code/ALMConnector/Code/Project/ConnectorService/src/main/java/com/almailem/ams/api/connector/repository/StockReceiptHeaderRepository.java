@@ -14,4 +14,6 @@ public interface StockReceiptHeaderRepository extends JpaRepository<StockReceipt
     StockReceiptHeader findByReceiptNo(String asnNumber);
 
     List<StockReceiptHeader> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
+
+    StockReceiptHeader findTopByReceiptNoOrderByOrderReceivedOnDesc(String receiptNumber);
 }

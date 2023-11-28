@@ -2,36 +2,28 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
-import com.almailem.ams.api.connector.model.transferout.TransferOutHeader;
-import com.almailem.ams.api.connector.model.wms.ShipmentOrderV2;
+import com.almailem.ams.api.connector.model.salesinvoice.SalesInvoice;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
-import com.almailem.ams.api.connector.repository.TransferOutHeaderRepository;
+import com.almailem.ams.api.connector.repository.SalesInvoiceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-@Slf4j
 @Service
-public class ShipmentOrderV2Service {
+@Slf4j
+public class SalesInvoiceService {
 
     @Autowired
-    TransferOutHeaderRepository transferOutHeaderRepository;
+    private SalesInvoiceRepository salesInvoiceRepository;
 
     @Autowired
-    AuthTokenService authTokenService;
+    private AuthTokenService authTokenService;
 
     @Autowired
     PropertiesConfig propertiesConfig;
@@ -52,38 +44,47 @@ public class ShipmentOrderV2Service {
     }
 
     /**
-     * Get All ShipmentOrderV2 Details
+     * GET ALL
+     */
+    public List<SalesInvoice> getAllSupplierInvoiceHeader() {
+        List<SalesInvoice> salesInvoiceList = salesInvoiceRepository.findAll();
+        return salesInvoiceList;
+    }
+
+    /**
      *
+     * @param asnNumber
      * @return
      */
-    public List<TransferOutHeader> getAllSoV2Details() {
-        List<TransferOutHeader> transferOuts = transferOutHeaderRepository.findAll();
-        return transferOuts;
-    }
-
-    public void updateProcessedOutboundOrder(String transferOrderNumber) {
-        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
-        log.info("orderId: " + transferOrderNumber);
-        log.info("SO Order: " + dbObOrder);
-        if (dbObOrder != null) {
-            dbObOrder.setProcessedStatusId(10L);
-            dbObOrder.setOrderProcessedOn(new Date());
-            transferOutHeaderRepository.updateProcessStatusId(transferOrderNumber, new Date());
+    public SalesInvoice updateProcessedOutboundOrder(String asnNumber) {
+        SalesInvoice dbOutboundOrder = salesInvoiceRepository.findTopBySalesInvoiceNumberOrderByOrderReceivedOnDesc(asnNumber);
+        log.info("orderId : " + asnNumber);
+        log.info("dbOutboundOrder : " + dbOutboundOrder);
+        if (dbOutboundOrder != null) {
+            dbOutboundOrder.setProcessedStatusId(10L);
+            dbOutboundOrder.setOrderProcessedOn(new Date());
+            SalesInvoice OutboundOrder = salesInvoiceRepository.save(dbOutboundOrder);
+            return dbOutboundOrder;
         }
+        return dbOutboundOrder;
     }
 
-    public WarehouseApiResponse postShipmentOrder(ShipmentOrderV2 shipmentOrder) {
+    /**
+     * @param salesInvoice
+     * @return
+     */
+    public WarehouseApiResponse postSalesInvoice(com.almailem.ams.api.connector.model.wms.SalesInvoice salesInvoice) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("User-Agent", "ClassicWMS RestTemplate");
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/so/v2");
-        HttpEntity<?> entity = new HttpEntity<>(shipmentOrder, headers);
+                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/salesInvoice/v2");
+        HttpEntity<?> entity = new HttpEntity<>(salesInvoice, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
-        log.info("result: " + result.getStatusCode());
+        log.info("result : " + result.getStatusCode());
         return result.getBody();
     }
 }

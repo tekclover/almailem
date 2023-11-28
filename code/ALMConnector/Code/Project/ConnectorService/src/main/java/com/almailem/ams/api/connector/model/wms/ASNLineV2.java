@@ -46,6 +46,7 @@ public class ASNLineV2 {
 	//almailem fields
 
 	private String manufacturerFullName;
+	private String purchaseOrderNumber;
 	//MiddleWare Fields
 	private Long middlewareId;
 	private Long middlewareHeaderId;

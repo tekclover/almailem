@@ -71,6 +71,10 @@ public class SupplierInvoiceLine {
     @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)")
     private String manufacturerCode;
 
+    @NotBlank(message = "Purchase Order No is mandatory")
+    @Column(name = "PurchaseorderNo", columnDefinition = "nvarchar(50)")
+    private String purchaseOrderNo;
+
 //    @NotBlank(message = "Invoice Date is mandatory")
     @Column(name = "Invoicedate")
     private Date invoiceDate;

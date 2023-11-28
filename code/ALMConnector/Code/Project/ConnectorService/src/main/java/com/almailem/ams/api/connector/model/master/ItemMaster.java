@@ -83,7 +83,10 @@ public class ItemMaster {
     private Date updatedOn;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
+    @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+    @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
     private Date orderProcessedOn;
+//    private String remarks;
 }

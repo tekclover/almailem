@@ -14,7 +14,10 @@ import java.util.concurrent.CompletableFuture;
 public class ScheduleAsyncService {
 
     @Autowired
-    InboundService inboundService;
+    TransactionService transactionService;
+
+    @Autowired
+    MastersService mastersService;
 
     //-------------------------------------------------------------------------------------------
 
@@ -23,7 +26,7 @@ public class ScheduleAsyncService {
     public CompletableFuture<WarehouseApiResponse> scheduleSupplierInvoice() throws InterruptedException, InvocationTargetException, IllegalAccessException {
 
         log.info("supplierInvoice Started Processing");
-        WarehouseApiResponse supplierInvoice = inboundService.processInboundOrder();
+        WarehouseApiResponse supplierInvoice = transactionService.processInboundOrder();
         log.info("supplierInvoice finished Processing");
         return CompletableFuture.completedFuture(supplierInvoice);
 
@@ -33,7 +36,7 @@ public class ScheduleAsyncService {
     public CompletableFuture<WarehouseApiResponse> scheduleStockReceipt() throws InterruptedException, InvocationTargetException, IllegalAccessException {
 
         log.info("stockReceipt Started Processing");
-        WarehouseApiResponse stockReceipt = inboundService.processInboundOrderSR();
+        WarehouseApiResponse stockReceipt = transactionService.processInboundOrderSR();
         log.info("stockReceipt finished Processing");
         return CompletableFuture.completedFuture(stockReceipt);
 
@@ -43,28 +46,77 @@ public class ScheduleAsyncService {
     public CompletableFuture<WarehouseApiResponse> scheduleSalesReturn() throws InterruptedException, InvocationTargetException, IllegalAccessException {
 
         log.info("salesReturn Started Processing");
-        WarehouseApiResponse salesReturn = inboundService.processInboundOrderSRT();
+        WarehouseApiResponse salesReturn = transactionService.processInboundOrderSRT();
         log.info("salesReturn finished Processing");
         return CompletableFuture.completedFuture(salesReturn);
 
     }
-//    @Async("asyncTaskExecutor")
-//    public CompletableFuture<WarehouseApiResponse> scheduleB2BTransfer() throws InterruptedException, InvocationTargetException, IllegalAccessException {
-//
-//        log.info("B2B Transfer Started Processing");
-//        WarehouseApiResponse b2btransfer = inboundService.processInboundOrderB2B();
-//        log.info("B2B Transfer finished Processing");
-//        return CompletableFuture.completedFuture(b2btransfer);
-//
-//    }
 
     @Async("asyncTaskExecutor")
     public CompletableFuture<WarehouseApiResponse> scheduleIWTTransfer() throws InterruptedException, InvocationTargetException, IllegalAccessException {
 
-        log.info("IWT Transfer Started Processing");
-        WarehouseApiResponse iwtTransfer = inboundService.processInboundOrderIWT();
-        log.info("IWT Transfer finished Processing");
+        log.info("Transfer In Started Processing");
+        WarehouseApiResponse iwtTransfer = transactionService.processInboundOrderIWT();
+        log.info("Transfer In finished Processing");
         return CompletableFuture.completedFuture(iwtTransfer);
+
+    }
+
+    //-------------------------------------------------------------------OUTBOUND---------------------------------------------------------------
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> scheduleOutboundPurchaseReturn() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("Purchase Return Started Processing");
+        WarehouseApiResponse purReturn = transactionService.processOutboundOrderRPO();
+        log.info("Purchase Return finished Processing");
+        return CompletableFuture.completedFuture(purReturn);
+    }
+
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> scheduleOutboundSalesOrder() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("SalesOrder Started Processing");
+        WarehouseApiResponse salesOrder = transactionService.processOutboundOrderPL();
+        log.info("SalesOrder finished Processing");
+        return CompletableFuture.completedFuture(salesOrder);
+
+    }
+
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> scheduleOutboundIWTTransfer() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("Transfer Out Started Processing");
+        WarehouseApiResponse transferOut = transactionService.processOutboundOrderIWT();
+        log.info("Transfer Out finished Processing");
+        return CompletableFuture.completedFuture(transferOut);
+    }
+
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> scheduleOutboundSalesInvoice() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("Sales Invoice Started Processing");
+        WarehouseApiResponse salesInvoice = transactionService.processOutboundOrderSI();
+        log.info("Sales Invoice finished Processing");
+        return CompletableFuture.completedFuture(salesInvoice);
+    }
+
+    //-------------------------------------------------------------------MASTER---------------------------------------------------------------
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> scheduleItemMaster() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("Item Master Started Processing");
+        WarehouseApiResponse itemMaster = mastersService.processItemMasterOrder();
+        log.info("Item Master finished Processing");
+        return CompletableFuture.completedFuture(itemMaster);
+    }
+
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> scheduleCustomerMaster() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("Customer Master Started Processing");
+        WarehouseApiResponse customerMaster = mastersService.processCustomerMasterOrder();
+        log.info("Customer Master finished Processing");
+        return CompletableFuture.completedFuture(customerMaster);
 
     }
 }

@@ -11,7 +11,9 @@ import java.util.List;
 @Transactional
 public interface SupplierInvoiceHeaderRepository extends JpaRepository<SupplierInvoiceHeader, String> {
 
-    List<SupplierInvoiceHeader> findTopByProcessedStatusIdOrderByOrderReceivedOn(Long deletionIndicator);
+    List<SupplierInvoiceHeader> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
 
     SupplierInvoiceHeader findBySupplierInvoiceNo(String asnNumber);
+
+    SupplierInvoiceHeader findTopBySupplierInvoiceNoOrderByOrderReceivedOnDesc(String asnNumber);
 }

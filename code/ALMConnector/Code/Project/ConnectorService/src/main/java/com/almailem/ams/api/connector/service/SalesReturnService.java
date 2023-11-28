@@ -57,7 +57,7 @@ public class SalesReturnService {
     }
 
     public SalesReturnHeader updateProcessedInboundOrder(String returnOrderNo) {
-        SalesReturnHeader dbInboundOrder = salesReturnHeaderRepository.findByReturnOrderNo(returnOrderNo);
+        SalesReturnHeader dbInboundOrder = salesReturnHeaderRepository.findTopByReturnOrderNoOrderByOrderReceivedOnDesc(returnOrderNo);
         log.info("orderId : " + returnOrderNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
