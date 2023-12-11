@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class InterWarehouseTransferInHeaderV2  {
+public class InterWarehouseTransferInHeader {
 
 	@NotBlank(message = "To CompanyCode is mandatory")
 	private String toCompanyCode;

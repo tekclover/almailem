@@ -38,8 +38,8 @@ public class PurchaseReturnHeader {
     @Column(name = "Returnorderdate")
     private Date returnOrderDate;
 
-    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)")
-    private String supplierInvoiceNo;
+//    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)")
+//    private String supplierInvoiceNo;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
     private String isCompleted;

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Data
-public class SalesOrderHeaderV2 {
+public class SalesOrderHeader {
 
     @NotBlank(message = "SalesOrder Number is mandatory")
     private String salesOrderNumber;                        // REF_DOC_NO;

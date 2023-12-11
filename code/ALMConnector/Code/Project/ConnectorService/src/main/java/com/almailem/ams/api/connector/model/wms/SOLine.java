@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class SOLineV2 {
+public class SOLine {
 
     @NotNull(message = "Line Reference is mandatory")
     private Long lineReference;                               // IB_LINE_NO
@@ -40,7 +40,7 @@ public class SOLineV2 {
     protected String storeID;
     private String sourceBranchCode;
     private String countryOfOrigin;
-
+    private String transferOrderNumber;
     //middleware fields
     private Long middlewareId;
     private Long middlewareHeaderId;

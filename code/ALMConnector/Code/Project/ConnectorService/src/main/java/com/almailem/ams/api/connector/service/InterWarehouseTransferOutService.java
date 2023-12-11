@@ -3,7 +3,7 @@ package com.almailem.ams.api.connector.service;
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.transferout.TransferOutHeader;
-import com.almailem.ams.api.connector.model.wms.ShipmentOrderV2;
+import com.almailem.ams.api.connector.model.wms.InterWarehouseTransferOut;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.TransferOutHeaderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +25,16 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ShipmentOrderV2Service {
+public class InterWarehouseTransferOutService {
 
     @Autowired
     TransferOutHeaderRepository transferOutHeaderRepository;
 
     @Autowired
-    AuthTokenService authTokenService;
+    PropertiesConfig propertiesConfig;
 
     @Autowired
-    PropertiesConfig propertiesConfig;
+    AuthTokenService authTokenService;
 
     private String getTransactionServiceApiUrl() {
         return propertiesConfig.getTransactionServiceUrl();
@@ -52,35 +52,41 @@ public class ShipmentOrderV2Service {
     }
 
     /**
-     * Get All ShipmentOrderV2 Details
+     * Get All InterWarehouseTransferOutV2 Details
      *
      * @return
      */
-    public List<TransferOutHeader> getAllSoV2Details() {
+    public List<TransferOutHeader> getAllInterWhTransferOutV2Details() {
         List<TransferOutHeader> transferOuts = transferOutHeaderRepository.findAll();
         return transferOuts;
     }
 
-    public void updateProcessedOutboundOrder(String transferOrderNumber) {
+    /**
+     * @param transferOrderNumber
+     * @return
+     */
+    public TransferOutHeader updateProcessedOutboundOrder(String transferOrderNumber) {
         TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
         log.info("orderId: " + transferOrderNumber);
-        log.info("SO Order: " + dbObOrder);
+        log.info("IWhTransfer Out Order: " + dbObOrder);
         if (dbObOrder != null) {
             dbObOrder.setProcessedStatusId(10L);
             dbObOrder.setOrderProcessedOn(new Date());
+//            transferOutHeaderRepository.save(dbObOrder);
             transferOutHeaderRepository.updateProcessStatusId(transferOrderNumber, new Date());
         }
+        return dbObOrder;
     }
 
-    public WarehouseApiResponse postShipmentOrder(ShipmentOrderV2 shipmentOrder) {
+    public WarehouseApiResponse postIWhTransferOutV2(InterWarehouseTransferOut iWhTransOutV2) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("User-Agent", "ClassicWMS RestTemplate");
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/so/v2");
-        HttpEntity<?> entity = new HttpEntity<>(shipmentOrder, headers);
+                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/interwarehousetransferoutv2");
+        HttpEntity<?> entity = new HttpEntity<>(iWhTransOutV2, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result: " + result.getStatusCode());

@@ -1,7 +1,7 @@
 package com.almailem.ams.api.connector.controller;
 
 import com.almailem.ams.api.connector.model.purchasereturn.PurchaseReturnHeader;
-import com.almailem.ams.api.connector.service.ReturnPOV2Service;
+import com.almailem.ams.api.connector.service.ReturnPOService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -23,16 +23,16 @@ import java.util.List;
 @SwaggerDefinition(tags = {@Tag(name = "ReturnPOV2", description = "Operations related to ReturnPOV2")})
 @RequestMapping("/returnpov2")
 @RestController
-public class ReturnPOV2Controller {
+public class ReturnPOController {
 
     @Autowired
-    ReturnPOV2Service returnPOV2Service;
+    ReturnPOService returnPOService;
 
     //Get All ReturnPOV2 Details
     @ApiOperation(response = PurchaseReturnHeader.class, value = "Get All ReturnPOV2 Details")
     @GetMapping("")
     public ResponseEntity<?> getAllReturnPOV2s() {
-        List<PurchaseReturnHeader> purchaseReturns = returnPOV2Service.getAllReturnPoV2Details();
+        List<PurchaseReturnHeader> purchaseReturns = returnPOService.getAllReturnPoV2Details();
         return new ResponseEntity<>(purchaseReturns, HttpStatus.OK);
     }
 }

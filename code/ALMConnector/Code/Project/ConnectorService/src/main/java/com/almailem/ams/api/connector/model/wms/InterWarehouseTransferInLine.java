@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class InterWarehouseTransferInLineV2 {
+public class InterWarehouseTransferInLine {
 
 	@NotBlank(message = "From Company Code is Mandatory")
 	private String fromCompanyCode;

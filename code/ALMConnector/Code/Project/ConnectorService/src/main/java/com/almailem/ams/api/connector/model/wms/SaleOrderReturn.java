@@ -6,11 +6,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Data
-public class SaleOrderReturnV2 {
+public class SaleOrderReturn {
 
 	@Valid
-	private SOReturnHeaderV2 soReturnHeader;
+	private SOReturnHeader soReturnHeader;
 	
 	@Valid
-	private List<SOReturnLineV2> soReturnLine;
+	private List<SOReturnLine> soReturnLine;
 }

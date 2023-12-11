@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class SalesOrderLineV2 {
+public class SalesOrderLine {
 
     @NotNull(message = "Line Reference is mandatory")
     private Long lineReference;                                // IB_LINE_NO

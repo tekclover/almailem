@@ -1,21 +1,25 @@
 package com.almailem.ams.api.connector.model.wms;
 
-import lombok.Data;
-
 import javax.validation.constraints.NotBlank;
 
-@Data
-public class SOReturnHeaderV2  {
+import lombok.Data;
 
-	@NotBlank(message = "Company Code is mandatory")
-	private String companyCode;
+@Data
+public class ASNHeader {
+
 	@NotBlank(message = "Branch Code is mandatory")
 	private String branchCode;
-	@NotBlank(message = "Transfer Order Number is mandatory")
-	private String transferOrderNumber;
+	
+	@NotBlank(message = "Company Code is mandatory")
+	private String companyCode;
+	
+	@NotBlank(message = "ASN number is mandatory")
+	private String asnNumber;
+
+	//almailem fields
+//	private String purchaseOrderNumber;
 
 	//MiddleWare Fields
 	private Long middlewareId;
 	private String middlewareTable;
-
 }

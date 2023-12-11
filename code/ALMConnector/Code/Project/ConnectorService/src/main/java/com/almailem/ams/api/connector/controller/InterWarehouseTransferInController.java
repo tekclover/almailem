@@ -1,7 +1,7 @@
 package com.almailem.ams.api.connector.controller;
 
 import com.almailem.ams.api.connector.model.transferin.TransferInHeader;
-import com.almailem.ams.api.connector.service.InterWarehouseTransferInV2Service;
+import com.almailem.ams.api.connector.service.InterWarehouseTransferInService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -23,10 +23,10 @@ import java.util.List;
 @SwaggerDefinition(tags = {@Tag(name = "InterWarehouseTransferInV2", description = "Operations related to InterWarehouseTransferInV2")})
 @RequestMapping("/interwarehousetransferinv2")
 @RestController
-public class InterWarehouseTransferInV2Controller {
+public class InterWarehouseTransferInController {
 
     @Autowired
-    InterWarehouseTransferInV2Service interWhTransferInV2Service;
+    InterWarehouseTransferInService interWhTransferInV2Service;
 
     /**
      * Get All InterWarehouseTransferInV2 Details

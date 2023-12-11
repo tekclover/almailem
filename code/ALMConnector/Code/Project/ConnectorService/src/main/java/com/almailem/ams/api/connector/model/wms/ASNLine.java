@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class ASNLineV2 {
+public class ASNLine {
 
 	@NotNull(message = "Line Reference is mandatory")
 	private Long lineReference;

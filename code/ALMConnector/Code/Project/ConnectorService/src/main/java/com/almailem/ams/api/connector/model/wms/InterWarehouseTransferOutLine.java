@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class InterWarehouseTransferOutLineV2 {
+public class InterWarehouseTransferOutLine {
 
     @NotNull(message = "Line Reference is mandatory")
     private Long lineReference;                                // IB_LINE_NO
@@ -41,6 +41,7 @@ public class InterWarehouseTransferOutLineV2 {
 
     private String sourceBranchCode;
     private String countryOfOrigin;
+    private String transferOrderNumber;
 
     //MiddleWare Fields
     private Long middlewareId;

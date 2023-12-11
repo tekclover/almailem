@@ -2,25 +2,33 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
-import com.almailem.ams.api.connector.model.transferin.TransferInHeader;
-import com.almailem.ams.api.connector.model.wms.*;
-import com.almailem.ams.api.connector.repository.TransferInHeaderRepository;
+import com.almailem.ams.api.connector.model.picklist.PickListHeader;
+import com.almailem.ams.api.connector.model.wms.SalesOrder;
+import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
+import com.almailem.ams.api.connector.repository.PickListHeaderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
-public class InterWarehouseTransferInV2Service {
+public class SalesOrderService {
 
     @Autowired
-    TransferInHeaderRepository transferInHeaderRepository;
+    PickListHeaderRepository pickListHeaderRepository;
 
     @Autowired
     private AuthTokenService authTokenService;
@@ -44,47 +52,51 @@ public class InterWarehouseTransferInV2Service {
     }
 
     /**
-     * Get All InterWhTransferInV2 Details
+     * Get All PickList Details
      *
      * @return
      */
-    public List<TransferInHeader> getAllInterWhTransferInV2Details() {
-        List<TransferInHeader> transferIns = transferInHeaderRepository.findAll();
-        return transferIns;
+    public List<PickListHeader> getAllSalesOrderV2Details() {
+        List<PickListHeader> pickLists = pickListHeaderRepository.findAll();
+        return pickLists;
     }
 
-    public void updateProcessedInboundOrder(String asnNumber) {
-        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
+    /**
+     *
+     * @param asnNumber
+     * @return
+     */
+    public PickListHeader updateProcessedInboundOrder(String asnNumber) {
+        PickListHeader dbInboundOrder = pickListHeaderRepository.findTopByPickListNoOrderByOrderReceivedOnDesc(asnNumber);
         log.info("orderId : " + asnNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
             dbInboundOrder.setProcessedStatusId(10L);
             dbInboundOrder.setOrderProcessedOn(new Date());
-//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
-            transferInHeaderRepository.updateProcessStatusId(asnNumber, new Date());
-//            return null;
+//            PickListHeader inboundOrder = pickListHeaderRepository.save(dbInboundOrder);
+            pickListHeaderRepository.updateProcessStatusId(dbInboundOrder.getPickListNo(), new Date());
+            return null;
         }
-//        return dbInboundOrder;
+        return dbInboundOrder;
     }
 
     /**
      *
-     * @param interWarehouseTransferIn
+     * @param salesOrder
      * @return
      */
-    public WarehouseApiResponse postIWTTransferIn(InterWarehouseTransferInV2 interWarehouseTransferIn) {
+    public WarehouseApiResponse postSalesOrder(SalesOrder salesOrder) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("User-Agent", "ClassicWMS RestTemplate");
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/inbound/interWarehouseTransferIn/v2");
-        HttpEntity<?> entity = new HttpEntity<>(interWarehouseTransferIn, headers);
+                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/salesorderv2");
+        HttpEntity<?> entity = new HttpEntity<>(salesOrder, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result : " + result.getStatusCode());
         return result.getBody();
     }
-
 }

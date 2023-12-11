@@ -1,12 +1,10 @@
 package com.almailem.ams.api.connector.service;
 
-
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
-import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
-import com.almailem.ams.api.connector.model.wms.SaleOrderReturn;
-import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
-import com.almailem.ams.api.connector.repository.SalesReturnHeaderRepository;
+import com.almailem.ams.api.connector.model.transferin.TransferInHeader;
+import com.almailem.ams.api.connector.model.wms.*;
+import com.almailem.ams.api.connector.repository.TransferInHeaderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -17,12 +15,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 
-@Service
 @Slf4j
-public class SalesReturnService {
+@Service
+public class InterWarehouseTransferInService {
 
     @Autowired
-    private SalesReturnHeaderRepository salesReturnHeaderRepository;
+    TransferInHeaderRepository transferInHeaderRepository;
 
     @Autowired
     private AuthTokenService authTokenService;
@@ -45,40 +43,44 @@ public class SalesReturnService {
         return restTemplate;
     }
 
-    //GET ALL
-
-    public List<SalesReturnHeader>  getAllSalesReturnHeader(){
-        List<SalesReturnHeader> salesReturnHeader = salesReturnHeaderRepository.findAll();
-        return salesReturnHeader;
+    /**
+     * Get All InterWhTransferInV2 Details
+     *
+     * @return
+     */
+    public List<TransferInHeader> getAllInterWhTransferInV2Details() {
+        List<TransferInHeader> transferIns = transferInHeaderRepository.findAll();
+        return transferIns;
     }
 
-    public SalesReturnHeader updateProcessedInboundOrder(String returnOrderNo) {
-        SalesReturnHeader dbInboundOrder = salesReturnHeaderRepository.findTopByReturnOrderNoOrderByOrderReceivedOnDesc(returnOrderNo);
-        log.info("orderId : " + returnOrderNo);
+    public void updateProcessedInboundOrder(String asnNumber) {
+        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
+        log.info("orderId : " + asnNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
             dbInboundOrder.setProcessedStatusId(10L);
             dbInboundOrder.setOrderProcessedOn(new Date());
-            SalesReturnHeader inboundOrder = salesReturnHeaderRepository.save(dbInboundOrder);
-            return inboundOrder;
+//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
+            transferInHeaderRepository.updateProcessStatusId(asnNumber, new Date());
+//            return null;
         }
-        return dbInboundOrder;
+//        return dbInboundOrder;
     }
 
     /**
      *
-     * @param salesReturn
+     * @param interWarehouseTransferIn
      * @return
      */
-    public WarehouseApiResponse postStockReceipt(SaleOrderReturn salesReturn) {
+    public WarehouseApiResponse postIWTTransferIn(InterWarehouseTransferIn interWarehouseTransferIn) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("User-Agent", "ClassicWMS RestTemplate");
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/inbound/soreturn/v2");
-        HttpEntity<?> entity = new HttpEntity<>(salesReturn, headers);
+                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/inbound/interWarehouseTransferIn/v2");
+        HttpEntity<?> entity = new HttpEntity<>(interWarehouseTransferIn, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result : " + result.getStatusCode());

@@ -69,4 +69,8 @@ public class PickListLine {
 
     @Column(name = "IS_ALL_PICKED", columnDefinition = "nvarchar(10)")
     private String isAllPicked;
+
+    @NotNull(message = "Line Number of Each Item is mandatory")
+    @Column(name = "Linenumberofeachitem")
+    private Long lineNumberOfEachItem;
 }

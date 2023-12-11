@@ -1,12 +1,10 @@
 package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
-import com.almailem.ams.api.connector.controller.exception.BadRequestException;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.supplierinvoice.*;
 import com.almailem.ams.api.connector.model.wms.*;
 import com.almailem.ams.api.connector.repository.SupplierInvoiceHeaderRepository;
-import com.almailem.ams.api.connector.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -15,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -75,10 +71,10 @@ public class SupplierInvoiceService {
     }
 
     /**
-     * @param asnv2
+     * @param ASN
      * @return
      */
-    public WarehouseApiResponse postASNV2(ASNV2 asnv2) {
+    public WarehouseApiResponse postASNV2(ASN ASN) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -86,7 +82,7 @@ public class SupplierInvoiceService {
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
                 UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/inbound/asn/v2");
-        HttpEntity<?> entity = new HttpEntity<>(asnv2, headers);
+        HttpEntity<?> entity = new HttpEntity<>(ASN, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result : " + result.getStatusCode());

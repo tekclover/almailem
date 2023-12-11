@@ -4,7 +4,6 @@ import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.dto.AuditLog;
 import com.almailem.ams.api.connector.model.master.CustomerMaster;
 import com.almailem.ams.api.connector.model.master.ItemMaster;
-import com.almailem.ams.api.connector.model.wms.ASNV2;
 import com.almailem.ams.api.connector.model.wms.Customer;
 import com.almailem.ams.api.connector.model.wms.Item;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;

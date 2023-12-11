@@ -45,22 +45,22 @@ public class TransactionService {
     B2BTransferInService b2BTransferInService;
 
     @Autowired
-    InterWarehouseTransferInV2Service interWarehouseTransferInV2Service;
+    InterWarehouseTransferInService interWarehouseTransferInService;
 
     @Autowired
-    ReturnPOV2Service returnPOV2Service;
+    ReturnPOService returnPOService;
 
     @Autowired
-    InterWarehouseTransferOutV2Service interWarehouseTransferOutService;
+    InterWarehouseTransferOutService interWarehouseTransferOutService;
 
     @Autowired
-    ShipmentOrderV2Service shipmentOrderService;
+    ShipmentOrderService shipmentOrderService;
 
     @Autowired
     SalesInvoiceService salesInvoiceService;
 
     @Autowired
-    SalesOrderV2Service salesOrderV2Service;
+    SalesOrderService salesOrderService;
 
     //-------------------------------------------------------------------------------------------
 
@@ -89,29 +89,29 @@ public class TransactionService {
     SalesInvoiceRepository salesInvoiceRepository;
 
     //-------------------------------------------------------------------------------------------
-    List<ASNV2> inboundList = null;
+    List<ASN> inboundList = null;
     List<com.almailem.ams.api.connector.model.wms.StockReceiptHeader> inboundSRList = null;
-    List<SaleOrderReturnV2> inboundSRTList = null;
+    List<SaleOrderReturn> inboundSRTList = null;
     List<B2bTransferIn> inboundB2BList = null;
-    List<InterWarehouseTransferInV2> inboundIWTList = null;
-    List<ReturnPOV2> outboundRPOList = null;
-    List<InterWarehouseTransferOutV2> outboundIWhtList = null;
-    List<ShipmentOrderV2> outboundSOList = null;
+    List<InterWarehouseTransferIn> inboundIWTList = null;
+    List<ReturnPO> outboundRPOList = null;
+    List<InterWarehouseTransferOut> outboundIWhtList = null;
+    List<ShipmentOrder> outboundSOList = null;
 
-    List<SalesOrderV2> outboundSalesOrderList = null;
+    List<SalesOrder> outboundSalesOrderList = null;
     List<com.almailem.ams.api.connector.model.wms.SalesInvoice> outboundSIList = null;
     //=================================================================================================================
-    static CopyOnWriteArrayList<ASNV2> spList = null;                               // ASN Inbound List
+    static CopyOnWriteArrayList<ASN> spList = null;                               // ASN Inbound List
     static CopyOnWriteArrayList<com.almailem.ams.api.connector.model.wms.StockReceiptHeader> spSRList = null;                // StockReceipt Inbound List
-    static CopyOnWriteArrayList<SaleOrderReturnV2> spSRTList = null;                // SaleOrder Inbound List
+    static CopyOnWriteArrayList<SaleOrderReturn> spSRTList = null;                // SaleOrder Inbound List
     static CopyOnWriteArrayList<B2bTransferIn> spB2BList = null;                    // B2B Inbound List
-    static CopyOnWriteArrayList<InterWarehouseTransferInV2> spIWTList = null;       // InterWarehouse Inbound List
+    static CopyOnWriteArrayList<InterWarehouseTransferIn> spIWTList = null;       // InterWarehouse Inbound List
 
-    static CopyOnWriteArrayList<ReturnPOV2> spRPOList = null;                       // ReturnPO Outbound List
-    static CopyOnWriteArrayList<InterWarehouseTransferOutV2> spIWhtList = null;     // InterWarehouseTransfer Outbound List
-    static CopyOnWriteArrayList<ShipmentOrderV2> spSOList = null;                   // ShipmentOrder Outbound List
+    static CopyOnWriteArrayList<ReturnPO> spRPOList = null;                       // ReturnPO Outbound List
+    static CopyOnWriteArrayList<InterWarehouseTransferOut> spIWhtList = null;     // InterWarehouseTransfer Outbound List
+    static CopyOnWriteArrayList<ShipmentOrder> spSOList = null;                   // ShipmentOrder Outbound List
 
-    static CopyOnWriteArrayList<SalesOrderV2> spSalesOrderList = null;                               // ASN Inbound List
+    static CopyOnWriteArrayList<SalesOrder> spSalesOrderList = null;                               // ASN Inbound List
     static CopyOnWriteArrayList<com.almailem.ams.api.connector.model.wms.SalesInvoice> spSIList = null;
 
     //==========================================================================================================================
@@ -119,21 +119,20 @@ public class TransactionService {
         if (inboundList == null || inboundList.isEmpty()) {
             List<SupplierInvoiceHeader> supplierInvoiceHeaders = supplierInvoiceHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
             inboundList = new ArrayList<>();
-            ASNV2 asn = new ASNV2();
+            ASN asn = new ASN();
             for (SupplierInvoiceHeader dbIBOrder : supplierInvoiceHeaders) {
 
-                ASNHeaderV2 asnHeader = new ASNHeaderV2();
+                ASNHeader asnHeader = new ASNHeader();
 
                 asnHeader.setAsnNumber(dbIBOrder.getSupplierInvoiceNo());
                 asnHeader.setCompanyCode(dbIBOrder.getCompanyCode());
                 asnHeader.setBranchCode(dbIBOrder.getBranchCode());
-//                asnHeader.setPurchaseOrderNumber(dbIBOrder.getPurchaseOrderNo());
                 asnHeader.setMiddlewareId(dbIBOrder.getSupplierInvoiceHeaderId());
                 asnHeader.setMiddlewareTable("IB_SUPPLIER_INVOICE");
 
-                List<ASNLineV2> asnLineList = new ArrayList<>();
+                List<ASNLine> asnLineList = new ArrayList<>();
                 for (SupplierInvoiceLine line : dbIBOrder.getSupplierInvoiceLines()) {
-                    ASNLineV2 asnLine = new ASNLineV2();
+                    ASNLine asnLine = new ASNLine();
 
                     asnLine.setSku(line.getItemCode());
                     asnLine.setSkuDescription(line.getItemDescription());
@@ -160,13 +159,13 @@ public class TransactionService {
                 asn.setAsnLine(asnLineList);
                 inboundList.add(asn);
             }
-            spList = new CopyOnWriteArrayList<ASNV2>(inboundList);
+            spList = new CopyOnWriteArrayList<ASN>(inboundList);
             log.info("There is no Supplier Invoice record found to process (sql) ...Waiting..");
         }
 
         if (inboundList != null) {
             log.info("Latest Supplier Invoice found: " + inboundList);
-            for (ASNV2 inbound : spList) {
+            for (ASN inbound : spList) {
                 try {
                     log.info("Supplier Invoice Number : " + inbound.getAsnHeader().getAsnNumber());
                     WarehouseApiResponse inboundHeader = supplierInvoiceService.postASNV2(inbound);
@@ -266,8 +265,8 @@ public class TransactionService {
             List<SalesReturnHeader> salesReturnHeaders = salesReturnHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
             inboundSRTList = new ArrayList<>();
             for (SalesReturnHeader dbIBOrder : salesReturnHeaders) {
-                SaleOrderReturnV2 saleOrderReturn = new SaleOrderReturnV2();
-                SOReturnHeaderV2 salesReturnHeader = new SOReturnHeaderV2();
+                SaleOrderReturn saleOrderReturn = new SaleOrderReturn();
+                SOReturnHeader salesReturnHeader = new SOReturnHeader();
 
                 salesReturnHeader.setCompanyCode(dbIBOrder.getCompanyCode());
                 salesReturnHeader.setBranchCode(dbIBOrder.getBranchCodeOfReceivingWarehouse());
@@ -275,9 +274,9 @@ public class TransactionService {
                 salesReturnHeader.setMiddlewareId(dbIBOrder.getSalesReturnHeaderId());
                 salesReturnHeader.setMiddlewareTable("IB_SALE_RETURN");
 
-                List<SOReturnLineV2> salesReturnLineList = new ArrayList<>();
+                List<SOReturnLine> salesReturnLineList = new ArrayList<>();
                 for (SalesReturnLine line : dbIBOrder.getSalesReturnLines()) {
-                    SOReturnLineV2 salesReturnLine = new SOReturnLineV2();
+                    SOReturnLine salesReturnLine = new SOReturnLine();
 
                     salesReturnLine.setLineReference(line.getLineNoOfEachItem());
                     salesReturnLine.setSku(line.getItemCode());
@@ -305,13 +304,13 @@ public class TransactionService {
                 saleOrderReturn.setSoReturnLine(salesReturnLineList);
                 inboundSRTList.add(saleOrderReturn);
             }
-            spSRTList = new CopyOnWriteArrayList<SaleOrderReturnV2>(inboundSRTList);
+            spSRTList = new CopyOnWriteArrayList<SaleOrderReturn>(inboundSRTList);
             log.info("There is no Sales Return record found to process (sql) ...Waiting..");
         }
 
         if (inboundSRTList != null) {
             log.info("Latest Sales Return found: " + inboundSRTList);
-            for (SaleOrderReturnV2 inbound : spSRTList) {
+            for (SaleOrderReturn inbound : spSRTList) {
                 try {
                     log.info("Sales Return Number : " + inbound.getSoReturnHeader().getTransferOrderNumber());
                     WarehouseApiResponse inboundHeader = salesReturnService.postStockReceipt(inbound);
@@ -354,8 +353,8 @@ public class TransactionService {
                 B2bTransferIn b2bTransferIn = new B2bTransferIn();
                 List<B2bTransferInLine> b2bTransferInLines = new ArrayList<>();
 
-                InterWarehouseTransferInV2 interWarehouseTransferIn = new InterWarehouseTransferInV2();
-                List<InterWarehouseTransferInLineV2> interWarehouseTransferInLineList = new ArrayList<>();
+                InterWarehouseTransferIn interWarehouseTransferIn = new InterWarehouseTransferIn();
+                List<InterWarehouseTransferInLine> interWarehouseTransferInLineList = new ArrayList<>();
 
                 if (!sourceBranchExist && targetBranchExist) {
 
@@ -402,7 +401,7 @@ public class TransactionService {
 
                 if (sourceBranchExist && targetBranchExist) {
 
-                    InterWarehouseTransferInHeaderV2 interWarehouseTransferInHeader = new InterWarehouseTransferInHeaderV2();
+                    InterWarehouseTransferInHeader interWarehouseTransferInHeader = new InterWarehouseTransferInHeader();
 
                     interWarehouseTransferInHeader.setToCompanyCode(dbIBOrder.getTargetCompanyCode());
                     interWarehouseTransferInHeader.setToBranchCode(dbIBOrder.getTargetBranchCode());
@@ -412,7 +411,7 @@ public class TransactionService {
 
                     for (TransferInLine line : dbIBOrder.getTransferInLines()) {
 
-                        InterWarehouseTransferInLineV2 interWarehouseTransferInLine = new InterWarehouseTransferInLineV2();
+                        InterWarehouseTransferInLine interWarehouseTransferInLine = new InterWarehouseTransferInLine();
 
                         interWarehouseTransferInLine.setLineReference(line.getLineNoOfEachItem());
                         interWarehouseTransferInLine.setSku(line.getItemCode());
@@ -443,7 +442,7 @@ public class TransactionService {
                 log.info("There is no B2B record found to process (sql) ...Waiting..");
             }
             if (inboundIWTList != null) {
-                spIWTList = new CopyOnWriteArrayList<InterWarehouseTransferInV2>(inboundIWTList);
+                spIWTList = new CopyOnWriteArrayList<InterWarehouseTransferIn>(inboundIWTList);
                 log.info("There is no IWT record found to process (sql) ...Waiting..");
             }
         }
@@ -474,13 +473,13 @@ public class TransactionService {
 
         if (inboundIWTList != null) {
             log.info("Latest InterWareHouse Transfer found: " + inboundIWTList);
-            for (InterWarehouseTransferInV2 inbound : spIWTList) {
+            for (InterWarehouseTransferIn inbound : spIWTList) {
                 try {
                     log.info("InterWarehouse Transfer Order Number : " + inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
-                    WarehouseApiResponse inboundHeader = interWarehouseTransferInV2Service.postIWTTransferIn(inbound);
+                    WarehouseApiResponse inboundHeader = interWarehouseTransferInService.postIWTTransferIn(inbound);
                     if (inboundHeader != null) {
                         // Updating the Processed Status
-                        interWarehouseTransferInV2Service.updateProcessedInboundOrder(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
+                        interWarehouseTransferInService.updateProcessedInboundOrder(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
                         inboundIWTList.remove(inbound);
                         return inboundHeader;
                     }
@@ -488,7 +487,7 @@ public class TransactionService {
                     e.printStackTrace();
                     log.error("Error on inbound processing : " + e.toString());
                     // Updating the Processed Status
-                    interWarehouseTransferInV2Service.updateProcessedInboundOrder(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
+                    interWarehouseTransferInService.updateProcessedInboundOrder(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
 //                    interWarehouseTransferInV2Service.createInboundIntegrationLog(inbound);
                     inboundIWTList.remove(inbound);
                     throw new RuntimeException(e);
@@ -504,50 +503,54 @@ public class TransactionService {
         if (outboundRPOList == null || outboundRPOList.isEmpty()) {
             List<PurchaseReturnHeader> purchaseReturns = purchaseReturnHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
             outboundRPOList = new ArrayList<>();
-            ReturnPOV2 returnPO = new ReturnPOV2();
+            ReturnPO returnPO = new ReturnPO();
             for (PurchaseReturnHeader dbObOrder : purchaseReturns) {
-                ReturnPOHeaderV2 retPOHeader = new ReturnPOHeaderV2();
+                ReturnPOHeader returnPOHeader = new ReturnPOHeader();
 
-                retPOHeader.setCompanyCode(dbObOrder.getCompanyCode());
-                retPOHeader.setPoNumber(dbObOrder.getReturnOrderNo());
-                retPOHeader.setStoreID(dbObOrder.getBranchCode());
-                retPOHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getReturnOrderDate()));
-                retPOHeader.setMiddlewareId(dbObOrder.getPurchaseReturnHeaderId());
-                retPOHeader.setMiddlewareTable("OB_PURCHASE_RETURN_HEADER");
+                returnPOHeader.setCompanyCode(dbObOrder.getCompanyCode());
+                returnPOHeader.setBranchCode(dbObOrder.getBranchCode());
+                returnPOHeader.setPoNumber(dbObOrder.getReturnOrderNo());
+                returnPOHeader.setStoreID(dbObOrder.getBranchCode());
+                returnPOHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getReturnOrderDate()));
+                returnPOHeader.setMiddlewareId(dbObOrder.getPurchaseReturnHeaderId());
+                returnPOHeader.setMiddlewareTable("OB_PURCHASE_RETURN_HEADER");
 
-                List<ReturnPOLineV2> returnPOLineList = new ArrayList<>();
+                List<ReturnPOLine> returnPOLineList = new ArrayList<>();
                 for (PurchaseReturnLine line : dbObOrder.getPurchaseReturnLines()) {
-                    ReturnPOLineV2 retPOLine = new ReturnPOLineV2();
+                    ReturnPOLine returnPOLine = new ReturnPOLine();
 
-                    retPOLine.setLineReference(line.getLineNoOfEachItemCode());
-                    retPOLine.setSku(line.getItemCode());
-                    retPOLine.setSkuDescription(line.getItemDescription());
-                    retPOLine.setReturnQty(line.getReturnOrderQty());
-                    retPOLine.setUom(line.getUnitOfMeasure());
-                    retPOLine.setManufacturerCode(line.getManufacturerCode());
-                    retPOLine.setManufacturerName(line.getManufacturerShortName());
-                    retPOLine.setMiddlewareId(line.getPurchaseReturnLineId());
-                    retPOLine.setMiddlewareHeaderId(dbObOrder.getPurchaseReturnHeaderId());
-                    retPOLine.setMiddlewareTable("OB_PURCHASE_RETURN_LINE");
-                    returnPOLineList.add(retPOLine);
+                    returnPOLine.setLineReference(line.getLineNoOfEachItemCode());
+                    returnPOLine.setSku(line.getItemCode());
+                    returnPOLine.setSkuDescription(line.getItemDescription());
+                    returnPOLine.setReturnQty(line.getReturnOrderQty());
+                    returnPOLine.setExpectedQty(line.getReturnOrderQty());
+                    returnPOLine.setUom(line.getUnitOfMeasure());
+                    returnPOLine.setManufacturerCode(line.getManufacturerCode());
+                    returnPOLine.setManufacturerName(line.getManufacturerShortName());
+                    returnPOLine.setBrand(line.getManufacturerFullName());
+                    returnPOLine.setSupplierInvoiceNo(line.getSupplierInvoiceNo());
+                    returnPOLine.setMiddlewareId(line.getPurchaseReturnLineId());
+                    returnPOLine.setMiddlewareHeaderId(dbObOrder.getPurchaseReturnHeaderId());
+                    returnPOLine.setMiddlewareTable("OB_PURCHASE_RETURN_LINE");
+                    returnPOLineList.add(returnPOLine);
                 }
                 returnPO.setReturnPOLine(returnPOLineList);
-                returnPO.setReturnPOHeader(retPOHeader);
+                returnPO.setReturnPOHeader(returnPOHeader);
                 outboundRPOList.add(returnPO);
             }
-            spRPOList = new CopyOnWriteArrayList<ReturnPOV2>(outboundRPOList);
+            spRPOList = new CopyOnWriteArrayList<ReturnPO>(outboundRPOList);
             log.info("There is no Purchase Return record found to process (sql) ...Waiting..");
         }
 
         if (outboundRPOList != null) {
             log.info("Latest Purchase Return found: " + outboundRPOList);
-            for (ReturnPOV2 outbound : spRPOList) {
+            for (ReturnPO outbound : spRPOList) {
                 try {
                     log.info("Purchase Return Number: " + outbound.getReturnPOHeader().getPoNumber());
-                    WarehouseApiResponse response = returnPOV2Service.postReturnPOV2(outbound);
+                    WarehouseApiResponse response = returnPOService.postReturnPOV2(outbound);
                     if (response != null) {
                         //Updating the Processed Status
-                        returnPOV2Service.updateProcessedOutboundOrder(outbound.getReturnPOHeader().getPoNumber());
+                        returnPOService.updateProcessedOutboundOrder(outbound.getReturnPOHeader().getPoNumber());
                         outboundRPOList.remove(outbound);
                         return response;
                     }
@@ -555,7 +558,7 @@ public class TransactionService {
                     e.printStackTrace();
                     log.error("Error on outbound processing: " + e.toString());
                     //Updating the Processed Status
-                    returnPOV2Service.updateProcessedOutboundOrder(outbound.getReturnPOHeader().getPoNumber());
+                    returnPOService.updateProcessedOutboundOrder(outbound.getReturnPOHeader().getPoNumber());
                     outboundRPOList.remove(outbound);
                     throw new RuntimeException(e);
                 }
@@ -579,33 +582,37 @@ public class TransactionService {
                 boolean sourceBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbObOrder.getSourceBranchCode()));
                 boolean targetBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbObOrder.getTargetBranchCode()));
 
-                ShipmentOrderV2 shipmentOrder = new ShipmentOrderV2();
-                List<SOLineV2> soV2List = new ArrayList<>();
+                ShipmentOrder shipmentOrder = new ShipmentOrder();
+                List<SOLine> soV2List = new ArrayList<>();
 
-                InterWarehouseTransferOutV2 iWhTransferOut = new InterWarehouseTransferOutV2();
-                List<InterWarehouseTransferOutLineV2> iWhtOutLineList = new ArrayList<>();
+                InterWarehouseTransferOut iWhTransferOut = new InterWarehouseTransferOut();
+                List<InterWarehouseTransferOutLine> iWhtOutLineList = new ArrayList<>();
 
-                if (!sourceBranchExist && targetBranchExist) {
-                    SOHeaderV2 soHeader = new SOHeaderV2();
+                if (sourceBranchExist && !targetBranchExist) {
+                    SOHeader soHeader = new SOHeader();
 
-                    soHeader.setCompanyCode(dbObOrder.getTargetCompanyCode());
-                    soHeader.setBranchCode(dbObOrder.getTargetBranchCode());
+                    soHeader.setCompanyCode(dbObOrder.getSourceCompanyCode());
+                    soHeader.setBranchCode(dbObOrder.getSourceBranchCode());
                     soHeader.setTransferOrderNumber(dbObOrder.getTransferOrderNumber());
                     soHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getTransferOrderDate()));
-                    soHeader.setStoreID(dbObOrder.getTargetBranchCode());
+                    soHeader.setStoreID(dbObOrder.getSourceBranchCode());
+                    soHeader.setTargetCompanyCode(dbObOrder.getTargetCompanyCode());
+                    soHeader.setTargetBranchCode(dbObOrder.getTargetBranchCode());
                     soHeader.setMiddlewareId(dbObOrder.getTransferOutHeaderId());
                     soHeader.setMiddlewareTable("OB_SHIPMENT_ORDER_HEADER");
 
                     for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
-                        SOLineV2 soLine = new SOLineV2();
+                        SOLine soLine = new SOLine();
 
                         soLine.setLineReference(line.getLineNumberOfEachItem());
                         soLine.setSku(line.getItemCode());
                         soLine.setSkuDescription(line.getItemDescription());
                         soLine.setOrderedQty(line.getTransferOrderQty());
+                        soLine.setExpectedQty(line.getTransferOrderQty());
                         soLine.setUom(line.getUnitOfMeasure());
                         soLine.setManufacturerCode(line.getManufacturerCode());
                         soLine.setManufacturerName(line.getManufacturerShortName());
+                        soLine.setFromCompanyCode(dbObOrder.getSourceCompanyCode());
                         soLine.setMiddlewareId(line.getTransferOutLineId());
                         soLine.setMiddlewareHeaderId(dbObOrder.getTransferOutHeaderId());
                         soLine.setMiddlewareTable("OB_SHIPMENT_ORDER_LINE");
@@ -617,7 +624,7 @@ public class TransactionService {
                 }
 
                 if (sourceBranchExist && targetBranchExist) {
-                    InterWarehouseTransferOutHeaderV2 iWhtOutHeader = new InterWarehouseTransferOutHeaderV2();
+                    InterWarehouseTransferOutHeader iWhtOutHeader = new InterWarehouseTransferOutHeader();
 
                     iWhtOutHeader.setFromCompanyCode(dbObOrder.getSourceCompanyCode());
                     iWhtOutHeader.setToCompanyCode(dbObOrder.getTargetCompanyCode());
@@ -629,7 +636,7 @@ public class TransactionService {
                     iWhtOutHeader.setMiddlewareTable("OB_IWHTRANSFER_OUT_HEADER");
 
                     for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
-                        InterWarehouseTransferOutLineV2 iWhtOutLine = new InterWarehouseTransferOutLineV2();
+                        InterWarehouseTransferOutLine iWhtOutLine = new InterWarehouseTransferOutLine();
 
                         iWhtOutLine.setLineReference(line.getLineNumberOfEachItem());
                         iWhtOutLine.setSku(line.getItemCode());
@@ -649,18 +656,18 @@ public class TransactionService {
                 }
             }
             if (outboundSOList != null) {
-                spSOList = new CopyOnWriteArrayList<ShipmentOrderV2>(outboundSOList);
+                spSOList = new CopyOnWriteArrayList<ShipmentOrder>(outboundSOList);
                 log.info("There is no IWhTOut record found to process (sql) ...Waiting..");
             }
             if (outboundIWhtList != null) {
-                spIWhtList = new CopyOnWriteArrayList<InterWarehouseTransferOutV2>(outboundIWhtList);
+                spIWhtList = new CopyOnWriteArrayList<InterWarehouseTransferOut>(outboundIWhtList);
                 log.info("There is no SO record found to process (sql) ...Waiting..");
             }
         }
 
         if (outboundSOList != null) {
             log.info("Latest Shipment Order found: " + outboundSOList);
-            for (ShipmentOrderV2 outbound : spSOList) {
+            for (ShipmentOrder outbound : spSOList) {
                 try {
                     log.info("SO Transfer Order Number: " + outbound.getSoHeader().getTransferOrderNumber());
                     WarehouseApiResponse response = shipmentOrderService.postShipmentOrder(outbound);
@@ -683,7 +690,7 @@ public class TransactionService {
 
         if (outboundIWhtList != null) {
             log.info("Latest Transfer Out found: " + outboundIWhtList);
-            for (InterWarehouseTransferOutV2 outbound : spIWhtList) {
+            for (InterWarehouseTransferOut outbound : spIWhtList) {
                 try {
                     log.info("IWT Transfer Out Number: " + outbound.getInterWarehouseTransferOutHeader().getTransferOrderNumber());
                     WarehouseApiResponse response = interWarehouseTransferOutService.postIWhTransferOutV2(outbound);
@@ -710,62 +717,69 @@ public class TransactionService {
         if (outboundSalesOrderList == null || outboundSalesOrderList.isEmpty()) {
             List<PickListHeader> pickListHeaders = pickListHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
             outboundSalesOrderList = new ArrayList<>();
-            SalesOrderV2 salesOrder = new SalesOrderV2();
+            SalesOrder salesOrder = new SalesOrder();
             for (PickListHeader dbOBOrder : pickListHeaders) {
 
-                SalesOrderHeaderV2 salesOrderHeader = new SalesOrderHeaderV2();
+                SalesOrderHeader salesOrderHeader = new SalesOrderHeader();
 
                 salesOrderHeader.setSalesOrderNumber(dbOBOrder.getSalesOrderNo());
                 salesOrderHeader.setCompanyCode(dbOBOrder.getCompanyCode());
                 salesOrderHeader.setBranchCode(dbOBOrder.getBranchCode());
                 salesOrderHeader.setPickListNumber(dbOBOrder.getPickListNo());
-//                salesOrderHeader.set(dbOBOrder.getPickListdate());
+                salesOrderHeader.setRequiredDeliveryDate(String.valueOf(dbOBOrder.getPickListdate()));
+                salesOrderHeader.setStoreID(dbOBOrder.getBranchCode());
+                salesOrderHeader.setStoreName(dbOBOrder.getBranchCode());
+                salesOrderHeader.setStatus("ACTIVE");
+                salesOrderHeader.setMiddlewareId(dbOBOrder.getPickListHeaderId());
                 salesOrderHeader.setMiddlewareTable("OB_SalesOrder");
 
-                List<SalesOrderLineV2> salesOrderLineV2s = new ArrayList<>();
+                List<SalesOrderLine> salesOrderLines = new ArrayList<>();
                 for (PickListLine line : dbOBOrder.getPickListLines()) {
-                    SalesOrderLineV2 salesOrderLineV2 = new SalesOrderLineV2();
+                    SalesOrderLine salesOrderLine = new SalesOrderLine();
 
-                    salesOrderLineV2.setSku(line.getItemCode());
-                    salesOrderLineV2.setSkuDescription(line.getItemDescription());
-                    salesOrderLineV2.setManufacturerCode(line.getManufacturerCode());
-                    salesOrderLineV2.setManufacturerName(line.getManufacturerShortName());
-                    salesOrderLineV2.setUom(line.getUnitOfMeasure());
-                    salesOrderLineV2.setOrderedQty(line.getPickListQty());
-                    salesOrderLineV2.setManufacturerFullName(line.getManufacturerFullName());
-                    salesOrderLineV2.setMiddlewareId(line.getPickListLineId());
-                    salesOrderLineV2.setMiddlewareHeaderId(dbOBOrder.getPickListHeaderId());
-                    salesOrderLineV2.setMiddlewareTable("OB_SalesOrder");
+                    salesOrderLine.setLineReference(line.getLineNumberOfEachItem());
+                    salesOrderLine.setSku(line.getItemCode());
+                    salesOrderLine.setSkuDescription(line.getItemDescription());
+                    salesOrderLine.setManufacturerCode(line.getManufacturerCode());
+                    salesOrderLine.setManufacturerName(line.getManufacturerShortName());
+                    salesOrderLine.setManufacturerFullName(line.getManufacturerFullName());
+                    salesOrderLine.setUom(line.getUnitOfMeasure());
+                    salesOrderLine.setOrderedQty(line.getPickListQty());
+                    salesOrderLine.setExpectedQty(line.getPickedQty());
+                    salesOrderLine.setPackQty(line.getPickedQty());
+                    salesOrderLine.setMiddlewareId(line.getPickListLineId());
+                    salesOrderLine.setMiddlewareHeaderId(dbOBOrder.getPickListHeaderId());
+                    salesOrderLine.setMiddlewareTable("OB_SalesOrder");
 
-                    salesOrderLineV2s.add(salesOrderLineV2);
+                    salesOrderLines.add(salesOrderLine);
                 }
                 salesOrder.setSalesOrderHeader(salesOrderHeader);
-                salesOrder.setSalesOrderLine(salesOrderLineV2s);
+                salesOrder.setSalesOrderLine(salesOrderLines);
                 outboundSalesOrderList.add(salesOrder);
             }
-            spSalesOrderList = new CopyOnWriteArrayList<SalesOrderV2>(outboundSalesOrderList);
+            spSalesOrderList = new CopyOnWriteArrayList<SalesOrder>(outboundSalesOrderList);
             log.info("There is no record found to process (sql) ...Waiting..");
         }
 
         if (outboundSalesOrderList != null) {
             log.info("Latest Supplier Invoice found: " + outboundSalesOrderList);
-            for (SalesOrderV2 outbound : spSalesOrderList) {
+            for (SalesOrder outbound : spSalesOrderList) {
                 try {
                     log.info("Supplier Invoice Number : " + outbound.getSalesOrderHeader().getSalesOrderNumber());
-                    WarehouseApiResponse outboundHeader = salesOrderV2Service.postSalesOrder(outbound);
+                    WarehouseApiResponse outboundHeader = salesOrderService.postSalesOrder(outbound);
                     if (outboundHeader != null) {
                         // Updating the Processed Status
-                        salesOrderV2Service.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getSalesOrderNumber());
-                        outboundSOList.remove(outbound);
+                        salesOrderService.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getSalesOrderNumber());
+                        outboundSalesOrderList.remove(outbound);
                         return outboundHeader;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on outbound processing : " + e.toString());
                     // Updating the Processed Status
-                    salesOrderV2Service.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getSalesOrderNumber());
+                    salesOrderService.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getSalesOrderNumber());
 //                    salesOrderV2Service.createInboundIntegrationLog(outbound);
-                    inboundList.remove(outbound);
+                    outboundSalesOrderList.remove(outbound);
                     throw new RuntimeException(e);
                 }
             }
@@ -781,10 +795,12 @@ public class TransactionService {
                 com.almailem.ams.api.connector.model.wms.SalesInvoice salesInvoice = new  com.almailem.ams.api.connector.model.wms.SalesInvoice();
 
                 salesInvoice.setCompanyCode(dbOBOrder.getCompanyCode());
+                salesInvoice.setBranchCode(dbOBOrder.getBranchCode());
                 salesInvoice.setSalesOrderNumber(dbOBOrder.getSalesOrderNumber());
                 salesInvoice.setSalesInvoiceNumber(dbOBOrder.getSalesInvoiceNumber());
                 salesInvoice.setPickListNumber(dbOBOrder.getPickListNumber());
                 salesInvoice.setInvoiceDate(String.valueOf(dbOBOrder.getInvoiceDate()));
+                salesInvoice.setMiddlewareId(dbOBOrder.getSalesInvoiceId());
                 salesInvoice.setMiddlewareTable("OBSalesInvoice");
 
                 outboundSIList.add(salesInvoice);
@@ -811,7 +827,7 @@ public class TransactionService {
                     // Updating the Processed Status
                     salesInvoiceService.updateProcessedOutboundOrder(outbound.getSalesInvoiceNumber());
 //                      salesInvoiceService.createInboundIntegrationLog(outbound);
-                    inboundList.remove(outbound);
+                    outboundSIList.remove(outbound);
                     throw new RuntimeException(e);
                 }
             }

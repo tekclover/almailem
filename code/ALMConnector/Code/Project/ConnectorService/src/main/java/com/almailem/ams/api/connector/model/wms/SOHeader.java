@@ -1,13 +1,13 @@
 package com.almailem.ams.api.connector.model.wms;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Data
-public class SOHeaderV2 {
+public class SOHeader {
 
     private String wareHouseId;                                      // WH_ID
 
@@ -28,8 +28,20 @@ public class SOHeaderV2 {
     @NotBlank(message = "BranchCode is mandatory")
     private String branchCode;
 
+    private String targetCompanyCode;
+
+    private String targetBranchCode;
+
     private String languageId;
 
+    @JsonIgnore
+    private String id;
+
+    @JsonIgnore
+    private Date orderReceivedOn;
+
+    @JsonIgnore
+    private Long statusId;
     //MiddleWare Fields
     private Long middlewareId;
     private String middlewareTable;

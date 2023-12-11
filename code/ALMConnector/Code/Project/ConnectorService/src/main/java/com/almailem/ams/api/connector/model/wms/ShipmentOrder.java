@@ -6,11 +6,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Data
-public class ShipmentOrderV2 {
+public class ShipmentOrder {
 	
 	@Valid
-	private SOHeaderV2 soHeader;
+	private SOHeader soHeader;
 	
 	@Valid
-	private List<SOLineV2> soLine;
+	private List<SOLine> soLine;
 }

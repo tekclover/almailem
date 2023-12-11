@@ -6,11 +6,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Data
-public class ReturnPOV2 {
+public class ReturnPO {
 
     @Valid
-    private ReturnPOHeaderV2 returnPOHeader;
+    private ReturnPOHeader returnPOHeader;
 
     @Valid
-    private List<ReturnPOLineV2> returnPOLine;
+    private List<ReturnPOLine> returnPOLine;
 }

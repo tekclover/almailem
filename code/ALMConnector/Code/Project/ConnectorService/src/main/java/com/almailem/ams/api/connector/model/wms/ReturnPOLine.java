@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class ReturnPOLineV2 {
+public class ReturnPOLine {
 
     @NotNull(message = "Line Reference is mandatory")
     private Long lineReference;                                // IB_LINE_NO
@@ -28,7 +28,20 @@ public class ReturnPOLineV2 {
     @NotBlank(message = "Manufacturer Name is mandatory")
     private String manufacturerName;
 
+    private String orderType;
+    private String brand;
+
+    private String origin;
+    private String supplierName;
+    private Double packQty;
+    private String fromCompanyCode;
+    private Double expectedQty;
+    protected String storeID;
+    private String sourceBranchCode;
+    private String countryOfOrigin;
+
     //MiddleWare Fields
+    private String supplierInvoiceNo;
     private Long middlewareId;
     private Long middlewareHeaderId;
     private String middlewareTable;

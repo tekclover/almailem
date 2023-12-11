@@ -64,6 +64,7 @@ public class SalesInvoiceService {
             dbOutboundOrder.setProcessedStatusId(10L);
             dbOutboundOrder.setOrderProcessedOn(new Date());
             SalesInvoice OutboundOrder = salesInvoiceRepository.save(dbOutboundOrder);
+            salesInvoiceRepository.updateProcessStatusId(dbOutboundOrder.getSalesInvoiceNumber(),new Date());
             return dbOutboundOrder;
         }
         return dbOutboundOrder;
@@ -80,7 +81,7 @@ public class SalesInvoiceService {
         headers.add("User-Agent", "ClassicWMS RestTemplate");
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/salesInvoice/v2");
+                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/salesinvoice");
         HttpEntity<?> entity = new HttpEntity<>(salesInvoice, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);

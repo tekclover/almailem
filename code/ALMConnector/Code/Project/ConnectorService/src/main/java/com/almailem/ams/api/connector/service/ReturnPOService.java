@@ -2,10 +2,10 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
-import com.almailem.ams.api.connector.model.picklist.PickListHeader;
-import com.almailem.ams.api.connector.model.wms.SalesOrderV2;
+import com.almailem.ams.api.connector.model.purchasereturn.PurchaseReturnHeader;
+import com.almailem.ams.api.connector.model.wms.ReturnPO;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
-import com.almailem.ams.api.connector.repository.PickListHeaderRepository;
+import com.almailem.ams.api.connector.repository.PurchaseReturnHeaderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -25,16 +25,16 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class SalesOrderV2Service {
+public class ReturnPOService {
 
     @Autowired
-    PickListHeaderRepository pickListHeaderRepository;
-
-    @Autowired
-    private AuthTokenService authTokenService;
+    PurchaseReturnHeaderRepository purchaseReturnHeaderRepository;
 
     @Autowired
     PropertiesConfig propertiesConfig;
+
+    @Autowired
+    AuthTokenService authTokenService;
 
     private String getTransactionServiceApiUrl() {
         return propertiesConfig.getTransactionServiceUrl();
@@ -52,50 +52,45 @@ public class SalesOrderV2Service {
     }
 
     /**
-     * Get All PickList Details
+     * Get All ReturnPOV2 Details
      *
      * @return
      */
-    public List<PickListHeader> getAllSalesOrderV2Details() {
-        List<PickListHeader> pickLists = pickListHeaderRepository.findAll();
-        return pickLists;
+    public List<PurchaseReturnHeader> getAllReturnPoV2Details() {
+        List<PurchaseReturnHeader> purchaseReturns = purchaseReturnHeaderRepository.findAll();
+        return purchaseReturns;
     }
 
     /**
-     *
-     * @param asnNumber
+     * @param returnOrderNo
      * @return
      */
-    public PickListHeader updateProcessedInboundOrder(String asnNumber) {
-        PickListHeader dbInboundOrder = pickListHeaderRepository.findTopByPickListNoOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
-        log.info("dbInboundOrder : " + dbInboundOrder);
-        if (dbInboundOrder != null) {
-            dbInboundOrder.setProcessedStatusId(10L);
-            dbInboundOrder.setOrderProcessedOn(new Date());
-            PickListHeader inboundOrder = pickListHeaderRepository.save(dbInboundOrder);
-            return inboundOrder;
+    public void updateProcessedOutboundOrder(String returnOrderNo) {
+        PurchaseReturnHeader dbObOrder = purchaseReturnHeaderRepository.findTopByReturnOrderNoOrderByOrderReceivedOnDesc(returnOrderNo);
+        log.info("orderId: " + returnOrderNo);
+        log.info("dbOutboundOrder: " + dbObOrder);
+        if (dbObOrder != null) {
+            dbObOrder.setProcessedStatusId(10L);
+            dbObOrder.setOrderProcessedOn(new Date());
+//            PurchaseReturnHeader obOrder = purchaseReturnHeaderRepository.save(dbObOrder);
+            purchaseReturnHeaderRepository.updateProcessStatusId(returnOrderNo,new Date());
+//            return null;
         }
-        return dbInboundOrder;
+//        return dbObOrder;
     }
 
-    /**
-     *
-     * @param salesOrderV2
-     * @return
-     */
-    public WarehouseApiResponse postSalesOrder(SalesOrderV2 salesOrderV2) {
+    public WarehouseApiResponse postReturnPOV2(ReturnPO returnPO) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("User-Agent", "ClassicWMS RestTemplate");
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/salesorderv2");
-        HttpEntity<?> entity = new HttpEntity<>(salesOrderV2, headers);
+                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/returnpov2");
+        HttpEntity<?> entity = new HttpEntity<>(returnPO, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
-        log.info("result : " + result.getStatusCode());
+        log.info("result: " + result.getStatusCode());
         return result.getBody();
     }
 }

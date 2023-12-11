@@ -1,11 +1,13 @@
 package com.almailem.ams.api.connector.model.wms;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Data
-public class InterWarehouseTransferOutHeaderV2 {
+public class InterWarehouseTransferOutHeader {
 
     private String fromWhsID;                            // WH_ID
 
@@ -35,6 +37,15 @@ public class InterWarehouseTransferOutHeaderV2 {
 
     private String branchCode;
     private String languageId;
+
+    @JsonIgnore
+    private String id;
+
+    @JsonIgnore
+    private Date orderReceivedOn;
+
+    @JsonIgnore
+    private Long statusId;
 
     //MiddleWare Fields
     private Long middlewareId;

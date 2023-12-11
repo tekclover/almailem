@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class SOReturnLineV2  {
+public class SOReturnLine {
 
 	@NotNull(message = "Line Reference is mandatory")
 	private Long lineReference;

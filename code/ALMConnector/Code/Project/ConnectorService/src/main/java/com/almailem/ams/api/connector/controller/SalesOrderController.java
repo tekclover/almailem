@@ -1,7 +1,7 @@
 package com.almailem.ams.api.connector.controller;
 
 import com.almailem.ams.api.connector.model.picklist.PickListHeader;
-import com.almailem.ams.api.connector.service.SalesOrderV2Service;
+import com.almailem.ams.api.connector.service.SalesOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -23,16 +23,16 @@ import java.util.List;
 @SwaggerDefinition(tags = {@Tag(name = "SalesOrderV2", description = "Operations related to SalesOrderV2")})
 @RequestMapping("/salesorderv2")
 @RestController
-public class SalesOrderV2Controller {
+public class SalesOrderController {
 
     @Autowired
-    SalesOrderV2Service salesOrderV2Service;
+    SalesOrderService salesOrderService;
 
     //Get All PickList Details
     @ApiOperation(response = PickListHeader.class, value = "Get All PickList Details") //label for Swagger
     @GetMapping("")
     public ResponseEntity<?> getAllSalesOrderV2s() {
-        List<PickListHeader> pickLists = salesOrderV2Service.getAllSalesOrderV2Details();
+        List<PickListHeader> pickLists = salesOrderService.getAllSalesOrderV2Details();
         return new ResponseEntity<>(pickLists, HttpStatus.OK);
     }
 }

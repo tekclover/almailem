@@ -2,10 +2,10 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
-import com.almailem.ams.api.connector.model.purchasereturn.PurchaseReturnHeader;
-import com.almailem.ams.api.connector.model.wms.ReturnPOV2;
+import com.almailem.ams.api.connector.model.transferout.TransferOutHeader;
+import com.almailem.ams.api.connector.model.wms.ShipmentOrder;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
-import com.almailem.ams.api.connector.repository.PurchaseReturnHeaderRepository;
+import com.almailem.ams.api.connector.repository.TransferOutHeaderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -25,16 +25,16 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ReturnPOV2Service {
+public class ShipmentOrderService {
 
     @Autowired
-    PurchaseReturnHeaderRepository purchaseReturnHeaderRepository;
-
-    @Autowired
-    PropertiesConfig propertiesConfig;
+    TransferOutHeaderRepository transferOutHeaderRepository;
 
     @Autowired
     AuthTokenService authTokenService;
+
+    @Autowired
+    PropertiesConfig propertiesConfig;
 
     private String getTransactionServiceApiUrl() {
         return propertiesConfig.getTransactionServiceUrl();
@@ -52,42 +52,35 @@ public class ReturnPOV2Service {
     }
 
     /**
-     * Get All ReturnPOV2 Details
+     * Get All ShipmentOrderV2 Details
      *
      * @return
      */
-    public List<PurchaseReturnHeader> getAllReturnPoV2Details() {
-        List<PurchaseReturnHeader> purchaseReturns = purchaseReturnHeaderRepository.findAll();
-        return purchaseReturns;
+    public List<TransferOutHeader> getAllSoV2Details() {
+        List<TransferOutHeader> transferOuts = transferOutHeaderRepository.findAll();
+        return transferOuts;
     }
 
-    /**
-     * @param returnOrderNo
-     * @return
-     */
-    public void updateProcessedOutboundOrder(String returnOrderNo) {
-        PurchaseReturnHeader dbObOrder = purchaseReturnHeaderRepository.findTopByReturnOrderNoOrderByOrderReceivedOnDesc(returnOrderNo);
-        log.info("orderId: " + returnOrderNo);
-        log.info("dbOutboundOrder: " + dbObOrder);
+    public void updateProcessedOutboundOrder(String transferOrderNumber) {
+        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
+        log.info("orderId: " + transferOrderNumber);
+        log.info("SO Order: " + dbObOrder);
         if (dbObOrder != null) {
             dbObOrder.setProcessedStatusId(10L);
             dbObOrder.setOrderProcessedOn(new Date());
-//            PurchaseReturnHeader obOrder = purchaseReturnHeaderRepository.save(dbObOrder);
-            purchaseReturnHeaderRepository.updateProcessStatusId(returnOrderNo,new Date());
-//            return null;
+            transferOutHeaderRepository.updateProcessStatusId(transferOrderNumber, new Date());
         }
-//        return dbObOrder;
     }
 
-    public WarehouseApiResponse postReturnPOV2(ReturnPOV2 returnPOV2) {
+    public WarehouseApiResponse postShipmentOrder(ShipmentOrder shipmentOrder) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("User-Agent", "ClassicWMS RestTemplate");
         headers.add("Authorization", "Bearer " + authToken.getAccess_token());
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/returnpov2");
-        HttpEntity<?> entity = new HttpEntity<>(returnPOV2, headers);
+                UriComponentsBuilder.fromHttpUrl(getTransactionServiceApiUrl() + "warehouse/outbound/so/v2");
+        HttpEntity<?> entity = new HttpEntity<>(shipmentOrder, headers);
         ResponseEntity<WarehouseApiResponse> result =
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result: " + result.getStatusCode());

@@ -1,7 +1,7 @@
 package com.almailem.ams.api.connector.controller;
 
 import com.almailem.ams.api.connector.model.transferout.TransferOutHeader;
-import com.almailem.ams.api.connector.service.InterWarehouseTransferOutV2Service;
+import com.almailem.ams.api.connector.service.ShipmentOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -19,20 +19,20 @@ import java.util.List;
 
 @Slf4j
 @Validated
-@Api(tags = {"InterWarehouseTransferOutV2"}, value = "InterWarehouseTransferOutV2 Operations related to InterWarehouseTransferOutV2Controller")
-@SwaggerDefinition(tags = {@Tag(name = "InterWarehouseTransferOutV2", description = "Operations related to InterWarehouseTransferOutV2")})
-@RequestMapping("/interwarehousetransferoutv2")
+@Api(tags = {"ShipmentOrderV2"}, value = "ShipmentOrderV2 Operations related to ShipmentOrderV2Controller")
+@SwaggerDefinition(tags = {@Tag(name = "ShipmentOrderV2", description = "Operations related to ShipmentOrderV2")})
+@RequestMapping("shipmentorderv2")
 @RestController
-public class InterWarehouseTransferOutV2Controller {
+public class ShipmentOrderController {
 
     @Autowired
-    InterWarehouseTransferOutV2Service iWhTransferOutV2Service;
+    ShipmentOrderService soV2Service;
 
-    //Get All InterWarehouseTransferOutV2 Details
-    @ApiOperation(response = TransferOutHeader.class, value = "Get All InterWarehouseTransferOutV2 Details")
+    //Get All ShipmentOrderV2 Details
+    @ApiOperation(response = TransferOutHeader.class, value = "Get All ShipmentOrderV2 Details") //label for Swagger
     @GetMapping("")
-    public ResponseEntity<?> getAllInterWhTransferOutV2s() {
-        List<TransferOutHeader> transferOuts = iWhTransferOutV2Service.getAllInterWhTransferOutV2Details();
+    public ResponseEntity<?> getAllSoV2s() {
+        List<TransferOutHeader> transferOuts = soV2Service.getAllSoV2Details();
         return new ResponseEntity<>(transferOuts, HttpStatus.OK);
     }
 }
