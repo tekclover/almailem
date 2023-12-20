@@ -32,7 +32,8 @@ public class B2bTransferInLine {
 	private String manufacturerFullName;
 	private String brand;
 	private String supplierName;
-
+	private String transferOrderNo;
+	private String isCompleted;
 	//MiddleWare Fields
 	private Long middlewareId;
 	private Long middlewareHeaderId;

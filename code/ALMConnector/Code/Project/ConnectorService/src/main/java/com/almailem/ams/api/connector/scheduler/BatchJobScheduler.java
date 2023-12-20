@@ -35,6 +35,11 @@ public class BatchJobScheduler {
         CompletableFuture<WarehouseApiResponse> itemMaster = scheduleAsyncService.scheduleItemMaster();
         CompletableFuture<WarehouseApiResponse> customerMaster = scheduleAsyncService.scheduleCustomerMaster();
 
+        CompletableFuture<WarehouseApiResponse> scPerpetual = scheduleAsyncService.schedulePerpetual();
+        CompletableFuture<WarehouseApiResponse> scPeriodic = scheduleAsyncService.schedulePeriodic();
+
+        CompletableFuture<WarehouseApiResponse> stockAdjustment = scheduleAsyncService.scheduleStockAdjustment();
+
 //        CompletableFuture.allOf(supplierInvoice,stockReceipt,salesReturn,b2bTransfer,iwtTransfer).join();
 
     }

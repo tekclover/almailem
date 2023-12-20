@@ -63,7 +63,7 @@ public class SalesInvoiceService {
         if (dbOutboundOrder != null) {
             dbOutboundOrder.setProcessedStatusId(10L);
             dbOutboundOrder.setOrderProcessedOn(new Date());
-            SalesInvoice OutboundOrder = salesInvoiceRepository.save(dbOutboundOrder);
+//            SalesInvoice OutboundOrder = salesInvoiceRepository.save(dbOutboundOrder);
             salesInvoiceRepository.updateProcessStatusId(dbOutboundOrder.getSalesInvoiceNumber(),new Date());
             return dbOutboundOrder;
         }

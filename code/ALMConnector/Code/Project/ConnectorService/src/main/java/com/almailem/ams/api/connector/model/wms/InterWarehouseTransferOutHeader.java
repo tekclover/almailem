@@ -35,8 +35,12 @@ public class InterWarehouseTransferOutHeader {
     @NotBlank(message = "Required Delivery Date is mandatory")
     private String requiredDeliveryDate;
 
+    private String isCompleted;
+    private Date updatedOn;
+
     private String branchCode;
     private String languageId;
+    private String orderType;
 
     @JsonIgnore
     private String id;

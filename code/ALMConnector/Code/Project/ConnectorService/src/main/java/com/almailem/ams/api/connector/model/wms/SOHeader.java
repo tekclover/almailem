@@ -33,6 +33,7 @@ public class SOHeader {
     private String targetBranchCode;
 
     private String languageId;
+    private String orderType;
 
     @JsonIgnore
     private String id;

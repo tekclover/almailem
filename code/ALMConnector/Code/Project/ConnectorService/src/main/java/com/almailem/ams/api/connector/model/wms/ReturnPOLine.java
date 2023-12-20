@@ -39,6 +39,10 @@ public class ReturnPOLine {
     protected String storeID;
     private String sourceBranchCode;
     private String countryOfOrigin;
+    private String isCompleted;
+    private String isCancelled;
+    private String returnOrderNo;
+
 
     //MiddleWare Fields
     private String supplierInvoiceNo;

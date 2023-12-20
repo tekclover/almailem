@@ -129,7 +129,15 @@ public class MastersService {
             for (Item inbound : spIMList) {
                 try {
                     log.info("Item Code : " + inbound.getSku());
-                    WarehouseApiResponse inboundHeader = itemMasterService.postItemMaster(inbound);
+                    WarehouseApiResponse inboundHeader = null;
+                    try {
+                        inboundHeader = itemMasterService.postItemMaster(inbound);
+                    } catch (Exception e) {
+                        itemMasterService.updateProcessedItemMaster(inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku());
+                        itemMasterList.remove(inbound);
+                        log.error("Error on item Master processing : " + e.toString());
+//                        throw new RuntimeException(e);
+                    }
                     if (inboundHeader != null) {
                         if(inboundHeader.getStatusCode().contains("1400")){
                             itemMasterService.updateProcessedItemMaster(inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku(), inboundHeader.getMessage());
@@ -195,7 +203,15 @@ public class MastersService {
             for (Customer inbound : spCMList) {
                 try {
                     log.info("Partner Code : " + inbound.getPartnerCode());
-                    WarehouseApiResponse inboundHeader = customerMasterService.postCustomerMaster(inbound);
+                    WarehouseApiResponse inboundHeader = null;
+                    try {
+                        inboundHeader = customerMasterService.postCustomerMaster(inbound);
+                    } catch (Exception e) {
+                        customerMasterService.updateProcessedCustomMaster(inbound.getCompanyCode(),inbound.getBranchCode(), inbound.getPartnerCode());
+                        customerMasterList.remove(inbound);
+                        log.error("Error on customer Master processing : " + e.toString());
+//                        throw new RuntimeException(e);
+                    }
                     if (inboundHeader != null) {
                         if(inboundHeader.getStatusCode().contains("1400")){
                             customerMasterService.updateProcessedCustomMaster(inbound.getCompanyCode(),inbound.getBranchCode(), inbound.getPartnerCode(), inboundHeader.getMessage());

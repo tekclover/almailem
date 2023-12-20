@@ -33,6 +33,9 @@ public class SOReturnLine {
 	private String manufacturerFullName;
 	private String brand;
 	private String salesOrderReference;
+	private String sourceBranchCode;
+	private String isCompleted;
+	private String isCancelled;
 
 	//MiddleWare Fields
 	private Long middlewareId;

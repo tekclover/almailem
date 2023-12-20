@@ -30,6 +30,8 @@ public class SOLine {
     @NotBlank(message = "Manufacturer Name is mandatory")
     private String manufacturerName;
 
+    private String manufacturerFullName;
+
     private String brand;
 
     private String origin;

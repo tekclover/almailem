@@ -5,6 +5,8 @@ import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class ASNLine {
 
@@ -44,9 +46,18 @@ public class ASNLine {
 	private String brand;
 
 	//almailem fields
+	private Date receivedDate;
+	private Double receivedQty;
+	private String receivedBy;
+	private String isCompleted;
+	private String isCancelled;
+
+	private String companyCode;
+	private String branchCode;
 
 	private String manufacturerFullName;
 	private String purchaseOrderNumber;
+	private String supplierInvoiceNo;
 	//MiddleWare Fields
 	private Long middlewareId;
 	private Long middlewareHeaderId;

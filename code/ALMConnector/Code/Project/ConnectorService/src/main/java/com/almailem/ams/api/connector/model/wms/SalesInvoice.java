@@ -26,6 +26,14 @@ public class SalesInvoice {
     @NotBlank(message = "Invoice Date is mandatory")
     private String invoiceDate;
 
+    private String deliveryType;
+    private String customerId;
+    private String customerName;
+    private String address;
+    private String phoneNumber;
+    private String alternateNo;
+    private String status;
+
     private String warehouseID;
 
     private String languageId;

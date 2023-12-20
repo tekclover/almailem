@@ -50,6 +50,9 @@ public class InterWarehouseTransferInLine {
 	private Double packQty;
 
 	private String manufacturerFullName;
+	private String isCompleted;
+	private String transferOrderNo;
+
 	//MiddleWare Fields
 	private Long middlewareId;
 	private Long middlewareHeaderId;

@@ -1,12 +1,15 @@
 package com.almailem.ams.api.connector.service;
 
-
+import com.almailem.ams.api.connector.model.periodic.PeriodicHeader;
+import com.almailem.ams.api.connector.model.periodic.PeriodicLine;
+import com.almailem.ams.api.connector.model.perpetual.PerpetualHeader;
+import com.almailem.ams.api.connector.model.perpetual.PerpetualLine;
 import com.almailem.ams.api.connector.model.picklist.PickListHeader;
 import com.almailem.ams.api.connector.model.picklist.PickListLine;
 import com.almailem.ams.api.connector.model.purchasereturn.PurchaseReturnHeader;
 import com.almailem.ams.api.connector.model.purchasereturn.PurchaseReturnLine;
-import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
 import com.almailem.ams.api.connector.model.salesinvoice.SalesInvoice;
+import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
 import com.almailem.ams.api.connector.model.salesreturn.SalesReturnLine;
 import com.almailem.ams.api.connector.model.stockreceipt.StockReceiptHeader;
 import com.almailem.ams.api.connector.model.stockreceipt.StockReceiptLine;
@@ -62,6 +65,12 @@ public class TransactionService {
     @Autowired
     SalesOrderService salesOrderService;
 
+    @Autowired
+    PerpetualService perpetualService;
+
+    @Autowired
+    PeriodicService periodicService;
+
     //-------------------------------------------------------------------------------------------
 
     @Autowired
@@ -88,6 +97,19 @@ public class TransactionService {
     @Autowired
     SalesInvoiceRepository salesInvoiceRepository;
 
+    @Autowired
+    PerpetualHeaderRepository perpetualHeaderRepository;
+
+    @Autowired
+    PeriodicHeaderRepository periodicHeaderRepository;
+
+    @Autowired
+    StockAdjustmentService stockAdjustmentService;
+
+    @Autowired
+    StockAdjustmentRepository stockAdjustmentRepo;
+
+
     //-------------------------------------------------------------------------------------------
     List<ASN> inboundList = null;
     List<com.almailem.ams.api.connector.model.wms.StockReceiptHeader> inboundSRList = null;
@@ -100,6 +122,11 @@ public class TransactionService {
 
     List<SalesOrder> outboundSalesOrderList = null;
     List<com.almailem.ams.api.connector.model.wms.SalesInvoice> outboundSIList = null;
+
+    List<Perpetual> stcPerpetualList = null;
+    List<Periodic> stcPeriodicList = null;
+
+    List<StockAdjustment> saList = null;
     //=================================================================================================================
     static CopyOnWriteArrayList<ASN> spList = null;                               // ASN Inbound List
     static CopyOnWriteArrayList<com.almailem.ams.api.connector.model.wms.StockReceiptHeader> spSRList = null;                // StockReceipt Inbound List
@@ -114,6 +141,11 @@ public class TransactionService {
     static CopyOnWriteArrayList<SalesOrder> spSalesOrderList = null;                               // ASN Inbound List
     static CopyOnWriteArrayList<com.almailem.ams.api.connector.model.wms.SalesInvoice> spSIList = null;
 
+    static CopyOnWriteArrayList<Perpetual> spPerpetualList = null;                   // Perpetual List
+    static CopyOnWriteArrayList<Periodic> spPeriodicList = null;                     // Periodic List
+
+    static CopyOnWriteArrayList<StockAdjustment> spStockAdjustmentList = null;       // Stock Adjustment List
+
     //==========================================================================================================================
     public WarehouseApiResponse processInboundOrder() throws IllegalAccessException, InvocationTargetException {
         if (inboundList == null || inboundList.isEmpty()) {
@@ -127,6 +159,9 @@ public class TransactionService {
                 asnHeader.setAsnNumber(dbIBOrder.getSupplierInvoiceNo());
                 asnHeader.setCompanyCode(dbIBOrder.getCompanyCode());
                 asnHeader.setBranchCode(dbIBOrder.getBranchCode());
+                asnHeader.setIsCancelled(dbIBOrder.getIsCancelled());
+                asnHeader.setIsCompleted(dbIBOrder.getIsCompleted());
+                asnHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
                 asnHeader.setMiddlewareId(dbIBOrder.getSupplierInvoiceHeaderId());
                 asnHeader.setMiddlewareTable("IB_SUPPLIER_INVOICE");
 
@@ -149,6 +184,17 @@ public class TransactionService {
                     asnLine.setContainerNumber(line.getContainerNo());
                     asnLine.setManufacturerFullName(line.getManufacturerFullName());
                     asnLine.setPurchaseOrderNumber(line.getPurchaseOrderNo());
+                    asnLine.setCompanyCode(line.getCompanyCode());
+                    asnLine.setBranchCode(line.getBranchCode());
+
+                    asnLine.setReceivedDate(line.getReceivedDate());
+                    asnLine.setReceivedQty(line.getReceivedQty());
+                    asnLine.setReceivedBy(line.getReceivedBy());
+                    asnLine.setIsCancelled(line.getIsCancelled());
+                    asnLine.setIsCompleted(line.getIsCompleted());
+                    asnLine.setManufacturerFullName(line.getManufacturerFullName());
+                    asnLine.setSupplierInvoiceNo(line.getSupplierInvoiceNo());
+
                     asnLine.setMiddlewareId(line.getSupplierInvoiceLineId());
                     asnLine.setMiddlewareHeaderId(dbIBOrder.getSupplierInvoiceHeaderId());
                     asnLine.setMiddlewareTable("IB_SUPPLIER_INVOICE");
@@ -168,7 +214,9 @@ public class TransactionService {
             for (ASN inbound : spList) {
                 try {
                     log.info("Supplier Invoice Number : " + inbound.getAsnHeader().getAsnNumber());
+
                     WarehouseApiResponse inboundHeader = supplierInvoiceService.postASNV2(inbound);
+
                     if (inboundHeader != null) {
                         // Updating the Processed Status
                         supplierInvoiceService.updateProcessedInboundOrder(inbound.getAsnHeader().getAsnNumber());
@@ -201,6 +249,8 @@ public class TransactionService {
                 stockReceiptHeader.setCompanyCode(dbIBOrder.getCompanyCode());
                 stockReceiptHeader.setBranchCode(dbIBOrder.getBranchCode());
                 stockReceiptHeader.setReceiptNo(dbIBOrder.getReceiptNo());
+                stockReceiptHeader.setIsCompleted(dbIBOrder.getIsCompleted());
+                stockReceiptHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
                 stockReceiptHeader.setMiddlewareId(dbIBOrder.getStockReceiptHeaderId());
                 stockReceiptHeader.setMiddlewareTable("IB_STOCK_RECEIPT");
 
@@ -220,6 +270,13 @@ public class TransactionService {
                     stockReceiptLine.setReceiptDate(line.getReceiptDate());
                     stockReceiptLine.setLineNoForEachItem(line.getLineNoForEachItem());
                     stockReceiptLine.setManufacturerFullName(line.getManufacturerFullName());
+
+                    stockReceiptLine.setReceiptNo(line.getReceiptNo());
+                    stockReceiptLine.setManufacturerFullName(line.getManufacturerFullName());
+                    stockReceiptLine.setIsCompleted(line.getIsCompleted());
+
+                    stockReceiptLine.setBranchCode(line.getBranchCode());
+                    stockReceiptLine.setCompanyCode(line.getCompanyCode());
                     stockReceiptLine.setMiddlewareId(line.getStockReceiptLineId());
                     stockReceiptLine.setMiddlewareHeaderId(dbIBOrder.getStockReceiptHeaderId());
                     stockReceiptLine.setMiddlewareTable("IB_STOCK_RECEIPT");
@@ -238,7 +295,9 @@ public class TransactionService {
             for (com.almailem.ams.api.connector.model.wms.StockReceiptHeader inbound : spSRList) {
                 try {
                     log.info("Stock Receipt Number : " + inbound.getReceiptNo());
+
                     WarehouseApiResponse inboundHeader = stockReceiptService.postStockReceipt(inbound);
+
                     if (inboundHeader != null) {
                         // Updating the Processed Status
                         stockReceiptService.updateProcessedInboundOrder(inbound.getReceiptNo());
@@ -271,6 +330,9 @@ public class TransactionService {
                 salesReturnHeader.setCompanyCode(dbIBOrder.getCompanyCode());
                 salesReturnHeader.setBranchCode(dbIBOrder.getBranchCodeOfReceivingWarehouse());
                 salesReturnHeader.setTransferOrderNumber(dbIBOrder.getReturnOrderNo());
+                salesReturnHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
+                salesReturnHeader.setIsCompleted(dbIBOrder.getIsCompleted());
+                salesReturnHeader.setIsCancelled(dbIBOrder.getIsCancelled());
                 salesReturnHeader.setMiddlewareId(dbIBOrder.getSalesReturnHeaderId());
                 salesReturnHeader.setMiddlewareTable("IB_SALE_RETURN");
 
@@ -288,6 +350,12 @@ public class TransactionService {
                     salesReturnLine.setExpectedDate(line.getReturnOrderDate());
                     salesReturnLine.setExpectedQty(line.getReturnQty());
                     salesReturnLine.setUom(line.getUnitOfMeasure());
+
+                    salesReturnLine.setIsCancelled(line.getIsCancelled());
+                    salesReturnLine.setIsCompleted(line.getIsCompleted());
+                    salesReturnLine.setSourceBranchCode(line.getSourceBranchCode());
+                    salesReturnLine.setPackQty(Double.valueOf(line.getNoOfPacks()));
+
                     if (line.getNoOfPacks() != null) {
                         salesReturnLine.setPackQty(Double.valueOf(line.getNoOfPacks()));
                     }
@@ -313,7 +381,9 @@ public class TransactionService {
             for (SaleOrderReturn inbound : spSRTList) {
                 try {
                     log.info("Sales Return Number : " + inbound.getSoReturnHeader().getTransferOrderNumber());
-                    WarehouseApiResponse inboundHeader = salesReturnService.postStockReceipt(inbound);
+
+                    WarehouseApiResponse inboundHeader = salesReturnService.postSaleOrderReturn(inbound);
+
                     if (inboundHeader != null) {
                         // Updating the Processed Status
                         salesReturnService.updateProcessedInboundOrder(inbound.getSoReturnHeader().getTransferOrderNumber());
@@ -363,6 +433,11 @@ public class TransactionService {
                     b2bTransferInHeader.setCompanyCode(dbIBOrder.getTargetCompanyCode());
                     b2bTransferInHeader.setBranchCode(dbIBOrder.getTargetBranchCode());
                     b2bTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
+                    b2bTransferInHeader.setSourceBranchCode(dbIBOrder.getSourceBranchCode());
+                    b2bTransferInHeader.setSourceCompanyCode(dbIBOrder.getSourceCompanyCode());
+                    b2bTransferInHeader.setTransferOrderDate(dbIBOrder.getTransferOrderDate());
+                    b2bTransferInHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
+                    b2bTransferInHeader.setIsCompleted(dbIBOrder.getIsCompleted());
                     b2bTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
                     b2bTransferInHeader.setMiddlewareTable("IB_B2B");
 
@@ -382,9 +457,14 @@ public class TransactionService {
                         b2bTransferInLine.setStoreID(dbIBOrder.getTargetBranchCode());
                         b2bTransferInLine.setOrigin(dbIBOrder.getSourceCompanyCode());
                         b2bTransferInLine.setBrand(line.getManufacturerShortName());
+
+                        b2bTransferInLine.setTransferOrderNo(line.getTransferOrderNo());
+                        b2bTransferInLine.setIsCompleted(line.getIsCompleted());
+
                         if (line.getTransferQty() != null) {
                             Double newDouble = new Double(line.getTransferQty());
-                            Long tfrQty = newDouble.longValue(); ;
+                            Long tfrQty = newDouble.longValue();
+                            ;
                             b2bTransferInLine.setPackQty(tfrQty);
                         }
                         b2bTransferInLine.setMiddlewareId(line.getTransferInLineId());
@@ -405,6 +485,9 @@ public class TransactionService {
 
                     interWarehouseTransferInHeader.setToCompanyCode(dbIBOrder.getTargetCompanyCode());
                     interWarehouseTransferInHeader.setToBranchCode(dbIBOrder.getTargetBranchCode());
+                    interWarehouseTransferInHeader.setSourceCompanyCode(dbIBOrder.getSourceCompanyCode());
+                    interWarehouseTransferInHeader.setSourceBranchCode(dbIBOrder.getSourceBranchCode());
+                    interWarehouseTransferInHeader.setIsCompleted(dbIBOrder.getIsCompleted());
                     interWarehouseTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
                     interWarehouseTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
                     interWarehouseTransferInHeader.setMiddlewareTable("IB_IWT");
@@ -426,6 +509,9 @@ public class TransactionService {
                         interWarehouseTransferInLine.setFromBranchCode(dbIBOrder.getSourceBranchCode());
                         interWarehouseTransferInLine.setFromCompanyCode(dbIBOrder.getSourceCompanyCode());
                         interWarehouseTransferInLine.setBrand(line.getManufacturerShortName());
+
+                        interWarehouseTransferInLine.setIsCompleted(line.getIsCompleted());
+
                         interWarehouseTransferInLine.setMiddlewareId(line.getTransferInLineId());
                         interWarehouseTransferInLine.setMiddlewareHeaderId(dbIBOrder.getTransferInHeaderId());
                         interWarehouseTransferInLine.setMiddlewareTable("IB_IWT");
@@ -512,6 +598,9 @@ public class TransactionService {
                 returnPOHeader.setPoNumber(dbObOrder.getReturnOrderNo());
                 returnPOHeader.setStoreID(dbObOrder.getBranchCode());
                 returnPOHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getReturnOrderDate()));
+                returnPOHeader.setIsCancelled(dbObOrder.getIsCancelled());
+                returnPOHeader.setIsCompleted(dbObOrder.getIsCompleted());
+                returnPOHeader.setUpdatedOn(dbObOrder.getUpdatedOn());
                 returnPOHeader.setMiddlewareId(dbObOrder.getPurchaseReturnHeaderId());
                 returnPOHeader.setMiddlewareTable("OB_PURCHASE_RETURN_HEADER");
 
@@ -519,6 +608,7 @@ public class TransactionService {
                 for (PurchaseReturnLine line : dbObOrder.getPurchaseReturnLines()) {
                     ReturnPOLine returnPOLine = new ReturnPOLine();
 
+                    returnPOLine.setReturnOrderNo(line.getReturnOrderNo());
                     returnPOLine.setLineReference(line.getLineNoOfEachItemCode());
                     returnPOLine.setSku(line.getItemCode());
                     returnPOLine.setSkuDescription(line.getItemDescription());
@@ -529,6 +619,8 @@ public class TransactionService {
                     returnPOLine.setManufacturerName(line.getManufacturerShortName());
                     returnPOLine.setBrand(line.getManufacturerFullName());
                     returnPOLine.setSupplierInvoiceNo(line.getSupplierInvoiceNo());
+                    returnPOLine.setIsCancelled(line.getIsCancelled());
+                    returnPOLine.setIsCompleted(line.getIsCompleted());
                     returnPOLine.setMiddlewareId(line.getPurchaseReturnLineId());
                     returnPOLine.setMiddlewareHeaderId(dbObOrder.getPurchaseReturnHeaderId());
                     returnPOLine.setMiddlewareTable("OB_PURCHASE_RETURN_LINE");
@@ -598,12 +690,14 @@ public class TransactionService {
                     soHeader.setStoreID(dbObOrder.getSourceBranchCode());
                     soHeader.setTargetCompanyCode(dbObOrder.getTargetCompanyCode());
                     soHeader.setTargetBranchCode(dbObOrder.getTargetBranchCode());
+                    soHeader.setOrderType(dbObOrder.getFulfilmentMethod());
                     soHeader.setMiddlewareId(dbObOrder.getTransferOutHeaderId());
                     soHeader.setMiddlewareTable("OB_SHIPMENT_ORDER_HEADER");
 
                     for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
                         SOLine soLine = new SOLine();
 
+                        soLine.setTransferOrderNumber(line.getTransferOrderNumber());
                         soLine.setLineReference(line.getLineNumberOfEachItem());
                         soLine.setSku(line.getItemCode());
                         soLine.setSkuDescription(line.getItemDescription());
@@ -613,6 +707,8 @@ public class TransactionService {
                         soLine.setManufacturerCode(line.getManufacturerCode());
                         soLine.setManufacturerName(line.getManufacturerShortName());
                         soLine.setFromCompanyCode(dbObOrder.getSourceCompanyCode());
+                        soLine.setOrderType(dbObOrder.getFulfilmentMethod());
+                        soLine.setManufacturerFullName(line.getManufacturerFullName());
                         soLine.setMiddlewareId(line.getTransferOutLineId());
                         soLine.setMiddlewareHeaderId(dbObOrder.getTransferOutHeaderId());
                         soLine.setMiddlewareTable("OB_SHIPMENT_ORDER_LINE");
@@ -632,12 +728,14 @@ public class TransactionService {
                     iWhtOutHeader.setFromBranchCode(dbObOrder.getSourceBranchCode());
                     iWhtOutHeader.setToBranchCode(dbObOrder.getTargetBranchCode());
                     iWhtOutHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getTransferOrderDate()));
+                    iWhtOutHeader.setOrderType(dbObOrder.getFulfilmentMethod());
                     iWhtOutHeader.setMiddlewareId(dbObOrder.getTransferOutHeaderId());
                     iWhtOutHeader.setMiddlewareTable("OB_IWHTRANSFER_OUT_HEADER");
 
                     for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
                         InterWarehouseTransferOutLine iWhtOutLine = new InterWarehouseTransferOutLine();
 
+                        iWhtOutLine.setTransferOrderNumber(line.getTransferOrderNumber());
                         iWhtOutLine.setLineReference(line.getLineNumberOfEachItem());
                         iWhtOutLine.setSku(line.getItemCode());
                         iWhtOutLine.setSkuDescription(line.getItemDescription());
@@ -645,6 +743,8 @@ public class TransactionService {
                         iWhtOutLine.setUom(line.getUnitOfMeasure());
                         iWhtOutLine.setManufacturerCode(line.getManufacturerCode());
                         iWhtOutLine.setManufacturerName(line.getManufacturerShortName());
+                        iWhtOutLine.setOrderType(dbObOrder.getFulfilmentMethod());
+                        iWhtOutLine.setManufacturerFullName(line.getManufacturerFullName());
                         iWhtOutLine.setMiddlewareId(line.getTransferOutLineId());
                         iWhtOutLine.setMiddlewareHeaderId(line.getTransferOutHeaderId());
                         iWhtOutLine.setMiddlewareTable("OB_IWHTRANSFER_OUT_LINE");
@@ -747,6 +847,8 @@ public class TransactionService {
                     salesOrderLine.setOrderedQty(line.getPickListQty());
                     salesOrderLine.setExpectedQty(line.getPickedQty());
                     salesOrderLine.setPackQty(line.getPickedQty());
+                    salesOrderLine.setPickListNo(line.getPickListNo());
+                    salesOrderLine.setSalesOrderNo(line.getSalesOrderNo());
                     salesOrderLine.setMiddlewareId(line.getPickListLineId());
                     salesOrderLine.setMiddlewareHeaderId(dbOBOrder.getPickListHeaderId());
                     salesOrderLine.setMiddlewareTable("OB_SalesOrder");
@@ -758,18 +860,21 @@ public class TransactionService {
                 outboundSalesOrderList.add(salesOrder);
             }
             spSalesOrderList = new CopyOnWriteArrayList<SalesOrder>(outboundSalesOrderList);
-            log.info("There is no record found to process (sql) ...Waiting..");
+            log.info("There is no Sale Order/PickList record found to process (sql) ...Waiting..");
         }
 
         if (outboundSalesOrderList != null) {
-            log.info("Latest Supplier Invoice found: " + outboundSalesOrderList);
+            log.info("Latest Sale Order found: " + outboundSalesOrderList);
             for (SalesOrder outbound : spSalesOrderList) {
                 try {
-                    log.info("Supplier Invoice Number : " + outbound.getSalesOrderHeader().getSalesOrderNumber());
+                    log.info("Sale Order Number : " + outbound.getSalesOrderHeader().getSalesOrderNumber());
+                    log.info("Pick List Number : " + outbound.getSalesOrderHeader().getPickListNumber());
+
                     WarehouseApiResponse outboundHeader = salesOrderService.postSalesOrder(outbound);
+
                     if (outboundHeader != null) {
                         // Updating the Processed Status
-                        salesOrderService.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getSalesOrderNumber());
+                        salesOrderService.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getPickListNumber());
                         outboundSalesOrderList.remove(outbound);
                         return outboundHeader;
                     }
@@ -777,7 +882,7 @@ public class TransactionService {
                     e.printStackTrace();
                     log.error("Error on outbound processing : " + e.toString());
                     // Updating the Processed Status
-                    salesOrderService.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getSalesOrderNumber());
+                    salesOrderService.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getPickListNumber());
 //                    salesOrderV2Service.createInboundIntegrationLog(outbound);
                     outboundSalesOrderList.remove(outbound);
                     throw new RuntimeException(e);
@@ -786,13 +891,14 @@ public class TransactionService {
         }
         return null;
     }
+
     public WarehouseApiResponse processOutboundOrderSI() throws IllegalAccessException, InvocationTargetException {
         if (outboundSIList == null || outboundSIList.isEmpty()) {
             List<SalesInvoice> salesInvoiceList = salesInvoiceRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
             outboundSIList = new ArrayList<>();
             for (SalesInvoice dbOBOrder : salesInvoiceList) {
 
-                com.almailem.ams.api.connector.model.wms.SalesInvoice salesInvoice = new  com.almailem.ams.api.connector.model.wms.SalesInvoice();
+                com.almailem.ams.api.connector.model.wms.SalesInvoice salesInvoice = new com.almailem.ams.api.connector.model.wms.SalesInvoice();
 
                 salesInvoice.setCompanyCode(dbOBOrder.getCompanyCode());
                 salesInvoice.setBranchCode(dbOBOrder.getBranchCode());
@@ -800,6 +906,15 @@ public class TransactionService {
                 salesInvoice.setSalesInvoiceNumber(dbOBOrder.getSalesInvoiceNumber());
                 salesInvoice.setPickListNumber(dbOBOrder.getPickListNumber());
                 salesInvoice.setInvoiceDate(String.valueOf(dbOBOrder.getInvoiceDate()));
+
+                salesInvoice.setAddress(dbOBOrder.getAddress());
+                salesInvoice.setStatus(dbOBOrder.getStatus());
+                salesInvoice.setAlternateNo(dbOBOrder.getAlternateNo());
+                salesInvoice.setCustomerId(dbOBOrder.getCustomerId());
+                salesInvoice.setCustomerName(dbOBOrder.getCustomerName());
+                salesInvoice.setPhoneNumber(dbOBOrder.getPhoneNumber());
+                salesInvoice.setDeliveryType(dbOBOrder.getDeliveryType());
+
                 salesInvoice.setMiddlewareId(dbOBOrder.getSalesInvoiceId());
                 salesInvoice.setMiddlewareTable("OBSalesInvoice");
 
@@ -828,6 +943,218 @@ public class TransactionService {
                     salesInvoiceService.updateProcessedOutboundOrder(outbound.getSalesInvoiceNumber());
 //                      salesInvoiceService.createInboundIntegrationLog(outbound);
                     outboundSIList.remove(outbound);
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    //======================================StockCount_Perpetual=======================================================
+    public WarehouseApiResponse processPerpetualOrder() throws IllegalAccessException, InvocationTargetException {
+        if (stcPerpetualList == null || stcPerpetualList.isEmpty()) {
+            List<PerpetualHeader> perpetualHeaders = perpetualHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
+
+            stcPerpetualList = new ArrayList<>();
+            Perpetual perpetual = new Perpetual();
+
+            for (PerpetualHeader dbObOrder : perpetualHeaders) {
+                PerpetualHeaderV1 perpetualHeaderV1 = new PerpetualHeaderV1();
+
+                perpetualHeaderV1.setCompanyCode(dbObOrder.getCompanyCode());
+                perpetualHeaderV1.setCycleCountNo(dbObOrder.getCycleCountNo());
+                perpetualHeaderV1.setBranchCode(dbObOrder.getBranchCode());
+                perpetualHeaderV1.setBranchName(dbObOrder.getBranchName());
+                perpetualHeaderV1.setIsNew(dbObOrder.getIsNew());
+                perpetualHeaderV1.setCycleCountCreationDate(dbObOrder.getCycleCountCreationDate());
+                perpetualHeaderV1.setUpdatedOn(dbObOrder.getUpdatedOn());
+                perpetualHeaderV1.setIsCancelled(dbObOrder.getIsCancelled());
+                perpetualHeaderV1.setIsCompleted(dbObOrder.getIsCompleted());
+                perpetualHeaderV1.setMiddlewareId(dbObOrder.getPerpetualHeaderId());
+                perpetualHeaderV1.setMiddlewareTable("PERPETUAL_HEADER");
+
+                List<PerpetualLineV1> perpetualLineV1List = new ArrayList<>();
+                for (PerpetualLine line : dbObOrder.getPerpetualLines()) {
+                    PerpetualLineV1 perpetualLineV1 = new PerpetualLineV1();
+
+                    perpetualLineV1.setCycleCountNo(line.getCycleCountNo());
+                    perpetualLineV1.setLineNoOfEachItemCode(line.getLineNoOfEachItemCode());
+                    perpetualLineV1.setItemCode(line.getItemCode());
+                    perpetualLineV1.setItemDescription(line.getItemDescription());
+                    perpetualLineV1.setUom(line.getUnitOfMeasure());
+                    perpetualLineV1.setManufacturerCode(line.getManufacturerCode());
+                    perpetualLineV1.setManufacturerName(line.getManufacturerName());
+                    perpetualLineV1.setFrozenQty(line.getFrozenQty());
+                    perpetualLineV1.setCountedQty(line.getCountedQty());
+                    perpetualLineV1.setIsCancelled(line.getIsCancelled());
+                    perpetualLineV1.setIsCompleted(line.getIsCompleted());
+                    perpetualLineV1.setMiddlewareId(line.getPerpetualLineId());
+                    perpetualLineV1.setMiddlewareHeaderId(dbObOrder.getPerpetualHeaderId());
+                    perpetualLineV1.setMiddlewareTable("PERPETUAL_LINE");
+                    perpetualLineV1List.add(perpetualLineV1);
+                }
+                perpetual.setPerpetualLineV1(perpetualLineV1List);
+                perpetual.setPerpetualHeaderV1(perpetualHeaderV1);
+                stcPerpetualList.add(perpetual);
+            }
+            spPerpetualList = new CopyOnWriteArrayList<Perpetual>(stcPerpetualList);
+            log.info("There is no Perpetual record found to process (sql) ...Waiting..");
+        }
+
+        if (stcPerpetualList != null) {
+            log.info("Latest Perpetual Order found: " + stcPerpetualList);
+            for (Perpetual stockCount : spPerpetualList) {
+                try {
+                    log.info("Perpetual Order Number: " + stockCount.getPerpetualHeaderV1().getCycleCountNo());
+                    WarehouseApiResponse response = perpetualService.postPerpetualOrder(stockCount);
+                    if (response != null) {
+                        //Updating the Processed Status
+                        perpetualService.updateProcessedPerpetualOrder(stockCount.getPerpetualHeaderV1().getCycleCountNo());
+                        stcPerpetualList.remove(stockCount);
+                        return response;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("Error on StockCount processing: " + e.toString());
+                    //Updating the Processed Status
+                    perpetualService.updateProcessedPerpetualOrder(stockCount.getPerpetualHeaderV1().getCycleCountNo());
+                    stcPerpetualList.remove(stockCount);
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    //======================================StockCount_Periodic=======================================================
+    public WarehouseApiResponse processPeriodicOrder() throws IllegalAccessException, InvocationTargetException {
+        if (stcPeriodicList == null || stcPeriodicList.isEmpty()) {
+            List<PeriodicHeader> periodicHeaders = periodicHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
+            stcPeriodicList = new ArrayList<>();
+            Periodic periodic = new Periodic();
+
+            for (PeriodicHeader dbOrder : periodicHeaders) {
+                PeriodicHeaderV1 periodicHeaderV1 = new PeriodicHeaderV1();
+
+                periodicHeaderV1.setCompanyCode(dbOrder.getCompanyCode());
+                periodicHeaderV1.setBranchCode(dbOrder.getBranchCode());
+                periodicHeaderV1.setBranchName(dbOrder.getBranchName());
+                periodicHeaderV1.setCycleCountNo(dbOrder.getCycleCountNo());
+                periodicHeaderV1.setCycleCountCreationDate(dbOrder.getCycleCountCreationDate());
+                periodicHeaderV1.setIsNew(dbOrder.getIsNew());
+                periodicHeaderV1.setIsCancelled(dbOrder.getIsCancelled());
+                periodicHeaderV1.setIsCompleted(dbOrder.getIsCompleted());
+                periodicHeaderV1.setUpdatedOn(dbOrder.getUpdatedOn());
+                periodicHeaderV1.setMiddlewareId(dbOrder.getPeriodicHeaderId());
+                periodicHeaderV1.setMiddlewareTable("PERIODIC_HEADER");
+
+                List<PeriodicLineV1> periodicLineV1List = new ArrayList<>();
+                for (PeriodicLine line : dbOrder.getPeriodicLines()) {
+                    PeriodicLineV1 periodicLineV1 = new PeriodicLineV1();
+
+                    periodicLineV1.setCycleCountNo(line.getCycleCountNo());
+                    periodicLineV1.setLineNoOfEachItemCode(line.getLineNoOfEachItemCode());
+                    periodicLineV1.setItemCode(line.getItemCode());
+                    periodicLineV1.setItemDescription(line.getItemDescription());
+                    periodicLineV1.setItemDescription(line.getItemDescription());
+                    periodicLineV1.setUom(line.getUnitOfMeasure());
+                    periodicLineV1.setManufacturerCode(line.getManufacturerCode());
+                    periodicLineV1.setManufacturerName(line.getManufacturerName());
+                    periodicLineV1.setCountedQty(line.getCountedQty());
+                    periodicLineV1.setFrozenQty(line.getFrozenQty());
+                    periodicLineV1.setIsCompleted(line.getIsCompleted());
+                    periodicLineV1.setIsCancelled(line.getIsCancelled());
+                    periodicLineV1.setMiddlewareId(line.getPeriodicLineId());
+                    periodicLineV1.setMiddlewareHeaderId(dbOrder.getPeriodicHeaderId());
+                    periodicLineV1.setMiddlewareTable("PERIODIC_LINE");
+                    periodicLineV1List.add(periodicLineV1);
+                }
+                periodic.setPeriodicLineV1(periodicLineV1List);
+                periodic.setPeriodicHeaderV1(periodicHeaderV1);
+                stcPeriodicList.add(periodic);
+            }
+            spPeriodicList = new CopyOnWriteArrayList<Periodic>(stcPeriodicList);
+            log.info("There is no Periodic record found to process (sql) ...Waiting..");
+        }
+
+        if (stcPeriodicList != null) {
+            log.info("Latest Periodic Order found: " + stcPeriodicList);
+            for (Periodic stockCount : spPeriodicList) {
+                try {
+                    log.info("Periodic Order Number: " + stockCount.getPeriodicHeaderV1().getCycleCountNo());
+                    WarehouseApiResponse response = periodicService.postPeriodicOrder(stockCount);
+                    if (response != null) {
+                        //Updating the Processed Status
+                        periodicService.updateProcessedPeriodicOrder(stockCount.getPeriodicHeaderV1().getCycleCountNo());
+                        stcPeriodicList.remove(stockCount);
+                        return response;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("Error on StockCount processing: " + e.toString());
+                    //Updating the Processed Status
+                    periodicService.updateProcessedPeriodicOrder(stockCount.getPeriodicHeaderV1().getCycleCountNo());
+                    stcPeriodicList.remove(stockCount);
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    //=======================================================V2============================================================
+
+    public WarehouseApiResponse processStockAdjustmentOrder() throws IllegalAccessException, InvocationTargetException {
+        if (saList == null || saList.isEmpty()) {
+            List<com.almailem.ams.api.connector.model.stockadjustment.StockAdjustment> stockAdjustments = stockAdjustmentRepo.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
+            saList = new ArrayList<>();
+            StockAdjustment stockAdjustment = new StockAdjustment();
+            for (com.almailem.ams.api.connector.model.stockadjustment.StockAdjustment dbSA : stockAdjustments) {
+
+//                stockAdjustment.setOrderId(dbSA.getItemCode());
+                stockAdjustment.setCompanyCode(dbSA.getCompanyCode());
+                stockAdjustment.setBranchCode(dbSA.getBranchCode());
+                stockAdjustment.setBranchName(dbSA.getBranchName());
+                stockAdjustment.setDateOfAdjustment(dbSA.getDateOfAdjustment());
+                stockAdjustment.setIsDamage(dbSA.getIsDamage());
+                stockAdjustment.setIsCycleCount(dbSA.getIsCycleCount());
+                stockAdjustment.setItemCode(dbSA.getItemCode());
+                stockAdjustment.setItemDescription(dbSA.getItemDescription());
+                stockAdjustment.setAdjustmentQty(dbSA.getAdjustmentQty());
+                stockAdjustment.setUnitOfMeasure(dbSA.getUnitOfMeasure());
+                stockAdjustment.setManufacturerCode(dbSA.getManufacturerCode());
+                stockAdjustment.setManufacturerName(dbSA.getManufacturerName());
+                stockAdjustment.setRemarks(dbSA.getRemarks());
+                stockAdjustment.setAmsReferenceNo(dbSA.getAmsReferenceNo());
+                stockAdjustment.setIsCompleted(dbSA.getIsCompleted());
+                stockAdjustment.setUpdatedOn(dbSA.getUpdatedOn());
+                stockAdjustment.setMiddlewareId(dbSA.getStockAdjustmentId());
+                stockAdjustment.setMiddlewareTable("STOCK_ADJUSTMENT");
+
+                saList.add(stockAdjustment);
+            }
+            spStockAdjustmentList = new CopyOnWriteArrayList<StockAdjustment>(saList);
+            log.info("There is no StockAdjustment record found to process (sql) ...Waiting..");
+        }
+
+        if (saList != null) {
+            log.info("Latest Stock Adjustment found: " + saList);
+            for (StockAdjustment stockCount : spStockAdjustmentList) {
+                try {
+                    log.info("Item Code: " + stockCount.getItemCode());
+                    WarehouseApiResponse response = stockAdjustmentService.postStockAdjustment(stockCount);
+                    if (response != null) {
+                        // Updating the Processed Status
+                        stockAdjustmentService.updateProcessedStockAdjustment(stockCount.getItemCode());
+                        saList.remove(stockCount);
+                        return response;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("Error on Stock Adjustment processing : " + e.toString());
+                    // Updating the Processed Status
+                    stockAdjustmentService.updateProcessedStockAdjustment(stockCount.getItemCode());
+                    saList.remove(stockCount);
                     throw new RuntimeException(e);
                 }
             }

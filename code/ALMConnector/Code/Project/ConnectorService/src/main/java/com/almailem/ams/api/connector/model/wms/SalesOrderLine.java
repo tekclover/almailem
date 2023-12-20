@@ -30,7 +30,9 @@ public class SalesOrderLine {
 
     private String brand;
 
-    private String orderType;                                // REF_FIELD_1
+    private String salesOrderNo;
+    private String pickListNo;
+
     private String origin;
     private String supplierName;
     private Double packQty;

@@ -3,6 +3,7 @@ package com.almailem.ams.api.connector.model.wms;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Data
 public class B2bTransferInHeader {
@@ -14,6 +15,11 @@ public class B2bTransferInHeader {
 	@NotBlank(message = "Branch Code is mandatory")
 	private String branchCode;
 
+	private String sourceCompanyCode;
+	private String sourceBranchCode;
+	private Date transferOrderDate;
+	private String isCompleted;
+	private Date updatedOn;
 	//MiddleWare Fields
 	private Long middlewareId;
 	private String middlewareTable;

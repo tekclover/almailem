@@ -119,4 +119,32 @@ public class ScheduleAsyncService {
         return CompletableFuture.completedFuture(customerMaster);
 
     }
+    //----------------------------------------------StockCount---------------------------------------------------------
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> schedulePerpetual() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("StockCount Perpetual Started Processing");
+        WarehouseApiResponse perpetual = transactionService.processPerpetualOrder();
+        log.info("StockCount Perpetual finished Processing");
+        return CompletableFuture.completedFuture(perpetual);
+    }
+
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> schedulePeriodic() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("StockCount Periodic Started Processing");
+        WarehouseApiResponse periodic = transactionService.processPeriodicOrder();
+        log.info("StockCount Periodic finished Processing");
+        return CompletableFuture.completedFuture(periodic);
+    }
+
+    //-----------------------------------------Stock_Adjustment--------------------------------------------------------
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<WarehouseApiResponse> scheduleStockAdjustment() throws InterruptedException, InvocationTargetException, IllegalAccessException {
+
+        log.info("Stock Adjustment Started Processing");
+        WarehouseApiResponse sa = transactionService.processStockAdjustmentOrder();
+        log.info("Stock Adjustment finished Processing");
+        return CompletableFuture.completedFuture(sa);
+    }
 }

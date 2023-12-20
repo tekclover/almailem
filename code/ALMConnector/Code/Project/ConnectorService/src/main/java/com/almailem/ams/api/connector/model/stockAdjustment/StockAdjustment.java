@@ -37,7 +37,7 @@ public class StockAdjustment {
     @Column(name = "BranchName", columnDefinition = "nvarchar(500)")
     private String branchName;
 
-    @NotBlank(message = "Date of Adjustment is mandatory")
+    @NotNull(message = "Date of Adjustment is mandatory")
     @Column(name = "Dateofadjustment")
     private Date dateOfAdjustment;
 

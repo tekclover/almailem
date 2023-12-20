@@ -27,6 +27,10 @@ public class ReturnPOHeader {
     private String branchCode;
     private String languageId;
 
+    private String isCompleted;
+    private Date updatedOn;
+    private String isCancelled;
+
     @JsonIgnore
     private String id;
 

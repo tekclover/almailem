@@ -70,7 +70,7 @@ public class SalesReturnService {
      * @param salesReturn
      * @return
      */
-    public WarehouseApiResponse postStockReceipt(SaleOrderReturn salesReturn) {
+    public WarehouseApiResponse postSaleOrderReturn(SaleOrderReturn salesReturn) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));

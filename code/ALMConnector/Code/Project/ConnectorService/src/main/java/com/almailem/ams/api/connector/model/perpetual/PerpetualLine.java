@@ -50,7 +50,7 @@ public class PerpetualLine {
     @Column(name = "ManufacturerName", columnDefinition = "nvarchar(200)")
     private String manufacturerName;
 
-    @NotBlank(message = "FrozenQty is mandatory")
+    @NotNull(message = "FrozenQty is mandatory")
     @Column(name = "FrozenQty")
     private Double frozenQty;
 

@@ -73,11 +73,11 @@ public class SwaggerConfig {
 	 */
 	private ApiInfo apiInfo() {
 	    return new ApiInfo(
-	      "Classic WMS - Transaction Setup Services",
-	      "Transaction Service Specifications",
+	      "Almailem - Connector Services",
+	      "Connector Service Specifications",
 	      "1.0",
 	      "Terms of service",
-	      new Contact("Classic WMS Team", "www.tekclover.com", "classicwms@tekclover.com"),
+	      new Contact("Almailem Team", "www.tekclover.com", "almailem@tekclover.com"),
 	      "License of API",
 	      "API license URL",
 	      Collections.emptyList());

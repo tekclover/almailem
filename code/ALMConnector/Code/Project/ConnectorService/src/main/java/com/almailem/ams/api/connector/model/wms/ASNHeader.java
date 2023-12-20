@@ -4,6 +4,8 @@ import javax.validation.constraints.NotBlank;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class ASNHeader {
 
@@ -18,6 +20,10 @@ public class ASNHeader {
 
 	//almailem fields
 //	private String purchaseOrderNumber;
+
+	private String isCompleted;
+	private Date updatedOn;
+	private String isCancelled;
 
 	//MiddleWare Fields
 	private Long middlewareId;
