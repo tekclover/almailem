@@ -54,7 +54,7 @@ public class B2BTransferInService {
     }
 
     public void updateProcessedInboundOrder(String asnNumber) {
-        TransferInHeader dbInboundOrder = transferInHeaderRepository.findByTransferOrderNo(asnNumber);
+        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
         log.info("orderId : " + asnNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {

@@ -664,7 +664,8 @@ public class TransactionService {
 
         if (outboundIWhtList == null || outboundSOList == null || outboundSOList.isEmpty() || outboundIWhtList.isEmpty()) {
 
-            List<TransferOutHeader> transferOuts = transferOutHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
+            List<TransferOutHeader> transferOuts = transferOutHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOnDesc(0L);
+            log.info("TransferOut / Shipment Order Found: " + transferOuts);
             outboundIWhtList = new ArrayList<>();
             outboundSOList = new ArrayList<>();
             String[] branchcode = new String[]{"115", "125", "212", "222"};

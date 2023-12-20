@@ -29,4 +29,6 @@ public interface TransferOutHeaderRepository extends JpaRepository<TransferOutHe
                                       @Param(value = "date") Date date);
 
     TransferOutHeader findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(String transferOrderNumber);
+
+    List<TransferOutHeader> findTopByProcessedStatusIdOrderByOrderReceivedOnDesc(long l);
 }
