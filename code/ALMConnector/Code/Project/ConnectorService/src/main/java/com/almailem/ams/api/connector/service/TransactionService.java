@@ -411,6 +411,8 @@ public class TransactionService {
 
             List<TransferInHeader> transferInHeaders = transferInHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
 
+            log.info("TrnasferIn Order Found: " + transferInHeaders);
+
             inboundIWTList = new ArrayList<>();
             inboundB2BList = new ArrayList<>();
             String[] branchcode = new String[]{"115", "125", "212", "222"};
@@ -420,6 +422,9 @@ public class TransactionService {
                 boolean sourceBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getSourceBranchCode()));
                 boolean targetBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getTargetBranchCode()));
 
+                log.info("sourceBranchExist: " + sourceBranchExist);
+                log.info("targetBranchExist: " + targetBranchExist);
+
                 B2bTransferIn b2bTransferIn = new B2bTransferIn();
                 List<B2bTransferInLine> b2bTransferInLines = new ArrayList<>();
 
@@ -427,7 +432,7 @@ public class TransactionService {
                 List<InterWarehouseTransferInLine> interWarehouseTransferInLineList = new ArrayList<>();
 
                 if (!sourceBranchExist && targetBranchExist) {
-
+                    log.info("B2B Transfer: " + dbIBOrder);
                     B2bTransferInHeader b2bTransferInHeader = new B2bTransferInHeader();
 
                     b2bTransferInHeader.setCompanyCode(dbIBOrder.getTargetCompanyCode());
@@ -442,7 +447,7 @@ public class TransactionService {
                     b2bTransferInHeader.setMiddlewareTable("IB_B2B");
 
                     for (TransferInLine line : dbIBOrder.getTransferInLines()) {
-
+                        log.info("B2B Transfer Lines: " + dbIBOrder.getTransferInLines());
                         B2bTransferInLine b2bTransferInLine = new B2bTransferInLine();
 
                         b2bTransferInLine.setLineReference(line.getLineNoOfEachItem());
@@ -477,10 +482,11 @@ public class TransactionService {
                     b2bTransferIn.setB2bTransferInHeader(b2bTransferInHeader);
                     b2bTransferIn.setB2bTransferLine(b2bTransferInLines);
                     inboundB2BList.add(b2bTransferIn);
+                    log.info("B2B Transfer List: " + inboundB2BList);
                 }
 
                 if (sourceBranchExist && targetBranchExist) {
-
+                    log.info("InterWarehouse Transfer: " + dbIBOrder);
                     InterWarehouseTransferInHeader interWarehouseTransferInHeader = new InterWarehouseTransferInHeader();
 
                     interWarehouseTransferInHeader.setToCompanyCode(dbIBOrder.getTargetCompanyCode());
@@ -493,7 +499,7 @@ public class TransactionService {
                     interWarehouseTransferInHeader.setMiddlewareTable("IB_IWT");
 
                     for (TransferInLine line : dbIBOrder.getTransferInLines()) {
-
+                        log.info("InterWarehouse Transfer: " + dbIBOrder.getTransferInLines());
                         InterWarehouseTransferInLine interWarehouseTransferInLine = new InterWarehouseTransferInLine();
 
                         interWarehouseTransferInLine.setLineReference(line.getLineNoOfEachItem());
@@ -521,6 +527,7 @@ public class TransactionService {
                     interWarehouseTransferIn.setInterWarehouseTransferInHeader(interWarehouseTransferInHeader);
                     interWarehouseTransferIn.setInterWarehouseTransferInLine(interWarehouseTransferInLineList);
                     inboundIWTList.add(interWarehouseTransferIn);
+                    log.info("Interwarehouse Transfer: " + inboundIWTList);
                 }
             }
             if (inboundB2BList != null) {
@@ -675,6 +682,9 @@ public class TransactionService {
                 boolean sourceBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbObOrder.getSourceBranchCode()));
                 boolean targetBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbObOrder.getTargetBranchCode()));
 
+                log.info("sourceBranchExist: " + sourceBranchExist);
+                log.info("targetBranchExist: " + targetBranchExist);
+
                 ShipmentOrder shipmentOrder = new ShipmentOrder();
                 List<SOLine> soV2List = new ArrayList<>();
 
@@ -682,6 +692,7 @@ public class TransactionService {
                 List<InterWarehouseTransferOutLine> iWhtOutLineList = new ArrayList<>();
 
                 if (sourceBranchExist && !targetBranchExist) {
+                    log.info("Shipment Order: " + dbObOrder);
                     SOHeader soHeader = new SOHeader();
 
                     soHeader.setCompanyCode(dbObOrder.getSourceCompanyCode());
@@ -696,6 +707,7 @@ public class TransactionService {
                     soHeader.setMiddlewareTable("OB_SHIPMENT_ORDER_HEADER");
 
                     for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
+                        log.info("Shipment Order Lines: " + dbObOrder.getTransferOutLines());
                         SOLine soLine = new SOLine();
 
                         soLine.setTransferOrderNumber(line.getTransferOrderNumber());
@@ -718,9 +730,11 @@ public class TransactionService {
                     shipmentOrder.setSoHeader(soHeader);
                     shipmentOrder.setSoLine(soV2List);
                     outboundSOList.add(shipmentOrder);
+                    log.info("outboundSOList: " + outboundSOList);
                 }
 
-                if (sourceBranchExist && targetBranchExist) {
+                if (!sourceBranchExist && targetBranchExist) {
+                    log.info("TransferOut Order: " + dbObOrder);
                     InterWarehouseTransferOutHeader iWhtOutHeader = new InterWarehouseTransferOutHeader();
 
                     iWhtOutHeader.setFromCompanyCode(dbObOrder.getSourceCompanyCode());
@@ -734,6 +748,7 @@ public class TransactionService {
                     iWhtOutHeader.setMiddlewareTable("OB_IWHTRANSFER_OUT_HEADER");
 
                     for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
+                        log.info("TrnasferOut Order Lines: " + dbObOrder.getTransferOutLines());
                         InterWarehouseTransferOutLine iWhtOutLine = new InterWarehouseTransferOutLine();
 
                         iWhtOutLine.setTransferOrderNumber(line.getTransferOrderNumber());
@@ -754,6 +769,7 @@ public class TransactionService {
                     iWhTransferOut.setInterWarehouseTransferOutHeader(iWhtOutHeader);
                     iWhTransferOut.setInterWarehouseTransferOutLine(iWhtOutLineList);
                     outboundIWhtList.add(iWhTransferOut);
+                    log.info("outboundIWhtList: " + outboundIWhtList);
                 }
             }
             if (outboundSOList != null) {
