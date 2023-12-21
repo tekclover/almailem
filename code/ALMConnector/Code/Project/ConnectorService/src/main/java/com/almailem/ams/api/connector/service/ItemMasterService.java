@@ -61,35 +61,36 @@ public class ItemMasterService {
     /**
      * @param itemCode
      */
-    public void updateProcessedItemMaster(String companyCode, String branchCode, String manufacturerName, String itemCode) {
-        ItemMaster dbItemMaster = itemMasterRepository.findTopByCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOnDesc(
-                companyCode, branchCode, itemCode, manufacturerName);
+    public void updateProcessedItemMaster(Long itemMasterId, String companyCode, String branchCode, String manufacturerName, String itemCode, Long processedStatusId) {
+        ItemMaster dbItemMaster = itemMasterRepository.findTopByItemMasterIdAndCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOn(
+                itemMasterId, companyCode, branchCode, itemCode, manufacturerName);
         log.info("ItemCode : " + itemCode);
         log.info("dbItemMaster : " + dbItemMaster);
         if (dbItemMaster != null) {
-            dbItemMaster.setProcessedStatusId(10L);
-            dbItemMaster.setOrderProcessedOn(new Date());
+//            dbItemMaster.setProcessedStatusId(10L);
+//            dbItemMaster.setOrderProcessedOn(new Date());
 //            ItemMaster itemMaster = itemMasterRepository.save(dbItemMaster);
-            itemMasterRepository.updateProcessStatusId(itemCode, new Date());
+//            itemMasterRepository.updateProcessStatusId(itemCode, new Date());
+            itemMasterRepository.updateProcessStatusId(dbItemMaster.getItemMasterId(), processedStatusId);
         }
     }
 
     /**
      * @param itemCode
      */
-    public void updateProcessedItemMaster(String companyCode, String branchCode, String manufacturerName, String itemCode, String remark) {
-        ItemMaster dbItemMaster = itemMasterRepository.findTopByCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOnDesc(
-                companyCode, branchCode, itemCode, manufacturerName);
-        log.info("ItemCode : " + itemCode);
-        log.info("dbItemMaster : " + dbItemMaster);
-        if (dbItemMaster != null) {
-            dbItemMaster.setProcessedStatusId(10L);
+//    public void updateProcessedItemMaster(String companyCode, String branchCode, String manufacturerName, String itemCode, String remark) {
+//        ItemMaster dbItemMaster = itemMasterRepository.findTopByCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOnDesc(
+//                companyCode, branchCode, itemCode, manufacturerName);
+//        log.info("ItemCode : " + itemCode);
+//        log.info("dbItemMaster : " + dbItemMaster);
+//        if (dbItemMaster != null) {
+//            dbItemMaster.setProcessedStatusId(10L);
 //            dbItemMaster.setRemarks(remark);
-            dbItemMaster.setOrderProcessedOn(new Date());
+//            dbItemMaster.setOrderProcessedOn(new Date());
 //            ItemMaster itemMaster = itemMasterRepository.save(dbItemMaster);
-            itemMasterRepository.updateProcessStatusId(itemCode, new Date());
-        }
-    }
+//            itemMasterRepository.updateProcessStatusId(itemCode, new Date());
+//        }
+//    }
 
     /**
      * @param item

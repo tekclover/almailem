@@ -24,11 +24,24 @@ public interface CustomerMasterRepository extends JpaRepository<CustomerMaster, 
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE CUSTOMERMASTER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
             + " WHERE Customercode = :customerCode ", nativeQuery = true)
-    public void updateProcessStatusId (
+    public void updateProcessStatusIdWithDate (
             @Param(value = "customerCode") String customerCode,
             @Param(value = "date") Date date);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE CUSTOMERMASTER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE customerMasterId = :customerMasterId ", nativeQuery = true)
+    public void updateProcessStatusId (
+            @Param(value = "customerMasterId") Long customerMasterId,
+            @Param(value = "processedStatusId")  Long processedStatusId);
 
     List<CustomerMaster> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
 
     CustomerMaster findTopByCompanyCodeAndBranchCodeAndCustomerCodeOrderByOrderReceivedOnDesc(String companyCode, String branchCode, String partnerCode);
+
+    CustomerMaster findTopByCustomerMasterIdAndCompanyCodeAndBranchCodeAndCustomerCodeOrderByOrderReceivedOnDesc(
+            Long customerMasterId, String companyCode, String branchCode, String partnerCode);
+
+    CustomerMaster findTopByCustomerMasterIdAndCompanyCodeAndBranchCodeAndCustomerCodeOrderByOrderReceivedOn(
+            Long customerMasterId, String companyCode, String branchCode, String partnerCode);
 }

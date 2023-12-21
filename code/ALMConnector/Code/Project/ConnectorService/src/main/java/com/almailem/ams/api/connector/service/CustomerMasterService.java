@@ -61,32 +61,34 @@ public class CustomerMasterService {
     /**
      * @param partnerCode
      */
-    public void updateProcessedCustomMaster(String companyCode, String branchCode, String partnerCode) {
-        CustomerMaster dbCustomerMaster = customerMasterRepository.findTopByCompanyCodeAndBranchCodeAndCustomerCodeOrderByOrderReceivedOnDesc(
-                companyCode, branchCode, partnerCode);
+    public void updateProcessedCustomMaster(Long customerMasterId, String companyCode, String branchCode, String partnerCode,  Long processedStatusId) {
+        CustomerMaster dbCustomerMaster = customerMasterRepository.findTopByCustomerMasterIdAndCompanyCodeAndBranchCodeAndCustomerCodeOrderByOrderReceivedOn(
+                customerMasterId, companyCode, branchCode, partnerCode);
         log.info("PartnerCode : " + partnerCode);
         log.info("dbCustomerMaster : " + dbCustomerMaster);
         if (dbCustomerMaster != null) {
-            dbCustomerMaster.setProcessedStatusId(10L);
-            dbCustomerMaster.setOrderProcessedOn(new Date());
+//            dbCustomerMaster.setProcessedStatusId(10L);
+//            dbCustomerMaster.setOrderProcessedOn(new Date());
 //            CustomerMaster customerMaster = customerMasterRepository.save(dbCustomerMaster);
-            customerMasterRepository.updateProcessStatusId(partnerCode, new Date());
+//            customerMasterRepository.updateProcessStatusId(partnerCode, new Date());
+            customerMasterRepository.updateProcessStatusId(dbCustomerMaster.getCustomerMasterId(), processedStatusId);
         }
     }
 
-    public void updateProcessedCustomMaster(String companyCode, String branchCode, String partnerCode, String remark) {
-        CustomerMaster dbCustomerMaster = customerMasterRepository.findTopByCompanyCodeAndBranchCodeAndCustomerCodeOrderByOrderReceivedOnDesc(
-                companyCode, branchCode, partnerCode);
-        log.info("PartnerCode : " + partnerCode);
-        log.info("dbCustomerMaster : " + dbCustomerMaster);
-        if (dbCustomerMaster != null) {
-            dbCustomerMaster.setProcessedStatusId(10L);
+//    public void updateProcessedCustomMaster(String companyCode, String branchCode, String partnerCode, String remark) {
+//        CustomerMaster dbCustomerMaster = customerMasterRepository.findTopByCompanyCodeAndBranchCodeAndCustomerCodeOrderByOrderReceivedOnDesc(
+//                companyCode, branchCode, partnerCode);
+//        log.info("PartnerCode : " + partnerCode);
+//        log.info("dbCustomerMaster : " + dbCustomerMaster);
+//        if (dbCustomerMaster != null) {
+//            dbCustomerMaster.setProcessedStatusId(10L);
 //            dbCustomerMaster.setRemarks(remark);
-            dbCustomerMaster.setOrderProcessedOn(new Date());
+//            dbCustomerMaster.setOrderProcessedOn(new Date());
 //            CustomerMaster customerMaster = customerMasterRepository.save(dbCustomerMaster);
-            customerMasterRepository.updateProcessStatusId(partnerCode, new Date());
-        }
-    }
+//            customerMasterRepository.updateProcessStatusId(partnerCode, new Date());
+//            customerMasterRepository.updateProcessStatusId(dbCustomerMaster.getCustomerMasterId(), 10L);
+//        }
+//    }
 
     /**
      * @param customer

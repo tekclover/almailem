@@ -23,12 +23,25 @@ public interface ItemMasterRepository extends JpaRepository<ItemMaster, String>,
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE ITEMMASTER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
             + " WHERE Itemcode = :itemCode ", nativeQuery = true)
-    public void updateProcessStatusId (
+    public void updateProcessStatusIdWithDate (
             @Param(value = "itemCode") String itemCode,
             @Param(value = "date") Date date);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE ITEMMASTER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE itemMasterId = :itemMasterId ", nativeQuery = true)
+    public void updateProcessStatusId (
+            @Param(value = "itemMasterId") Long itemMasterId,
+            @Param(value = "processedStatusId") Long processedStatusId );
 
     List<ItemMaster> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
 
     ItemMaster findTopByCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOnDesc(
             String companyCode, String branchCode, String itemCode, String manufacturerName);
+
+    ItemMaster findTopByItemMasterIdAndCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOnDesc(
+            Long itemMasterId, String companyCode, String branchCode, String itemCode, String manufacturerName);
+
+    ItemMaster findTopByItemMasterIdAndCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOn(
+            Long itemMasterId, String companyCode, String branchCode, String itemCode, String manufacturerName);
 }

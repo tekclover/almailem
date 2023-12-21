@@ -404,14 +404,13 @@ public class TransactionService {
         return null;
     }
 
+
     //=====================================================Interwarehouse============================================================
     public WarehouseApiResponse processInboundOrderIWT() throws IllegalAccessException, InvocationTargetException {
 
         if (inboundIWTList == null || inboundB2BList == null || inboundB2BList.isEmpty() || inboundIWTList.isEmpty()) {
 
             List<TransferInHeader> transferInHeaders = transferInHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
-
-            log.info("TrnasferIn Order Found: " + transferInHeaders);
 
             inboundIWTList = new ArrayList<>();
             inboundB2BList = new ArrayList<>();
@@ -422,9 +421,6 @@ public class TransactionService {
                 boolean sourceBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getSourceBranchCode()));
                 boolean targetBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getTargetBranchCode()));
 
-                log.info("sourceBranchExist: " + sourceBranchExist);
-                log.info("targetBranchExist: " + targetBranchExist);
-
                 B2bTransferIn b2bTransferIn = new B2bTransferIn();
                 List<B2bTransferInLine> b2bTransferInLines = new ArrayList<>();
 
@@ -432,7 +428,7 @@ public class TransactionService {
                 List<InterWarehouseTransferInLine> interWarehouseTransferInLineList = new ArrayList<>();
 
                 if (!sourceBranchExist && targetBranchExist) {
-                    log.info("B2B Transfer: " + dbIBOrder);
+
                     B2bTransferInHeader b2bTransferInHeader = new B2bTransferInHeader();
 
                     b2bTransferInHeader.setCompanyCode(dbIBOrder.getTargetCompanyCode());
@@ -440,14 +436,14 @@ public class TransactionService {
                     b2bTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
                     b2bTransferInHeader.setSourceBranchCode(dbIBOrder.getSourceBranchCode());
                     b2bTransferInHeader.setSourceCompanyCode(dbIBOrder.getSourceCompanyCode());
+                    b2bTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
+                    b2bTransferInHeader.setMiddlewareTable("IB_B2B");
                     b2bTransferInHeader.setTransferOrderDate(dbIBOrder.getTransferOrderDate());
                     b2bTransferInHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
                     b2bTransferInHeader.setIsCompleted(dbIBOrder.getIsCompleted());
-                    b2bTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
-                    b2bTransferInHeader.setMiddlewareTable("IB_B2B");
 
                     for (TransferInLine line : dbIBOrder.getTransferInLines()) {
-                        log.info("B2B Transfer Lines: " + dbIBOrder.getTransferInLines());
+
                         B2bTransferInLine b2bTransferInLine = new B2bTransferInLine();
 
                         b2bTransferInLine.setLineReference(line.getLineNoOfEachItem());
@@ -462,7 +458,6 @@ public class TransactionService {
                         b2bTransferInLine.setStoreID(dbIBOrder.getTargetBranchCode());
                         b2bTransferInLine.setOrigin(dbIBOrder.getSourceCompanyCode());
                         b2bTransferInLine.setBrand(line.getManufacturerShortName());
-
                         b2bTransferInLine.setTransferOrderNo(line.getTransferOrderNo());
                         b2bTransferInLine.setIsCompleted(line.getIsCompleted());
 
@@ -482,11 +477,10 @@ public class TransactionService {
                     b2bTransferIn.setB2bTransferInHeader(b2bTransferInHeader);
                     b2bTransferIn.setB2bTransferLine(b2bTransferInLines);
                     inboundB2BList.add(b2bTransferIn);
-                    log.info("B2B Transfer List: " + inboundB2BList);
                 }
 
                 if (sourceBranchExist && targetBranchExist) {
-                    log.info("InterWarehouse Transfer: " + dbIBOrder);
+
                     InterWarehouseTransferInHeader interWarehouseTransferInHeader = new InterWarehouseTransferInHeader();
 
                     interWarehouseTransferInHeader.setToCompanyCode(dbIBOrder.getTargetCompanyCode());
@@ -494,12 +488,14 @@ public class TransactionService {
                     interWarehouseTransferInHeader.setSourceCompanyCode(dbIBOrder.getSourceCompanyCode());
                     interWarehouseTransferInHeader.setSourceBranchCode(dbIBOrder.getSourceBranchCode());
                     interWarehouseTransferInHeader.setIsCompleted(dbIBOrder.getIsCompleted());
+                    interWarehouseTransferInHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
                     interWarehouseTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
+                    interWarehouseTransferInHeader.setTransferOrderDate(dbIBOrder.getTransferOrderDate());
                     interWarehouseTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
                     interWarehouseTransferInHeader.setMiddlewareTable("IB_IWT");
 
                     for (TransferInLine line : dbIBOrder.getTransferInLines()) {
-                        log.info("InterWarehouse Transfer: " + dbIBOrder.getTransferInLines());
+
                         InterWarehouseTransferInLine interWarehouseTransferInLine = new InterWarehouseTransferInLine();
 
                         interWarehouseTransferInLine.setLineReference(line.getLineNoOfEachItem());
@@ -515,7 +511,7 @@ public class TransactionService {
                         interWarehouseTransferInLine.setFromBranchCode(dbIBOrder.getSourceBranchCode());
                         interWarehouseTransferInLine.setFromCompanyCode(dbIBOrder.getSourceCompanyCode());
                         interWarehouseTransferInLine.setBrand(line.getManufacturerShortName());
-
+                        interWarehouseTransferInLine.setTransferOrderNo(dbIBOrder.getTransferOrderNo());
                         interWarehouseTransferInLine.setIsCompleted(line.getIsCompleted());
 
                         interWarehouseTransferInLine.setMiddlewareId(line.getTransferInLineId());
@@ -527,7 +523,6 @@ public class TransactionService {
                     interWarehouseTransferIn.setInterWarehouseTransferInHeader(interWarehouseTransferInHeader);
                     interWarehouseTransferIn.setInterWarehouseTransferInLine(interWarehouseTransferInLineList);
                     inboundIWTList.add(interWarehouseTransferIn);
-                    log.info("Interwarehouse Transfer: " + inboundIWTList);
                 }
             }
             if (inboundB2BList != null) {
@@ -589,6 +584,7 @@ public class TransactionService {
         }
         return null;
     }
+
 
     //===========================================Outbound==============================================================
     //===========================================Purchase_Return=======================================================
@@ -1124,6 +1120,7 @@ public class TransactionService {
     public WarehouseApiResponse processStockAdjustmentOrder() throws IllegalAccessException, InvocationTargetException {
         if (saList == null || saList.isEmpty()) {
             List<com.almailem.ams.api.connector.model.stockadjustment.StockAdjustment> stockAdjustments = stockAdjustmentRepo.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
+            log.info("StockAdjustment Found: " + stockAdjustments);
             saList = new ArrayList<>();
             StockAdjustment stockAdjustment = new StockAdjustment();
             for (com.almailem.ams.api.connector.model.stockadjustment.StockAdjustment dbSA : stockAdjustments) {
@@ -1145,6 +1142,7 @@ public class TransactionService {
                 stockAdjustment.setAmsReferenceNo(dbSA.getAmsReferenceNo());
                 stockAdjustment.setIsCompleted(dbSA.getIsCompleted());
                 stockAdjustment.setUpdatedOn(dbSA.getUpdatedOn());
+                stockAdjustment.setStockAdjustmentId(dbSA.getStockAdjustmentId());
                 stockAdjustment.setMiddlewareId(dbSA.getStockAdjustmentId());
                 stockAdjustment.setMiddlewareTable("STOCK_ADJUSTMENT");
 
@@ -1162,7 +1160,7 @@ public class TransactionService {
                     WarehouseApiResponse response = stockAdjustmentService.postStockAdjustment(stockCount);
                     if (response != null) {
                         // Updating the Processed Status
-                        stockAdjustmentService.updateProcessedStockAdjustment(stockCount.getItemCode());
+                        stockAdjustmentService.updateProcessedStockAdjustment(stockCount.getStockAdjustmentId(), stockCount.getItemCode(), 10L);
                         saList.remove(stockCount);
                         return response;
                     }
@@ -1170,7 +1168,7 @@ public class TransactionService {
                     e.printStackTrace();
                     log.error("Error on Stock Adjustment processing : " + e.toString());
                     // Updating the Processed Status
-                    stockAdjustmentService.updateProcessedStockAdjustment(stockCount.getItemCode());
+                    stockAdjustmentService.updateProcessedStockAdjustment(stockCount.getStockAdjustmentId(), stockCount.getItemCode(), 100L);
                     saList.remove(stockCount);
                     throw new RuntimeException(e);
                 }

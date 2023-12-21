@@ -21,9 +21,10 @@ public interface StockAdjustmentRepository extends JpaRepository<StockAdjustment
     StockAdjustment findTopByItemCodeOrderByOrderReceivedOnDesc(String itemCode);
 
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE STOCKADJUSTMENT set processedStatusId = 10, orderProcessedOn = :date \r\n"
-            + " WHERE Itemcode = :itemCode ", nativeQuery = true)
-    void updateProcessStatusId(@Param(value = "itemCode") String itemCode,
-                               @Param(value = "date") Date date);
+    @Query(value = "UPDATE STOCKADJUSTMENT set processedStatusId = :processedStatusId, orderProcessedOn = getdate() \r\n"
+            + " WHERE stockAdjustmentId = :stockAdjustmentId ", nativeQuery = true)
+    void updateProcessStatusId(@Param(value = "stockAdjustmentId") Long stockAdjustmentId,
+                               @Param(value = "processedStatusId") Long processedStatusId);
 
+    StockAdjustment findTopByStockAdjustmentIdAndItemCodeAndProcessedStatusIdOrderByOrderReceivedOnDesc(Long stockAdjustmentId, String itemCode, Long processStatusId);
 }

@@ -91,11 +91,11 @@ public class MastersService {
         if (itemMasterList == null || itemMasterList.isEmpty()) {
 
             List<ItemMaster> itemMasterOrderList = itemMasterRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
-
+            log.info("Latest Item Master found: " + itemMasterOrderList);
             itemMasterList = new ArrayList<>();
 
             for (ItemMaster dbIBOrder : itemMasterOrderList) {
-
+                log.info("Item Master: " + dbIBOrder);
                 Item item = new Item();
 
                 item.setCompanyCode(dbIBOrder.getCompanyCode());
@@ -129,21 +129,10 @@ public class MastersService {
             for (Item inbound : spIMList) {
                 try {
                     log.info("Item Code : " + inbound.getSku());
-                    WarehouseApiResponse inboundHeader = null;
-                    try {
-                        inboundHeader = itemMasterService.postItemMaster(inbound);
-                    } catch (Exception e) {
-                        itemMasterService.updateProcessedItemMaster(inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku());
-                        itemMasterList.remove(inbound);
-                        log.error("Error on item Master processing : " + e.toString());
-//                        throw new RuntimeException(e);
-                    }
+                    WarehouseApiResponse inboundHeader = itemMasterService.postItemMaster(inbound);
                     if (inboundHeader != null) {
-                        if(inboundHeader.getStatusCode().contains("1400")){
-                            itemMasterService.updateProcessedItemMaster(inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku(), inboundHeader.getMessage());
-                        }
                         // Updating the Processed Status
-                        itemMasterService.updateProcessedItemMaster(inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku());
+                        itemMasterService.updateProcessedItemMaster(inbound.getMiddlewareId(), inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku(), 10L);
                         itemMasterList.remove(inbound);
                         return inboundHeader;
                     }
@@ -151,8 +140,7 @@ public class MastersService {
                     e.printStackTrace();
                     log.error("Error on item Master processing : " + e.toString());
                     // Updating the Processed Status
-                    itemMasterService.updateProcessedItemMaster(inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku());
-//                    supplierInvoiceService.createInboundIntegrationLog(inbound);
+                    itemMasterService.updateProcessedItemMaster(inbound.getMiddlewareId(), inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku(), 100L);
                     itemMasterList.remove(inbound);
                     throw new RuntimeException(e);
                 }
@@ -166,11 +154,11 @@ public class MastersService {
         if (customerMasterList == null || customerMasterList.isEmpty()) {
 
             List<CustomerMaster> customerMasterOrderList = customerMasterRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
-
+            log.info("Latest Customer Master found: " + customerMasterOrderList);
             customerMasterList = new ArrayList<>();
 
             for (CustomerMaster dbIBOrder : customerMasterOrderList) {
-
+                log.info("Customer Master: " + dbIBOrder);
                 Customer customer = new Customer();
 
                 customer.setCompanyCode(dbIBOrder.getCompanyCode());
@@ -203,21 +191,10 @@ public class MastersService {
             for (Customer inbound : spCMList) {
                 try {
                     log.info("Partner Code : " + inbound.getPartnerCode());
-                    WarehouseApiResponse inboundHeader = null;
-                    try {
-                        inboundHeader = customerMasterService.postCustomerMaster(inbound);
-                    } catch (Exception e) {
-                        customerMasterService.updateProcessedCustomMaster(inbound.getCompanyCode(),inbound.getBranchCode(), inbound.getPartnerCode());
-                        customerMasterList.remove(inbound);
-                        log.error("Error on customer Master processing : " + e.toString());
-//                        throw new RuntimeException(e);
-                    }
+                    WarehouseApiResponse inboundHeader = customerMasterService.postCustomerMaster(inbound);
                     if (inboundHeader != null) {
-                        if(inboundHeader.getStatusCode().contains("1400")){
-                            customerMasterService.updateProcessedCustomMaster(inbound.getCompanyCode(),inbound.getBranchCode(), inbound.getPartnerCode(), inboundHeader.getMessage());
-                        }
                         // Updating the Processed Status
-                        customerMasterService.updateProcessedCustomMaster(inbound.getCompanyCode(),inbound.getBranchCode(), inbound.getPartnerCode());
+                        customerMasterService.updateProcessedCustomMaster(inbound.getMiddlewareId(), inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getPartnerCode(), 10L);
                         customerMasterList.remove(inbound);
                         return inboundHeader;
                     }
@@ -225,7 +202,7 @@ public class MastersService {
                     e.printStackTrace();
                     log.error("Error on customer Master processing : " + e.toString());
                     // Updating the Processed Status
-                    customerMasterService.updateProcessedCustomMaster(inbound.getCompanyCode(),inbound.getBranchCode(), inbound.getPartnerCode());
+                    customerMasterService.updateProcessedCustomMaster(inbound.getMiddlewareId(), inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getPartnerCode(), 100L);
 //                    supplierInvoiceService.createInboundIntegrationLog(inbound);
                     customerMasterList.remove(inbound);
                     throw new RuntimeException(e);

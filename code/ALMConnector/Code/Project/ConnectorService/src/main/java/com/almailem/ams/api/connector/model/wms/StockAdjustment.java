@@ -10,7 +10,7 @@ import java.util.Date;
 public class StockAdjustment {
 
     private String orderId;
-
+    private Long stockAdjustmentId;
 //    private Long stockAdjustmentId;
 
     @NotBlank(message = "Company Code is mandatory")
