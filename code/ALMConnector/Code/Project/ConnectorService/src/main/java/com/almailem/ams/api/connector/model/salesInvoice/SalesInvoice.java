@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -26,51 +27,51 @@ public class SalesInvoice {
     private Long salesInvoiceId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "companyCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "companyCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "branchCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "branchCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String branchCode;
 
     @NotBlank(message = "Sales Invoice Number is mandatory")
-    @Column(name = "salesInvoiceNumber", columnDefinition = "nvarchar(50)")
+    @Column(name = "salesInvoiceNumber", columnDefinition = "nvarchar(50)", nullable = false)
     private String salesInvoiceNumber;
 
     @NotBlank(message = "Delivery Type is mandatory")
-    @Column(name = "Deliverytype", columnDefinition = "nvarchar(50)")
+    @Column(name = "Deliverytype", columnDefinition = "nvarchar(50)", nullable = false)
     private String deliveryType;
 
     @NotBlank(message = "Sales Order Number is mandatory")
-    @Column(name = "salesOrderNumber", columnDefinition = "nvarchar(50)")
+    @Column(name = "salesOrderNumber", columnDefinition = "nvarchar(50)", nullable = false)
     private String salesOrderNumber;
 
     @NotBlank(message = "Pick List Number is mandatory")
-    @Column(name = "pickListNumber", columnDefinition = "nvarchar(50)")
+    @Column(name = "pickListNumber", columnDefinition = "nvarchar(50)", nullable = false)
     private String pickListNumber;
 
-    @NotBlank(message = "Invoice Date is mandatory")
+    @NotNull(message = "Invoice Date is mandatory")
     @Column(name = "InvoiceDate")
     private Date invoiceDate;
 
     @NotBlank(message = "Customer Id is mandatory")
-    @Column(name = "CustomerID", columnDefinition = "nvarchar(50)")
+    @Column(name = "CustomerID", columnDefinition = "nvarchar(50)", nullable = false)
     private String customerId;
 
     @NotBlank(message = "Customer Name is mandatory")
-    @Column(name = "CustomerName", columnDefinition = "nvarchar(50)")
+    @Column(name = "CustomerName", columnDefinition = "nvarchar(50)", nullable = false)
     private String customerName;
 
     @NotBlank(message = "Address is mandatory")
-    @Column(name = "Address", columnDefinition = "nvarchar(500)")
+    @Column(name = "Address", columnDefinition = "nvarchar(500)", nullable = false)
     private String address;
 
     @NotBlank(message = "Phone Number is mandatory")
-    @Column(name = "PhoneNumber", columnDefinition = "nvarchar(50)")
+    @Column(name = "PhoneNumber", columnDefinition = "nvarchar(50)", nullable = false)
     private String phoneNumber;
 
     @NotBlank(message = "Alternate No is mandatory")
-    @Column(name = "AlternateNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "AlternateNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String alternateNo;
 
     @Column(name = "Status", columnDefinition = "nvarchar(50)")
@@ -79,7 +80,9 @@ public class SalesInvoice {
     //ProcessedStatusIdOrderByOrderReceivedOn
     @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+
     @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
+
     private Date orderProcessedOn;
 }

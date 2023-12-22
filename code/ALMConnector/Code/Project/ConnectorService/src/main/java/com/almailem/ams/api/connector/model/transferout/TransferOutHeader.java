@@ -4,16 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
 
@@ -30,26 +23,26 @@ public class TransferOutHeader {
     private Long transferOutHeaderId;
 
     @NotBlank(message = "Source Company Code is mandatory")
-    @Column(name = "SourceCompanyCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "SourceCompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String sourceCompanyCode;
 
     @NotBlank(message = "Target Company Code is mandatory")
-    @Column(name = "TargetCompanyCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "TargetCompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String targetCompanyCode;
 
     @NotBlank(message = "Transfer Order Number is mandatory")
-    @Column(name = "TransferOrdernumber", columnDefinition = "nvarchar(50)")
+    @Column(name = "TransferOrdernumber", columnDefinition = "nvarchar(50)", nullable = false)
     private String transferOrderNumber;
 
     @NotBlank(message = "Source Branch Code is mandatory")
-    @Column(name = "Sourcebranchcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Sourcebranchcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String sourceBranchCode;
 
     @NotBlank(message = "Target Branch Code is mandatory")
-    @Column(name = "TargetbranchCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "TargetbranchCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String targetBranchCode;
 
-    @NotBlank(message = "Transfer Order Date is mandatory")
+    @NotNull(message = "Transfer Order Date is mandatory")
     @Column(name = "TransferOrderdate")
     private Date transferOrderDate;
 
@@ -65,10 +58,11 @@ public class TransferOutHeader {
     //ProcessedStatusIdOrderByOrderReceivedOn
     @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+
     @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
-    private Date orderProcessedOn;
 
+    private Date orderProcessedOn;
 
     @OneToMany(mappedBy = "transferOutHeaderId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<TransferOutLine> transferOutLines;

@@ -4,16 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
 
@@ -30,22 +23,22 @@ public class PickListHeader {
     private Long pickListHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "Branchcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String branchCode;
 
     @NotBlank(message = "Sales Order No is mandatory")
-    @Column(name = "SalesorderNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "SalesorderNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String salesOrderNo;
 
     @NotBlank(message = "Pick List No is mandatory")
-    @Column(name = "PickListNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "PickListNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String pickListNo;
 
-    @NotBlank(message = "Pick List Date is mandatory")
+    @NotNull(message = "Pick List Date is mandatory")
     @Column(name = "PickListdate")
     private Date pickListdate;
 
@@ -61,8 +54,10 @@ public class PickListHeader {
     //ProcessedStatusIdOrderByOrderReceivedOn
     @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+
     @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
+
     private Date orderProcessedOn;
 
 

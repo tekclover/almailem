@@ -30,15 +30,15 @@ public class StockReceiptLine {
     private Long stockReceiptHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "Branchcode", columnDefinition = "nvarchar(25)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(25)", nullable = false)
     private String branchCode;
 
     @NotBlank(message = "Receipt Number is mandatory")
-    @Column(name = "ReceiptNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "ReceiptNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String receiptNo;
 
     @NotNull(message = "Line No for Each Item is mandatory")
@@ -46,11 +46,11 @@ public class StockReceiptLine {
     private Long lineNoForEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)")
+    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)", nullable = false)
     private String itemDescription;
 
     @Column(name = "Suppliercode", columnDefinition = "nvarchar(50)")
@@ -60,14 +60,14 @@ public class StockReceiptLine {
     private String supplierPartNo;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)")
+    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
-    @NotBlank(message = "Receipt Date is mandatory")
+    @NotNull(message = "Receipt Date is mandatory")
     @Column(name = "Receiptdate")
     private Date receiptDate;
 
@@ -76,7 +76,7 @@ public class StockReceiptLine {
     private Double receiptQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @Column(name = "SupplierName", columnDefinition = "nvarchar(250)")

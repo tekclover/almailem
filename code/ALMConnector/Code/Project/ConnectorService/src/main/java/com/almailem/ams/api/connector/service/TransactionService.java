@@ -71,6 +71,9 @@ public class TransactionService {
     @Autowired
     PeriodicService periodicService;
 
+    @Autowired
+    IDMasterService idMasterService;
+
     //-------------------------------------------------------------------------------------------
 
     @Autowired
@@ -109,6 +112,9 @@ public class TransactionService {
     @Autowired
     StockAdjustmentRepository stockAdjustmentRepo;
 
+    @Autowired
+    IntegrationLogService integrationLogService;
+
 
     //-------------------------------------------------------------------------------------------
     List<ASN> inboundList = null;
@@ -127,6 +133,7 @@ public class TransactionService {
     List<Periodic> stcPeriodicList = null;
 
     List<StockAdjustment> saList = null;
+
     //=================================================================================================================
     static CopyOnWriteArrayList<ASN> spList = null;                               // ASN Inbound List
     static CopyOnWriteArrayList<com.almailem.ams.api.connector.model.wms.StockReceiptHeader> spSRList = null;                // StockReceipt Inbound List
@@ -226,6 +233,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on inbound processing : " + e.toString());
+
+                    //IntegrationLog
+                    integrationLogService.createAsnLog(inbound, e.toString());
+
                     // Updating the Processed Status
                     supplierInvoiceService.updateProcessedInboundOrder(inbound.getAsnHeader().getAsnNumber());
 //                    supplierInvoiceService.createInboundIntegrationLog(inbound);
@@ -236,6 +247,7 @@ public class TransactionService {
         }
         return null;
     }
+
 
     //=====================================================StockReceipt============================================================
     public WarehouseApiResponse processInboundOrderSR() throws IllegalAccessException, InvocationTargetException {
@@ -307,6 +319,9 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on inbound processing : " + e.toString());
+
+                    integrationLogService.createStockReceiptHeaderLog(inbound, e.toString());
+
                     // Updating the Processed Status
                     stockReceiptService.updateProcessedInboundOrder(inbound.getReceiptNo());
 //                    stockReceiptService.createInboundIntegrationLog(inbound);
@@ -347,7 +362,7 @@ public class TransactionService {
                     salesReturnLine.setStoreID(line.getSourceBranchCode());
                     salesReturnLine.setSupplierPartNumber(line.getSupplierPartNo());
                     salesReturnLine.setManufacturerName(line.getManufacturerShortName());
-                    salesReturnLine.setExpectedDate(line.getReturnOrderDate());
+                    salesReturnLine.setExpectedDate(String.valueOf(line.getReturnOrderDate()));
                     salesReturnLine.setExpectedQty(line.getReturnQty());
                     salesReturnLine.setUom(line.getUnitOfMeasure());
 
@@ -393,6 +408,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on inbound processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createSalesOrderReturnLog(inbound, e.getMessage());
+
                     // Updating the Processed Status
                     salesReturnService.updateProcessedInboundOrder(inbound.getSoReturnHeader().getTransferOrderNumber());
 //                    salesReturnService.createInboundIntegrationLog(inbound);
@@ -550,10 +569,15 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on inbound processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createB2bTransferLog(inbound, e.toString());
+
                     // Updating the Processed Status
                     b2BTransferInService.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
 //                    b2BTransferInService.createInboundIntegrationLog(inbound);
                     inboundB2BList.remove(inbound);
+
                     throw new RuntimeException(e);
                 }
             }
@@ -574,6 +598,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on inbound processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createInterWarehouseTransferInLog(inbound, e.toString());
+
                     // Updating the Processed Status
                     interWarehouseTransferInService.updateProcessedInboundOrder(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
 //                    interWarehouseTransferInV2Service.createInboundIntegrationLog(inbound);
@@ -652,6 +680,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on outbound processing: " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createReturnPoLog(outbound, e.toString());
+
                     //Updating the Processed Status
                     returnPOService.updateProcessedOutboundOrder(outbound.getReturnPOHeader().getPoNumber());
                     outboundRPOList.remove(outbound);
@@ -793,6 +825,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on outbound processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createShipmentOrderLog(outbound, e.toString());
+
                     //Updating the Processed Status
                     shipmentOrderService.updateProcessedOutboundOrder(outbound.getSoHeader().getTransferOrderNumber());
                     outboundSOList.remove(outbound);
@@ -816,6 +852,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on outbound processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createInterWarehouseTransferOutLog(outbound, e.toString());
+
                     //Updating the Processed Status
                     interWarehouseTransferOutService.updateProcessedOutboundOrder(outbound.getInterWarehouseTransferOutHeader().getTransferOrderNumber());
                     outboundIWhtList.remove(outbound);
@@ -858,7 +898,7 @@ public class TransactionService {
                     salesOrderLine.setManufacturerFullName(line.getManufacturerFullName());
                     salesOrderLine.setUom(line.getUnitOfMeasure());
                     salesOrderLine.setOrderedQty(line.getPickListQty());
-                    salesOrderLine.setExpectedQty(line.getPickedQty());
+                    salesOrderLine.setExpectedQty(line.getPickListQty());
                     salesOrderLine.setPackQty(line.getPickedQty());
                     salesOrderLine.setPickListNo(line.getPickListNo());
                     salesOrderLine.setSalesOrderNo(line.getSalesOrderNo());
@@ -894,6 +934,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on outbound processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createSalesOrderLog(outbound, e.toString());
+
                     // Updating the Processed Status
                     salesOrderService.updateProcessedInboundOrder(outbound.getSalesOrderHeader().getPickListNumber());
 //                    salesOrderV2Service.createInboundIntegrationLog(outbound);
@@ -952,6 +996,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on outbound processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createSalesInvoice(outbound, e.toString());
+
                     // Updating the Processed Status
                     salesInvoiceService.updateProcessedOutboundOrder(outbound.getSalesInvoiceNumber());
 //                      salesInvoiceService.createInboundIntegrationLog(outbound);
@@ -1029,6 +1077,9 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on StockCount processing: " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createPerpetualLog(stockCount, e.toString());
                     //Updating the Processed Status
                     perpetualService.updateProcessedPerpetualOrder(stockCount.getPerpetualHeaderV1().getCycleCountNo());
                     stcPerpetualList.remove(stockCount);
@@ -1105,6 +1156,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on StockCount processing: " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createPeriodicLog(stockCount, e.toString());
+
                     //Updating the Processed Status
                     periodicService.updateProcessedPeriodicOrder(stockCount.getPeriodicHeaderV1().getCycleCountNo());
                     stcPeriodicList.remove(stockCount);
@@ -1137,7 +1192,12 @@ public class TransactionService {
                 stockAdjustment.setAdjustmentQty(dbSA.getAdjustmentQty());
                 stockAdjustment.setUnitOfMeasure(dbSA.getUnitOfMeasure());
                 stockAdjustment.setManufacturerCode(dbSA.getManufacturerCode());
-                stockAdjustment.setManufacturerName(dbSA.getManufacturerName());
+                if(dbSA.getManufacturerName() != null) {
+                    stockAdjustment.setManufacturerName(dbSA.getManufacturerName());
+                }
+                if (dbSA.getManufacturerName() == null) {
+                    stockAdjustment.setManufacturerName(dbSA.getManufacturerCode());
+                }
                 stockAdjustment.setRemarks(dbSA.getRemarks());
                 stockAdjustment.setAmsReferenceNo(dbSA.getAmsReferenceNo());
                 stockAdjustment.setIsCompleted(dbSA.getIsCompleted());
@@ -1167,6 +1227,10 @@ public class TransactionService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.error("Error on Stock Adjustment processing : " + e.toString());
+
+                    //Integration Log
+                    integrationLogService.createStockAdjustment(stockCount, e.toString());
+
                     // Updating the Processed Status
                     stockAdjustmentService.updateProcessedStockAdjustment(stockCount.getStockAdjustmentId(), stockCount.getItemCode(), 100L);
                     saList.remove(stockCount);

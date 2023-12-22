@@ -2,29 +2,33 @@ package com.almailem.ams.api.connector.model.wms;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Data
 public class InterWarehouseTransferInHeader {
 
-	@NotBlank(message = "To CompanyCode is mandatory")
-	private String toCompanyCode;
-	
-	@NotBlank(message = "To Branch Code is mandatory")
-	private String toBranchCode;
-	
-	@NotBlank(message = "Transfer Order Number is mandatory")
-	private String transferOrderNumber;
+    @Column(nullable = false)
+    @NotBlank(message = "To CompanyCode is mandatory")
+    private String toCompanyCode;
 
-	private String sourceCompanyCode;
-	private String sourceBranchCode;
+    @Column(nullable = false)
+    @NotBlank(message = "To Branch Code is mandatory")
+    private String toBranchCode;
 
-	private Date transferOrderDate;
-	private String isCompleted;
-	private Date updatedOn;
+    @Column(nullable = false)
+    @NotBlank(message = "Transfer Order Number is mandatory")
+    private String transferOrderNumber;
 
-	//MiddleWare Fields
-	private Long middlewareId;
-	private String middlewareTable;
+    private String sourceCompanyCode;
+    private String sourceBranchCode;
+
+    private Date transferOrderDate;
+    private String isCompleted;
+    private Date updatedOn;
+
+    //MiddleWare Fields
+    private Long middlewareId;
+    private String middlewareTable;
 }

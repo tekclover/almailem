@@ -4,12 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -30,15 +25,15 @@ public class SupplierInvoiceLine {
     private Long supplierInvoiceHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "Branchcode", columnDefinition = "nvarchar(25)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(25)", nullable = false)
     private String branchCode;
 
     @NotBlank(message = "Supplier Invoice No is mandatory")
-    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String supplierInvoiceNo;
 
     @NotNull(message = "Line No for each item is mandatory")
@@ -46,36 +41,36 @@ public class SupplierInvoiceLine {
     private Long lineNoForEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)")
+    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)", nullable = false)
     private String itemDescription;
 
     @Column(name = "ContainerNo", columnDefinition = "nvarchar(50)")
     private String containerNo;
 
-//    @NotBlank(message = "Supplier Code is mandatory")
-    @Column(name = "Suppliercode", columnDefinition = "nvarchar(50)")
+    @NotBlank(message = "Supplier Code is mandatory")
+    @Column(name = "Suppliercode", columnDefinition = "nvarchar(50)", nullable = false)
     private String supplierCode;
 
     @Column(name = "SupplierPartNo", columnDefinition = "nvarchar(50)")
     private String supplierPartNo;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)")
+    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Purchase Order No is mandatory")
-    @Column(name = "PurchaseorderNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "PurchaseorderNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String purchaseOrderNo;
 
-//    @NotBlank(message = "Invoice Date is mandatory")
+    @NotNull(message = "Invoice Date is mandatory")
     @Column(name = "Invoicedate")
     private Date invoiceDate;
 
@@ -84,7 +79,7 @@ public class SupplierInvoiceLine {
     private Double invoiceQty;
 
     @NotBlank(message = "Unit Of Measure is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @Column(name = "SupplierName", columnDefinition = "nvarchar(250)")

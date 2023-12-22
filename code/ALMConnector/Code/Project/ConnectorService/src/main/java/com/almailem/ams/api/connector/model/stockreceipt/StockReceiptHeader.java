@@ -4,15 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
@@ -30,15 +22,15 @@ public class StockReceiptHeader {
     private Long stockReceiptHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "Branchcode", columnDefinition = "nvarchar(25)")
+    @Column(name = "Branchcode", columnDefinition = "nvarchar(25)", nullable = false)
     private String branchCode;
 
     @NotBlank(message = "Receipt Number is mandatory")
-    @Column(name = "ReceiptNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "ReceiptNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String receiptNo;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
@@ -50,8 +42,10 @@ public class StockReceiptHeader {
     //ProcessedStatusIdOrderByOrderReceivedOn
     @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+
     @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
+
     private Date orderProcessedOn;
 
     @OneToMany(mappedBy = "stockReceiptHeaderId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Data
 @Entity
@@ -33,15 +34,15 @@ public class SalesReturnLine {
     private Long lineNoOfEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)")
+    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)", nullable = false)
     private String itemDescription;
 
     @NotBlank(message = "Reference Invoice No is mandatory")
-    @Column(name = "ReferenceInvoiceNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "ReferenceInvoiceNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String referenceInvoiceNo;
 
     @Column(name = "Sourcebranchcode", columnDefinition = "nvarchar(50)")
@@ -51,19 +52,19 @@ public class SalesReturnLine {
     private String supplierPartNo;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
-    @NotBlank(message = "Return Order Date is mandatory")
+    @NotNull(message = "Return Order Date is mandatory")
     @Column(name = "ReturnorderDate")
-    private String returnOrderDate;
+    private Date returnOrderDate;
 
     @NotNull(message = "Return Qty is mandatory")
     @Column(name = "Returnqty")
     private Double returnQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @Column(name = "NoofPacks")
@@ -73,7 +74,7 @@ public class SalesReturnLine {
     private String countryOfOrigin;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")

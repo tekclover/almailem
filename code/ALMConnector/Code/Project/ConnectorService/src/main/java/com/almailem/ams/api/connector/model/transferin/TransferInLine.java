@@ -29,7 +29,7 @@ public class TransferInLine {
     private Long transferInHeaderId;
 
     @NotBlank(message = "TransferOrderNo is mandatory")
-    @Column(name = "TransferOrderNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "TransferOrderNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String transferOrderNo;
 
     @NotNull(message = "Line No for Each Item is mandatory")
@@ -37,11 +37,11 @@ public class TransferInLine {
     private Long lineNoOfEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)")
+    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)", nullable = false)
     private String itemDescription;
 
     @NotNull(message = "Transfer Quantity is mandatory")
@@ -49,15 +49,15 @@ public class TransferInLine {
     private Double transferQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")

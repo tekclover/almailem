@@ -27,11 +27,11 @@ public class StockAdjustment {
     private Long stockAdjustmentId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Stock Count Branch Code is mandatory")
-    @Column(name = "StockcountBranchcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "StockcountBranchcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String branchCode;
 
     @Column(name = "BranchName", columnDefinition = "nvarchar(500)")
@@ -41,14 +41,14 @@ public class StockAdjustment {
     @Column(name = "Dateofadjustment")
     private Date dateOfAdjustment;
 
-    @Column(name = "IS_CYCLECOUNT", columnDefinition = "nvarchar(10)")
+    @Column(name = "IS_CYCLECOUNT", columnDefinition = "nvarchar(10)", nullable = false)
     private String isCycleCount;
 
-    @Column(name = "IS_DAMAGE", columnDefinition = "nvarchar(10)")
+    @Column(name = "IS_DAMAGE", columnDefinition = "nvarchar(10)", nullable = false)
     private String isDamage;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String itemCode;
 
     @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)")
@@ -59,14 +59,14 @@ public class StockAdjustment {
     private Double adjustmentQty;
 
     @NotBlank(message = "Unit of Measure is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
-    @NotBlank(message = "Manufacturer Name is mandatory")
+//    @NotBlank(message = "Manufacturer Name is mandatory")
     @Column(name = "ManufacturerName", columnDefinition = "nvarchar(200)")
     private String manufacturerName;
 
@@ -85,7 +85,9 @@ public class StockAdjustment {
     //ProcessedStatusIdOrderByOrderReceivedOn
     @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+
     @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
+
     private Date orderProcessedOn;
 }

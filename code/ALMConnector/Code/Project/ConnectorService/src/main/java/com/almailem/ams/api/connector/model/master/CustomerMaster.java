@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -26,22 +27,22 @@ public class CustomerMaster {
     private Long customerMasterId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @Column(name = "Branchcode", columnDefinition = "nvarchar(50)")
     private String branchCode;
 
     @NotBlank(message = "Customer Code is mandatory")
-    @Column(name = "Customercode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Customercode", columnDefinition = "nvarchar(50)", nullable = false)
     private String customerCode;
 
     @NotBlank(message = "Customer Name is mandatory")
-    @Column(name = "CustomerName", columnDefinition = "nvarchar(50)")
+    @Column(name = "CustomerName", columnDefinition = "nvarchar(50)", nullable = false)
     private String customerName;
 
     @NotBlank(message = "HomeAddress1 is mandatory")
-    @Column(name = "HomeAddress1", columnDefinition = "nvarchar(3999)")
+    @Column(name = "HomeAddress1", columnDefinition = "nvarchar(3999)", nullable = false)
     private String homeAddress1;
 
     @Column(name = "HomeAddress2", columnDefinition = "nvarchar(3999)")
@@ -57,17 +58,17 @@ public class CustomerMaster {
     private String mobileNumber;
 
     @NotBlank(message = "Created Username is mandatory")
-    @Column(name = "CreatedUsername", columnDefinition = "nvarchar(50)")
+    @Column(name = "CreatedUsername", columnDefinition = "nvarchar(50)", nullable = false)
     private String createdUsername;
 
-    @NotBlank(message = "Customer Creation Date is mandatory")
+    @NotNull(message = "Customer Creation Date is mandatory")
     @Column(name = "Customercreationdate")
     private Date customerCreationDate;
 
-    @Column(name = "IS_NEW", columnDefinition = "nvarchar(20)")
+    @Column(name = "IS_NEW", columnDefinition = "nvarchar(20)", nullable = false)
     private String isNew;
 
-    @Column(name = "IS_UPDATE", columnDefinition = "nvarchar(20)")
+    @Column(name = "IS_UPDATE", columnDefinition = "nvarchar(20)", nullable = false)
     private String isUpdate;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
@@ -79,8 +80,10 @@ public class CustomerMaster {
     //ProcessedStatusIdOrderByOrderReceivedOn
     @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+
     @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
+
     private Date orderProcessedOn;
 //    private String remarks;
 }

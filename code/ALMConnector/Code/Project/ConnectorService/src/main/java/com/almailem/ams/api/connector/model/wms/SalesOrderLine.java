@@ -2,29 +2,36 @@ package com.almailem.ams.api.connector.model.wms;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 public class SalesOrderLine {
 
+    @Column(nullable = false)
     @NotNull(message = "Line Reference is mandatory")
     private Long lineReference;                                // IB_LINE_NO
 
+    @Column(nullable = false)
     @NotBlank(message = "SKU is mandatory")
     private String sku;                                    // ITM_CODE
 
     private String skuDescription;                            // ITEM_TEXT
 
+    @Column(nullable = false)
     @NotNull(message = "Ordered Quantity is mandatory")
     private Double orderedQty;                                // ORD_QTY
 
+    @Column(nullable = false)
     @NotBlank(message = "Unit of Measure is mandatory")
     private String uom;                                        // ORD_UOM
 
+    @Column(nullable = false)
     @NotBlank(message = "Manufacturer Code is mandatory")
     private String manufacturerCode;
 
+    @Column(nullable = false)
     @NotBlank(message = "Manufacturer Name is mandatory")
     private String manufacturerName;
 

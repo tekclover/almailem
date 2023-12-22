@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -26,23 +27,23 @@ public class ItemMaster {
     private Long itemMasterId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
-    @Column(name = "BranchCode", columnDefinition = "nvarchar(50)")
+    @Column(name = "BranchCode", columnDefinition = "nvarchar(50)", nullable = false)
     private String branchCode;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)")
+    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)", nullable = false)
     private String itemDescription;
 
     @NotBlank(message = "Unit of Measure is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @Column(name = "ItemGroupID")
@@ -52,28 +53,28 @@ public class ItemMaster {
     private Long secondaryItemGroupId;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @Column(name = "ManufacturerFullName", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
     @NotBlank(message = "Created Username is mandatory")
-    @Column(name = "CreatedUsername", columnDefinition = "nvarchar(50)")
+    @Column(name = "CreatedUsername", columnDefinition = "nvarchar(50)", nullable = false)
     private String createdUsername;
 
-    @NotBlank(message = "Item Creation Date is mandatory")
+    @NotNull(message = "Item Creation Date is mandatory")
     @Column(name = "Itemcreationdate")
     private Date itemCreationDate;
 
-    @Column(name = "IS_NEW", columnDefinition = "nvarchar(20)")
+    @Column(name = "IS_NEW", columnDefinition = "nvarchar(20)", nullable = false)
     private String isNew;
 
-    @Column(name = "IS_UPDATE", columnDefinition = "nvarchar(20)")
+    @Column(name = "IS_UPDATE", columnDefinition = "nvarchar(20)", nullable = false)
     private String isUpdate;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
@@ -85,8 +86,10 @@ public class ItemMaster {
     //ProcessedStatusIdOrderByOrderReceivedOn
     @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
+
     @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
+
     private Date orderProcessedOn;
 //    private String remarks;
 }

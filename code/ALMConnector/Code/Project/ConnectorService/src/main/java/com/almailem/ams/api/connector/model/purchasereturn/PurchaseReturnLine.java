@@ -4,7 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -24,7 +29,7 @@ public class PurchaseReturnLine {
     private Long purchaseReturnHeaderId;
 
     @NotBlank(message = "Return Order No is mandatory")
-    @Column(name = "ReturnorderNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "ReturnorderNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String returnOrderNo;
 
     @NotNull(message = "Line No 0f Each Item Code is mandatory")
@@ -32,7 +37,7 @@ public class PurchaseReturnLine {
     private Long lineNoOfEachItemCode;
 
     @NotBlank(message = "Item Code is mandatory")
-    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)")
+    @Column(name = "Itemcode", columnDefinition = "nvarchar(50)", nullable = false)
     private String itemCode;
 
     @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)")
@@ -43,15 +48,15 @@ public class PurchaseReturnLine {
     private Double returnOrderQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)")
+    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)")
+    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
