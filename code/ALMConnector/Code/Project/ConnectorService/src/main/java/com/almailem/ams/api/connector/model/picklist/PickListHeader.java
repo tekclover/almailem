@@ -34,6 +34,9 @@ public class PickListHeader {
     @Column(name = "SalesorderNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String salesOrderNo;
 
+    @Column(name = "Tokennumber", columnDefinition = "nvarchar(50)")
+    private String tokenNumber;
+
     @NotBlank(message = "Pick List No is mandatory")
     @Column(name = "PickListNo", columnDefinition = "nvarchar(50)", nullable = false)
     private String pickListNo;

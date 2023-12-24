@@ -28,6 +28,11 @@ public interface TransferOutHeaderRepository extends JpaRepository<TransferOutHe
     public void updateProcessStatusId(@Param(value = "transferOrderNumber") String transferOrderNumber,
                                       @Param(value = "date") Date date);
 
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE TRANSFEROUTHEADER set processedStatusId = 100, orderProcessedOn = getdate() \r\n"
+            + "WHERE TransferOrdernumber = :transferOrderNumber", nativeQuery = true)
+    public void updatefailureProcessStatusId(@Param(value = "transferOrderNumber") String transferOrderNumber);
+
     TransferOutHeader findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(String transferOrderNumber);
 
     List<TransferOutHeader> findTopByProcessedStatusIdOrderByOrderReceivedOnDesc(long l);

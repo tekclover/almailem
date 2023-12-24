@@ -78,6 +78,19 @@ public class InterWarehouseTransferOutService {
         return dbObOrder;
     }
 
+    public TransferOutHeader updatefailureProcessedOutboundOrder(String transferOrderNumber) {
+        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
+        log.info("orderId: " + transferOrderNumber);
+        log.info("IWhTransfer Out Order: " + dbObOrder);
+        if (dbObOrder != null) {
+//            dbObOrder.setProcessedStatusId(10L);
+//            dbObOrder.setOrderProcessedOn(new Date());
+//            transferOutHeaderRepository.save(dbObOrder);
+            transferOutHeaderRepository.updatefailureProcessStatusId(transferOrderNumber);
+        }
+        return dbObOrder;
+    }
+
     public WarehouseApiResponse postIWhTransferOutV2(InterWarehouseTransferOut iWhTransOutV2) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();

@@ -25,5 +25,11 @@ public interface TransferInHeaderRepository extends JpaRepository<TransferInHead
             @Param(value = "transferOrderNo") String transferOrderNo,
             @Param(value = "date") Date date);
 
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE TRANSFERINHEADER set processedStatusId = 100, orderProcessedOn = getdate()  \r\n"
+            + " WHERE TransferOrderNo = :transferOrderNo ", nativeQuery = true)
+    public void updatefailureProcessStatusId (
+            @Param(value = "transferOrderNo") String transferOrderNo);
+
     TransferInHeader findTopByTransferOrderNoOrderByOrderReceivedOnDesc(String asnNumber);
 }

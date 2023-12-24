@@ -72,6 +72,17 @@ public class ShipmentOrderService {
         }
     }
 
+    public void updateFailedProcessedOutboundOrder(String transferOrderNumber) {
+        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
+        log.info("orderId: " + transferOrderNumber);
+        log.info("SO Order: " + dbObOrder);
+        if (dbObOrder != null) {
+//            dbObOrder.setProcessedStatusId(100L);
+//            dbObOrder.setOrderProcessedOn(new Date());
+            transferOutHeaderRepository.updatefailureProcessStatusId(transferOrderNumber);
+        }
+    }
+
     public WarehouseApiResponse postShipmentOrder(ShipmentOrder shipmentOrder) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();
         HttpHeaders headers = new HttpHeaders();

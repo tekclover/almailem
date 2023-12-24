@@ -67,6 +67,20 @@ public class InterWarehouseTransferInService {
 //        return dbInboundOrder;
     }
 
+    public void updatefailureProcessedInboundOrder(String asnNumber) {
+        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
+        log.info("orderId : " + asnNumber);
+        log.info("dbInboundOrder : " + dbInboundOrder);
+        if (dbInboundOrder != null) {
+//            dbInboundOrder.setProcessedStatusId(100L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
+            transferInHeaderRepository.updatefailureProcessStatusId(asnNumber);
+//            return null;
+        }
+//        return dbInboundOrder;
+    }
+
     /**
      *
      * @param interWarehouseTransferIn

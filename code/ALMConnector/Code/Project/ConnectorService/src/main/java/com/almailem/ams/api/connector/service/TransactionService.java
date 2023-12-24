@@ -440,14 +440,68 @@ public class TransactionService {
                 boolean sourceBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getSourceBranchCode()));
                 boolean targetBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getTargetBranchCode()));
 
+                log.info("sourceBranchExist,targetBranchExist: " + sourceBranchExist, targetBranchExist);
+
                 B2bTransferIn b2bTransferIn = new B2bTransferIn();
                 List<B2bTransferInLine> b2bTransferInLines = new ArrayList<>();
 
                 InterWarehouseTransferIn interWarehouseTransferIn = new InterWarehouseTransferIn();
                 List<InterWarehouseTransferInLine> interWarehouseTransferInLineList = new ArrayList<>();
 
-                if (!sourceBranchExist && targetBranchExist) {
+                if (!sourceBranchExist && !targetBranchExist) {
+                    log.info("IB NON WMS to NON WMS: " + sourceBranchExist, targetBranchExist);
+                    B2bTransferInHeader b2bTransferInHeader = new B2bTransferInHeader();
 
+                    b2bTransferInHeader.setCompanyCode(dbIBOrder.getTargetCompanyCode());
+                    b2bTransferInHeader.setBranchCode(dbIBOrder.getTargetBranchCode());
+                    b2bTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
+                    b2bTransferInHeader.setSourceBranchCode(dbIBOrder.getSourceBranchCode());
+                    b2bTransferInHeader.setSourceCompanyCode(dbIBOrder.getSourceCompanyCode());
+                    b2bTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
+                    b2bTransferInHeader.setMiddlewareTable("IB_NONWMS_TO_NONWMS");
+                    b2bTransferInHeader.setTransferOrderDate(dbIBOrder.getTransferOrderDate());
+                    b2bTransferInHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
+                    b2bTransferInHeader.setIsCompleted(dbIBOrder.getIsCompleted());
+
+                    for (TransferInLine line : dbIBOrder.getTransferInLines()) {
+
+                        B2bTransferInLine b2bTransferInLine = new B2bTransferInLine();
+
+                        b2bTransferInLine.setLineReference(line.getLineNoOfEachItem());
+                        b2bTransferInLine.setSku(line.getItemCode());
+                        b2bTransferInLine.setSkuDescription(line.getItemDescription());
+                        b2bTransferInLine.setManufacturerName(line.getManufacturerShortName());
+                        b2bTransferInLine.setExpectedQty(line.getTransferQty());
+                        b2bTransferInLine.setUom(line.getUnitOfMeasure());
+                        b2bTransferInLine.setManufacturerCode(line.getManufacturerCode());
+                        b2bTransferInLine.setManufacturerFullName(line.getManufacturerFullName());
+                        b2bTransferInLine.setExpectedDate(String.valueOf(dbIBOrder.getTransferOrderDate()));
+                        b2bTransferInLine.setStoreID(dbIBOrder.getTargetBranchCode());
+                        b2bTransferInLine.setOrigin(dbIBOrder.getSourceCompanyCode());
+                        b2bTransferInLine.setBrand(line.getManufacturerShortName());
+                        b2bTransferInLine.setTransferOrderNo(line.getTransferOrderNo());
+                        b2bTransferInLine.setIsCompleted(line.getIsCompleted());
+
+                        if (line.getTransferQty() != null) {
+                            Double newDouble = new Double(line.getTransferQty());
+                            Long tfrQty = newDouble.longValue();
+
+                            b2bTransferInLine.setPackQty(tfrQty);
+                        }
+                        b2bTransferInLine.setMiddlewareId(line.getTransferInLineId());
+                        b2bTransferInLine.setMiddlewareHeaderId(dbIBOrder.getTransferInHeaderId());
+                        b2bTransferInLine.setMiddlewareTable("IB_NONWMS_TO_NONWMS");
+
+                        b2bTransferInLines.add(b2bTransferInLine);
+                    }
+
+                    b2bTransferIn.setB2bTransferInHeader(b2bTransferInHeader);
+                    b2bTransferIn.setB2bTransferLine(b2bTransferInLines);
+                    inboundB2BList.add(b2bTransferIn);
+                }
+
+                if (!sourceBranchExist && targetBranchExist) {
+                    log.info("IB NON WMS to WMS: " + sourceBranchExist, targetBranchExist);
                     B2bTransferInHeader b2bTransferInHeader = new B2bTransferInHeader();
 
                     b2bTransferInHeader.setCompanyCode(dbIBOrder.getTargetCompanyCode());
@@ -483,7 +537,7 @@ public class TransactionService {
                         if (line.getTransferQty() != null) {
                             Double newDouble = new Double(line.getTransferQty());
                             Long tfrQty = newDouble.longValue();
-                            ;
+
                             b2bTransferInLine.setPackQty(tfrQty);
                         }
                         b2bTransferInLine.setMiddlewareId(line.getTransferInLineId());
@@ -499,7 +553,7 @@ public class TransactionService {
                 }
 
                 if (sourceBranchExist && targetBranchExist) {
-
+                    log.info("IB WMS to WMS: " + sourceBranchExist, targetBranchExist);
                     InterWarehouseTransferInHeader interWarehouseTransferInHeader = new InterWarehouseTransferInHeader();
 
                     interWarehouseTransferInHeader.setToCompanyCode(dbIBOrder.getTargetCompanyCode());
@@ -512,6 +566,51 @@ public class TransactionService {
                     interWarehouseTransferInHeader.setTransferOrderDate(dbIBOrder.getTransferOrderDate());
                     interWarehouseTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
                     interWarehouseTransferInHeader.setMiddlewareTable("IB_IWT");
+
+                    for (TransferInLine line : dbIBOrder.getTransferInLines()) {
+
+                        InterWarehouseTransferInLine interWarehouseTransferInLine = new InterWarehouseTransferInLine();
+
+                        interWarehouseTransferInLine.setLineReference(line.getLineNoOfEachItem());
+                        interWarehouseTransferInLine.setSku(line.getItemCode());
+                        interWarehouseTransferInLine.setSkuDescription(line.getItemDescription());
+                        interWarehouseTransferInLine.setManufacturerName(line.getManufacturerShortName());
+                        interWarehouseTransferInLine.setExpectedQty(line.getTransferQty());
+                        interWarehouseTransferInLine.setPackQty(line.getTransferQty());
+                        interWarehouseTransferInLine.setUom(line.getUnitOfMeasure());
+                        interWarehouseTransferInLine.setManufacturerCode(line.getManufacturerCode());
+                        interWarehouseTransferInLine.setManufacturerFullName(line.getManufacturerFullName());
+                        interWarehouseTransferInLine.setExpectedDate(String.valueOf(dbIBOrder.getTransferOrderDate()));
+                        interWarehouseTransferInLine.setFromBranchCode(dbIBOrder.getSourceBranchCode());
+                        interWarehouseTransferInLine.setFromCompanyCode(dbIBOrder.getSourceCompanyCode());
+                        interWarehouseTransferInLine.setBrand(line.getManufacturerShortName());
+                        interWarehouseTransferInLine.setTransferOrderNo(dbIBOrder.getTransferOrderNo());
+                        interWarehouseTransferInLine.setIsCompleted(line.getIsCompleted());
+
+                        interWarehouseTransferInLine.setMiddlewareId(line.getTransferInLineId());
+                        interWarehouseTransferInLine.setMiddlewareHeaderId(dbIBOrder.getTransferInHeaderId());
+                        interWarehouseTransferInLine.setMiddlewareTable("IB_IWT");
+
+                        interWarehouseTransferInLineList.add(interWarehouseTransferInLine);
+                    }
+                    interWarehouseTransferIn.setInterWarehouseTransferInHeader(interWarehouseTransferInHeader);
+                    interWarehouseTransferIn.setInterWarehouseTransferInLine(interWarehouseTransferInLineList);
+                    inboundIWTList.add(interWarehouseTransferIn);
+                }
+                if (sourceBranchExist && !targetBranchExist) {
+                    log.info("IB WMS to NON WMS: " + sourceBranchExist, targetBranchExist);
+                    InterWarehouseTransferInHeader interWarehouseTransferInHeader = new InterWarehouseTransferInHeader();
+
+                    interWarehouseTransferInHeader.setToCompanyCode(dbIBOrder.getTargetCompanyCode());
+                    interWarehouseTransferInHeader.setToBranchCode(dbIBOrder.getTargetBranchCode());
+                    interWarehouseTransferInHeader.setSourceCompanyCode(dbIBOrder.getSourceCompanyCode());
+                    interWarehouseTransferInHeader.setSourceBranchCode(dbIBOrder.getSourceBranchCode());
+                    interWarehouseTransferInHeader.setIsCompleted(dbIBOrder.getIsCompleted());
+                    interWarehouseTransferInHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
+                    interWarehouseTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
+                    interWarehouseTransferInHeader.setTransferOrderDate(dbIBOrder.getTransferOrderDate());
+                    interWarehouseTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
+                    interWarehouseTransferInHeader.setMiddlewareTable("IB_WMS_TO_NONWMS");
 
                     for (TransferInLine line : dbIBOrder.getTransferInLines()) {
 
@@ -574,7 +673,7 @@ public class TransactionService {
                     integrationLogService.createB2bTransferLog(inbound, e.toString());
 
                     // Updating the Processed Status
-                    b2BTransferInService.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
+                    b2BTransferInService.updatefailureProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
 //                    b2BTransferInService.createInboundIntegrationLog(inbound);
                     inboundB2BList.remove(inbound);
 
@@ -603,7 +702,7 @@ public class TransactionService {
                     integrationLogService.createInterWarehouseTransferInLog(inbound, e.toString());
 
                     // Updating the Processed Status
-                    interWarehouseTransferInService.updateProcessedInboundOrder(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
+                    interWarehouseTransferInService.updatefailureProcessedInboundOrder(inbound.getInterWarehouseTransferInHeader().getTransferOrderNumber());
 //                    interWarehouseTransferInV2Service.createInboundIntegrationLog(inbound);
                     inboundIWTList.remove(inbound);
                     throw new RuntimeException(e);
@@ -613,6 +712,120 @@ public class TransactionService {
         return null;
     }
 
+//    public WarehouseApiResponse processInboundOrderIWT() throws IllegalAccessException, InvocationTargetException {
+//
+//        if (inboundIWTList == null || inboundB2BList == null || inboundB2BList.isEmpty() || inboundIWTList.isEmpty()) {
+//
+//            List<TransferInHeader> transferInHeaders = transferInHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOn(0L);
+//
+//            inboundIWTList = new ArrayList<>();
+//            inboundB2BList = new ArrayList<>();
+//            String[] branchcode = new String[]{"115", "125", "212", "222"};
+//
+//            for (TransferInHeader dbIBOrder : transferInHeaders) {
+//
+//                boolean sourceBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getSourceBranchCode()));
+//                boolean targetBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbIBOrder.getTargetBranchCode()));
+//
+//                log.info("sourceBranchExist,targetBranchExist: " + sourceBranchExist, targetBranchExist);
+//
+//                B2bTransferIn b2bTransferIn = new B2bTransferIn();
+//                List<B2bTransferInLine> b2bTransferInLines = new ArrayList<>();
+//
+//                InterWarehouseTransferIn interWarehouseTransferIn = new InterWarehouseTransferIn();
+//                List<InterWarehouseTransferInLine> interWarehouseTransferInLineList = new ArrayList<>();
+//
+////                if (!sourceBranchExist && !targetBranchExist) {
+//                log.info("IB : " + sourceBranchExist, targetBranchExist);
+//                B2bTransferInHeader b2bTransferInHeader = new B2bTransferInHeader();
+//
+//                b2bTransferInHeader.setCompanyCode(dbIBOrder.getTargetCompanyCode());
+//                b2bTransferInHeader.setBranchCode(dbIBOrder.getTargetBranchCode());
+//                b2bTransferInHeader.setTransferOrderNumber(dbIBOrder.getTransferOrderNo());
+//                b2bTransferInHeader.setSourceBranchCode(dbIBOrder.getSourceBranchCode());
+//                b2bTransferInHeader.setSourceCompanyCode(dbIBOrder.getSourceCompanyCode());
+//                b2bTransferInHeader.setMiddlewareId(dbIBOrder.getTransferInHeaderId());
+//                b2bTransferInHeader.setMiddlewareTable("IB_NONWMS_TO_NONWMS");
+//                b2bTransferInHeader.setTransferOrderDate(dbIBOrder.getTransferOrderDate());
+//                b2bTransferInHeader.setUpdatedOn(dbIBOrder.getUpdatedOn());
+//                b2bTransferInHeader.setIsCompleted(dbIBOrder.getIsCompleted());
+//
+//                for (TransferInLine line : dbIBOrder.getTransferInLines()) {
+//
+//                    B2bTransferInLine b2bTransferInLine = new B2bTransferInLine();
+//
+//                    b2bTransferInLine.setLineReference(line.getLineNoOfEachItem());
+//                    b2bTransferInLine.setSku(line.getItemCode());
+//                    b2bTransferInLine.setSkuDescription(line.getItemDescription());
+//                    b2bTransferInLine.setManufacturerName(line.getManufacturerShortName());
+//                    b2bTransferInLine.setExpectedQty(line.getTransferQty());
+//                    b2bTransferInLine.setUom(line.getUnitOfMeasure());
+//                    b2bTransferInLine.setManufacturerCode(line.getManufacturerCode());
+//                    b2bTransferInLine.setManufacturerFullName(line.getManufacturerFullName());
+//                    b2bTransferInLine.setExpectedDate(String.valueOf(dbIBOrder.getTransferOrderDate()));
+//                    b2bTransferInLine.setStoreID(dbIBOrder.getTargetBranchCode());
+//                    b2bTransferInLine.setOrigin(dbIBOrder.getSourceCompanyCode());
+//                    b2bTransferInLine.setBrand(line.getManufacturerShortName());
+//                    b2bTransferInLine.setTransferOrderNo(line.getTransferOrderNo());
+//                    b2bTransferInLine.setIsCompleted(line.getIsCompleted());
+//
+//                    if (line.getTransferQty() != null) {
+//                        Double newDouble = new Double(line.getTransferQty());
+//                        Long tfrQty = newDouble.longValue();
+//                        ;
+//                        b2bTransferInLine.setPackQty(tfrQty);
+//                    }
+//                    b2bTransferInLine.setMiddlewareId(line.getTransferInLineId());
+//                    b2bTransferInLine.setMiddlewareHeaderId(dbIBOrder.getTransferInHeaderId());
+//                    b2bTransferInLine.setMiddlewareTable("IB_NONWMS_TO_NONWMS");
+//
+//                    b2bTransferInLines.add(b2bTransferInLine);
+//                }
+//
+//                b2bTransferIn.setB2bTransferInHeader(b2bTransferInHeader);
+//                b2bTransferIn.setB2bTransferLine(b2bTransferInLines);
+//                inboundB2BList.add(b2bTransferIn);
+////                }
+//
+//
+//                if (inboundB2BList != null) {
+//                    spB2BList = new CopyOnWriteArrayList<B2bTransferIn>(inboundB2BList);
+//                    log.info("There is no B2B record found to process (sql) ...Waiting..");
+//                }
+//
+//            }
+//
+//            if (inboundB2BList != null) {
+//                log.info("Latest B2B Transfer found: " + inboundB2BList);
+//                for (B2bTransferIn inbound : spB2BList) {
+//                    try {
+//                        log.info("B2B Transfer Order Number : " + inbound.getB2bTransferInHeader().getTransferOrderNumber());
+//                        WarehouseApiResponse inboundHeader = b2BTransferInService.postB2BTransferIn(inbound);
+//                        if (inboundHeader != null) {
+//                            // Updating the Processed Status
+//                            b2BTransferInService.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
+//                            inboundB2BList.remove(inbound);
+//                            return inboundHeader;
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        log.error("Error on inbound processing : " + e.toString());
+//
+//                        //Integration Log
+//                        integrationLogService.createB2bTransferLog(inbound, e.toString());
+//
+//                        // Updating the Processed Status
+//                        b2BTransferInService.updateProcessedInboundOrder(inbound.getB2bTransferInHeader().getTransferOrderNumber());
+////                    b2BTransferInService.createInboundIntegrationLog(inbound);
+//                        inboundB2BList.remove(inbound);
+//
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     //===========================================Outbound==============================================================
     //===========================================Purchase_Return=======================================================
@@ -720,6 +933,7 @@ public class TransactionService {
                 List<InterWarehouseTransferOutLine> iWhtOutLineList = new ArrayList<>();
 
                 if (sourceBranchExist && !targetBranchExist) {
+                    log.info("OB WMS to NON WMS: " + sourceBranchExist, targetBranchExist);
                     log.info("Shipment Order: " + dbObOrder);
                     SOHeader soHeader = new SOHeader();
 
@@ -762,6 +976,7 @@ public class TransactionService {
                 }
 
                 if (!sourceBranchExist && targetBranchExist) {
+                    log.info("OB NON WMS to WMS: " + sourceBranchExist, targetBranchExist);
                     log.info("TransferOut Order: " + dbObOrder);
                     InterWarehouseTransferOutHeader iWhtOutHeader = new InterWarehouseTransferOutHeader();
 
@@ -799,6 +1014,86 @@ public class TransactionService {
                     outboundIWhtList.add(iWhTransferOut);
                     log.info("outboundIWhtList: " + outboundIWhtList);
                 }
+
+                if (sourceBranchExist && targetBranchExist) {
+                    log.info("OB WMS to WMS: " + sourceBranchExist, targetBranchExist);
+                    log.info("TransferOut Order: " + dbObOrder);
+                    InterWarehouseTransferOutHeader iWhtOutHeader = new InterWarehouseTransferOutHeader();
+
+                    iWhtOutHeader.setFromCompanyCode(dbObOrder.getSourceCompanyCode());
+                    iWhtOutHeader.setToCompanyCode(dbObOrder.getTargetCompanyCode());
+                    iWhtOutHeader.setTransferOrderNumber(dbObOrder.getTransferOrderNumber());
+                    iWhtOutHeader.setFromBranchCode(dbObOrder.getSourceBranchCode());
+                    iWhtOutHeader.setToBranchCode(dbObOrder.getTargetBranchCode());
+                    iWhtOutHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getTransferOrderDate()));
+                    iWhtOutHeader.setOrderType(dbObOrder.getFulfilmentMethod());
+                    iWhtOutHeader.setMiddlewareId(dbObOrder.getTransferOutHeaderId());
+                    iWhtOutHeader.setMiddlewareTable("OB_WMS_TO_WMS");
+
+                    for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
+                        log.info("TrnasferOut Order Lines: " + dbObOrder.getTransferOutLines());
+                        InterWarehouseTransferOutLine iWhtOutLine = new InterWarehouseTransferOutLine();
+
+                        iWhtOutLine.setTransferOrderNumber(line.getTransferOrderNumber());
+                        iWhtOutLine.setLineReference(line.getLineNumberOfEachItem());
+                        iWhtOutLine.setSku(line.getItemCode());
+                        iWhtOutLine.setSkuDescription(line.getItemDescription());
+                        iWhtOutLine.setOrderedQty(line.getTransferOrderQty());
+                        iWhtOutLine.setUom(line.getUnitOfMeasure());
+                        iWhtOutLine.setManufacturerCode(line.getManufacturerCode());
+                        iWhtOutLine.setManufacturerName(line.getManufacturerShortName());
+                        iWhtOutLine.setOrderType(dbObOrder.getFulfilmentMethod());
+                        iWhtOutLine.setManufacturerFullName(line.getManufacturerFullName());
+                        iWhtOutLine.setMiddlewareId(line.getTransferOutLineId());
+                        iWhtOutLine.setMiddlewareHeaderId(line.getTransferOutHeaderId());
+                        iWhtOutLine.setMiddlewareTable("OB_IWHTRANSFER_OUT_LINE");
+                        iWhtOutLineList.add(iWhtOutLine);
+                    }
+                    iWhTransferOut.setInterWarehouseTransferOutHeader(iWhtOutHeader);
+                    iWhTransferOut.setInterWarehouseTransferOutLine(iWhtOutLineList);
+                    outboundIWhtList.add(iWhTransferOut);
+                    log.info("outboundIWhtList: " + outboundIWhtList);
+                }
+
+                if (!sourceBranchExist && !targetBranchExist) {
+                    log.info("OB NON WMS to NON WMS: " + sourceBranchExist, targetBranchExist);
+                    log.info("TransferOut Order: " + dbObOrder);
+                    InterWarehouseTransferOutHeader iWhtOutHeader = new InterWarehouseTransferOutHeader();
+
+                    iWhtOutHeader.setFromCompanyCode(dbObOrder.getSourceCompanyCode());
+                    iWhtOutHeader.setToCompanyCode(dbObOrder.getTargetCompanyCode());
+                    iWhtOutHeader.setTransferOrderNumber(dbObOrder.getTransferOrderNumber());
+                    iWhtOutHeader.setFromBranchCode(dbObOrder.getSourceBranchCode());
+                    iWhtOutHeader.setToBranchCode(dbObOrder.getTargetBranchCode());
+                    iWhtOutHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getTransferOrderDate()));
+                    iWhtOutHeader.setOrderType(dbObOrder.getFulfilmentMethod());
+                    iWhtOutHeader.setMiddlewareId(dbObOrder.getTransferOutHeaderId());
+                    iWhtOutHeader.setMiddlewareTable("OB_NONWMS_TO_NONWMS");
+
+                    for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
+                        log.info("TransferOut Order Lines: " + dbObOrder.getTransferOutLines());
+                        InterWarehouseTransferOutLine iWhtOutLine = new InterWarehouseTransferOutLine();
+
+                        iWhtOutLine.setTransferOrderNumber(line.getTransferOrderNumber());
+                        iWhtOutLine.setLineReference(line.getLineNumberOfEachItem());
+                        iWhtOutLine.setSku(line.getItemCode());
+                        iWhtOutLine.setSkuDescription(line.getItemDescription());
+                        iWhtOutLine.setOrderedQty(line.getTransferOrderQty());
+                        iWhtOutLine.setUom(line.getUnitOfMeasure());
+                        iWhtOutLine.setManufacturerCode(line.getManufacturerCode());
+                        iWhtOutLine.setManufacturerName(line.getManufacturerShortName());
+                        iWhtOutLine.setOrderType(dbObOrder.getFulfilmentMethod());
+                        iWhtOutLine.setManufacturerFullName(line.getManufacturerFullName());
+                        iWhtOutLine.setMiddlewareId(line.getTransferOutLineId());
+                        iWhtOutLine.setMiddlewareHeaderId(line.getTransferOutHeaderId());
+                        iWhtOutLine.setMiddlewareTable("OB_IWHTRANSFER_OUT_LINE");
+                        iWhtOutLineList.add(iWhtOutLine);
+                    }
+                    iWhTransferOut.setInterWarehouseTransferOutHeader(iWhtOutHeader);
+                    iWhTransferOut.setInterWarehouseTransferOutLine(iWhtOutLineList);
+                    outboundIWhtList.add(iWhTransferOut);
+                    log.info("outboundIWhtList: OB_NONWMS_TO_NONWMS " + outboundIWhtList);
+                }
             }
             if (outboundSOList != null) {
                 spSOList = new CopyOnWriteArrayList<ShipmentOrder>(outboundSOList);
@@ -830,7 +1125,7 @@ public class TransactionService {
                     integrationLogService.createShipmentOrderLog(outbound, e.toString());
 
                     //Updating the Processed Status
-                    shipmentOrderService.updateProcessedOutboundOrder(outbound.getSoHeader().getTransferOrderNumber());
+                    shipmentOrderService.updateFailedProcessedOutboundOrder(outbound.getSoHeader().getTransferOrderNumber());
                     outboundSOList.remove(outbound);
                     throw new RuntimeException(e);
                 }
@@ -857,7 +1152,7 @@ public class TransactionService {
                     integrationLogService.createInterWarehouseTransferOutLog(outbound, e.toString());
 
                     //Updating the Processed Status
-                    interWarehouseTransferOutService.updateProcessedOutboundOrder(outbound.getInterWarehouseTransferOutHeader().getTransferOrderNumber());
+                    interWarehouseTransferOutService.updatefailureProcessedOutboundOrder(outbound.getInterWarehouseTransferOutHeader().getTransferOrderNumber());
                     outboundIWhtList.remove(outbound);
                     throw new RuntimeException(e);
                 }
@@ -865,6 +1160,113 @@ public class TransactionService {
         }
         return null;
     }
+
+//    public WarehouseApiResponse processOutboundOrderIWT() throws IllegalAccessException, InvocationTargetException {
+//
+//        if (outboundIWhtList == null || outboundSOList == null || outboundSOList.isEmpty() || outboundIWhtList.isEmpty()) {
+//
+//            List<TransferOutHeader> transferOuts = transferOutHeaderRepository.findTopByProcessedStatusIdOrderByOrderReceivedOnDesc(0L);
+//            log.info("TransferOut / Shipment Order Found: " + transferOuts);
+//            outboundIWhtList = new ArrayList<>();
+//            outboundSOList = new ArrayList<>();
+//            String[] branchcode = new String[]{"115", "125", "212", "222"};
+//
+//            for (TransferOutHeader dbObOrder : transferOuts) {
+//
+//                boolean sourceBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbObOrder.getSourceBranchCode()));
+//                boolean targetBranchExist = Arrays.stream(branchcode).anyMatch(n -> n.equalsIgnoreCase(dbObOrder.getTargetBranchCode()));
+//
+//                log.info("sourceBranchExist: " + sourceBranchExist);
+//                log.info("targetBranchExist: " + targetBranchExist);
+//
+//                ShipmentOrder shipmentOrder = new ShipmentOrder();
+//                List<SOLine> soV2List = new ArrayList<>();
+//
+//                InterWarehouseTransferOut iWhTransferOut = new InterWarehouseTransferOut();
+//                List<InterWarehouseTransferOutLine> iWhtOutLineList = new ArrayList<>();
+//
+////                if (sourceBranchExist && !targetBranchExist) {
+////                    log.info("OB WMS to NON WMS: " + sourceBranchExist, targetBranchExist);
+//                log.info("Shipment Order: " + dbObOrder);
+//                SOHeader soHeader = new SOHeader();
+//
+//                soHeader.setCompanyCode(dbObOrder.getSourceCompanyCode());
+//                soHeader.setBranchCode(dbObOrder.getSourceBranchCode());
+//                soHeader.setTransferOrderNumber(dbObOrder.getTransferOrderNumber());
+//                soHeader.setRequiredDeliveryDate(String.valueOf(dbObOrder.getTransferOrderDate()));
+//                soHeader.setStoreID(dbObOrder.getSourceBranchCode());
+//                soHeader.setTargetCompanyCode(dbObOrder.getTargetCompanyCode());
+//                soHeader.setTargetBranchCode(dbObOrder.getTargetBranchCode());
+//                soHeader.setOrderType(dbObOrder.getFulfilmentMethod());
+//                soHeader.setMiddlewareId(dbObOrder.getTransferOutHeaderId());
+//                soHeader.setMiddlewareTable("OB_SHIPMENT_ORDER_HEADER");
+//
+//                for (TransferOutLine line : dbObOrder.getTransferOutLines()) {
+//                    log.info("Shipment Order Lines: " + dbObOrder.getTransferOutLines());
+//                    SOLine soLine = new SOLine();
+//
+//                    soLine.setTransferOrderNumber(line.getTransferOrderNumber());
+//                    soLine.setLineReference(line.getLineNumberOfEachItem());
+//                    soLine.setSku(line.getItemCode());
+//                    soLine.setSkuDescription(line.getItemDescription());
+//                    soLine.setOrderedQty(line.getTransferOrderQty());
+//                    soLine.setExpectedQty(line.getTransferOrderQty());
+//                    soLine.setUom(line.getUnitOfMeasure());
+//                    soLine.setManufacturerCode(line.getManufacturerCode());
+//                    soLine.setManufacturerName(line.getManufacturerShortName());
+//                    soLine.setFromCompanyCode(dbObOrder.getSourceCompanyCode());
+//                    soLine.setOrderType(dbObOrder.getFulfilmentMethod());
+//                    soLine.setManufacturerFullName(line.getManufacturerFullName());
+//                    soLine.setMiddlewareId(line.getTransferOutLineId());
+//                    soLine.setMiddlewareHeaderId(dbObOrder.getTransferOutHeaderId());
+//                    soLine.setMiddlewareTable("OB_SHIPMENT_ORDER_LINE");
+//                    soV2List.add(soLine);
+//                }
+//                shipmentOrder.setSoHeader(soHeader);
+//                shipmentOrder.setSoLine(soV2List);
+//                outboundSOList.add(shipmentOrder);
+//                log.info("outboundSOList: " + outboundSOList);
+////                }
+//
+//                if (outboundSOList != null) {
+//                    spSOList = new CopyOnWriteArrayList<ShipmentOrder>(outboundSOList);
+//                    log.info("There is no IWhTOut record found to process (sql) ...Waiting..");
+//                }
+////                if (outboundIWhtList != null) {
+////                    spIWhtList = new CopyOnWriteArrayList<InterWarehouseTransferOut>(outboundIWhtList);
+////                    log.info("There is no SO record found to process (sql) ...Waiting..");
+////                }
+//            }
+//
+//            if (outboundSOList != null) {
+//                log.info("Latest Shipment Order found: " + outboundSOList);
+//                for (ShipmentOrder outbound : spSOList) {
+//                    try {
+//                        log.info("SO Transfer Order Number: " + outbound.getSoHeader().getTransferOrderNumber());
+//                        WarehouseApiResponse response = shipmentOrderService.postShipmentOrder(outbound);
+//                        if (response != null) {
+//                            // Updating the Processed Status
+//                            shipmentOrderService.updateProcessedOutboundOrder(outbound.getSoHeader().getTransferOrderNumber());
+//                            outboundSOList.remove(outbound);
+//                            return response;
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        log.error("Error on outbound processing : " + e.toString());
+//
+//                        //Integration Log
+//                        integrationLogService.createShipmentOrderLog(outbound, e.toString());
+//
+//                        //Updating the Processed Status
+//                        shipmentOrderService.updateProcessedOutboundOrder(outbound.getSoHeader().getTransferOrderNumber());
+//                        outboundSOList.remove(outbound);
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     public WarehouseApiResponse processOutboundOrderPL() throws IllegalAccessException, InvocationTargetException {
         if (outboundSalesOrderList == null || outboundSalesOrderList.isEmpty()) {
@@ -1192,7 +1594,7 @@ public class TransactionService {
                 stockAdjustment.setAdjustmentQty(dbSA.getAdjustmentQty());
                 stockAdjustment.setUnitOfMeasure(dbSA.getUnitOfMeasure());
                 stockAdjustment.setManufacturerCode(dbSA.getManufacturerCode());
-                if(dbSA.getManufacturerName() != null) {
+                if (dbSA.getManufacturerName() != null) {
                     stockAdjustment.setManufacturerName(dbSA.getManufacturerName());
                 }
                 if (dbSA.getManufacturerName() == null) {

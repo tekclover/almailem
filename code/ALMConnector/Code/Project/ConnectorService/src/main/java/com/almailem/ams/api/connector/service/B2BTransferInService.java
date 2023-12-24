@@ -67,6 +67,20 @@ public class B2BTransferInService {
 //        return dbInboundOrder;
     }
 
+    public void updatefailureProcessedInboundOrder(String asnNumber) {
+        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
+        log.info("orderId : " + asnNumber);
+        log.info("dbInboundOrder : " + dbInboundOrder);
+        if (dbInboundOrder != null) {
+//            dbInboundOrder.setProcessedStatusId(100L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+            transferInHeaderRepository.updatefailureProcessStatusId(asnNumber);
+//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
+//            return inboundOrder;
+        }
+//        return dbInboundOrder;
+    }
+
     /**
      *
      * @param b2bTransferIn
