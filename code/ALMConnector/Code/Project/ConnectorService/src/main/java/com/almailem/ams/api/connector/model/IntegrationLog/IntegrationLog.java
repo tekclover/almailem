@@ -20,6 +20,9 @@ public class IntegrationLog {
     @Column(name = "ORDER_ID")
     private Long orderId;
 
+    @Column(name = "ORDER_TYPE_ID")
+    private String orderTypeId;
+
     @Column(name = "ORDER_DATE")
     private Date orderDate;
 
