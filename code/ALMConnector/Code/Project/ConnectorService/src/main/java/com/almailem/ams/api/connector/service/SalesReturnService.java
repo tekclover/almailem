@@ -52,15 +52,19 @@ public class SalesReturnService {
         return salesReturnHeader;
     }
 
-    public SalesReturnHeader updateProcessedInboundOrder(String returnOrderNo) {
-        SalesReturnHeader dbInboundOrder = salesReturnHeaderRepository.findTopByReturnOrderNoOrderByOrderReceivedOnDesc(returnOrderNo);
+    public SalesReturnHeader updateProcessedInboundOrder(Long salesReturnHeaderId, String companyCode,
+                                                         String branchCode, String returnOrderNo, Long processedStatusId) {
+        SalesReturnHeader dbInboundOrder =
+                salesReturnHeaderRepository.findTopBySalesReturnHeaderIdAndCompanyCodeAndBranchCodeAndReturnOrderNoOrderByOrderReceivedOnDesc(
+                salesReturnHeaderId, companyCode, branchCode, returnOrderNo);
         log.info("orderId : " + returnOrderNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
-            dbInboundOrder.setProcessedStatusId(10L);
-            dbInboundOrder.setOrderProcessedOn(new Date());
-            SalesReturnHeader inboundOrder = salesReturnHeaderRepository.save(dbInboundOrder);
-            return inboundOrder;
+//            dbInboundOrder.setProcessedStatusId(10L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+//            SalesReturnHeader inboundOrder = salesReturnHeaderRepository.save(dbInboundOrder);
+//            return inboundOrder;
+            salesReturnHeaderRepository.updateProcessStatusId(dbInboundOrder.getSalesReturnHeaderId(), processedStatusId);
         }
         return dbInboundOrder;
     }

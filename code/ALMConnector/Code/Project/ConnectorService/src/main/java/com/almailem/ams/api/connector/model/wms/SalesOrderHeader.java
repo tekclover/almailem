@@ -41,6 +41,7 @@ public class SalesOrderHeader {
     private String wareHouseId;                                // WH_ID
     private String languageId;
     private String branchCode;
+    private String tokenNumber;
 
     @JsonIgnore
     private String id;

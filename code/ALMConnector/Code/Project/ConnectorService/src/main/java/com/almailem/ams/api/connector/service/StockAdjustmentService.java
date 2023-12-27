@@ -5,7 +5,6 @@ import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.stockadjustment.StockAdjustment;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.StockAdjustmentRepository;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -16,7 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -53,8 +51,20 @@ public class StockAdjustmentService {
         return stockAdjustments;
     }
 
-    public void updateProcessedStockAdjustment(Long stockAdjustmentId, String itemCode, Long processStatusId) {
-        StockAdjustment dbSA = stockAdjustmentRepo.findTopByStockAdjustmentIdAndItemCodeAndProcessedStatusIdOrderByOrderReceivedOnDesc(stockAdjustmentId, itemCode, 0L);
+    /**
+     *
+     * @param stockAdjustmentId
+     * @param companyCode
+     * @param branchCode
+     * @param itemCode
+     * @param processStatusId
+     * @return
+     */
+    public StockAdjustment updateProcessedStockAdjustment(Long stockAdjustmentId, String companyCode, String branchCode,
+                                                          String itemCode, Long processStatusId) {
+        StockAdjustment dbSA =
+                stockAdjustmentRepo.findTopByStockAdjustmentIdAndCompanyCodeAndBranchCodeAndItemCodeOrderByDateOfAdjustmentDesc(
+                        stockAdjustmentId, companyCode, branchCode, itemCode);
         log.info("Item Code: " + itemCode);
         log.info("dbStockAdjustment: " + dbSA);
         if (dbSA != null) {
@@ -62,6 +72,7 @@ public class StockAdjustmentService {
 //            dbSA.setOrderProcessedOn(new Date());
             stockAdjustmentRepo.updateProcessStatusId(stockAdjustmentId, processStatusId);
         }
+        return dbSA;
     }
 
     public WarehouseApiResponse postStockAdjustment(com.almailem.ams.api.connector.model.wms.StockAdjustment stockAdjustment) {

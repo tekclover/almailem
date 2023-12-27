@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -61,35 +60,48 @@ public class InterWarehouseTransferOutService {
         return transferOuts;
     }
 
-    /**
-     * @param transferOrderNumber
-     * @return
-     */
-    public TransferOutHeader updateProcessedOutboundOrder(String transferOrderNumber) {
-        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
-        log.info("orderId: " + transferOrderNumber);
-        log.info("IWhTransfer Out Order: " + dbObOrder);
-        if (dbObOrder != null) {
-            dbObOrder.setProcessedStatusId(10L);
-            dbObOrder.setOrderProcessedOn(new Date());
-//            transferOutHeaderRepository.save(dbObOrder);
-            transferOutHeaderRepository.updateProcessStatusId(transferOrderNumber, new Date());
-        }
-        return dbObOrder;
-    }
-
-    public TransferOutHeader updatefailureProcessedOutboundOrder(String transferOrderNumber) {
-        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
-        log.info("orderId: " + transferOrderNumber);
-        log.info("IWhTransfer Out Order: " + dbObOrder);
-        if (dbObOrder != null) {
+//    /**
+//     * @param transferOrderNumber
+//     * @return
+//     */
+//    public TransferOutHeader updateProcessedOutboundOrder(String transferOrderNumber) {
+//        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
+//        log.info("orderId: " + transferOrderNumber);
+//        log.info("IWhTransfer Out Order: " + dbObOrder);
+//        if (dbObOrder != null) {
 //            dbObOrder.setProcessedStatusId(10L);
 //            dbObOrder.setOrderProcessedOn(new Date());
-//            transferOutHeaderRepository.save(dbObOrder);
-            transferOutHeaderRepository.updatefailureProcessStatusId(transferOrderNumber);
+////            transferOutHeaderRepository.save(dbObOrder);
+//            transferOutHeaderRepository.updateProcessStatusId(transferOrderNumber, new Date());
+//        }
+//        return dbObOrder;
+//    }
+
+    public TransferOutHeader updateProcessedOutboundOrder(Long transferOutHeaderId, String sourceCompanyCode,
+                                                          String sourceBranchCode, String transferOrderNumber, Long processedStatusId) {
+        TransferOutHeader dbInboundOrder =
+                transferOutHeaderRepository.findTopByTransferOutHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNumberOrderByOrderReceivedOnDesc(
+                        transferOutHeaderId, sourceCompanyCode, sourceBranchCode, transferOrderNumber);
+        log.info("orderId : " + transferOrderNumber);
+        log.info("dbInboundOrder : " + dbInboundOrder);
+        if (dbInboundOrder != null) {
+            transferOutHeaderRepository.updateProcessStatusId(dbInboundOrder.getTransferOutHeaderId(), processedStatusId);
         }
-        return dbObOrder;
+        return dbInboundOrder;
     }
+
+//    public TransferOutHeader updatefailureProcessedOutboundOrder(String transferOrderNumber) {
+//        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
+//        log.info("orderId: " + transferOrderNumber);
+//        log.info("IWhTransfer Out Order: " + dbObOrder);
+//        if (dbObOrder != null) {
+////            dbObOrder.setProcessedStatusId(10L);
+////            dbObOrder.setOrderProcessedOn(new Date());
+////            transferOutHeaderRepository.save(dbObOrder);
+//            transferOutHeaderRepository.updatefailureProcessStatusId(transferOrderNumber);
+//        }
+//        return dbObOrder;
+//    }
 
     public WarehouseApiResponse postIWhTransferOutV2(InterWarehouseTransferOut iWhTransOutV2) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();

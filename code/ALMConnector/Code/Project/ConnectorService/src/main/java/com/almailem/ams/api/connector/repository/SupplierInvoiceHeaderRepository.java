@@ -2,6 +2,9 @@ package com.almailem.ams.api.connector.repository;
 
 import com.almailem.ams.api.connector.model.supplierinvoice.SupplierInvoiceHeader;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,5 +18,13 @@ public interface SupplierInvoiceHeaderRepository extends JpaRepository<SupplierI
 
     SupplierInvoiceHeader findBySupplierInvoiceNo(String asnNumber);
 
-    SupplierInvoiceHeader findTopBySupplierInvoiceNoOrderByOrderReceivedOnDesc(String asnNumber);
+    SupplierInvoiceHeader findTopBySupplierInvoiceHeaderIdAndCompanyCodeAndBranchCodeAndSupplierInvoiceNoOrderByOrderReceivedOnDesc(
+            Long supplierInvoiceHeaderId, String companyCode, String branchCode, String supplierInvoiceNo);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE SUPPLIERINVOICEHEADER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE SupplierInvoiceHeaderId = :supplierInvoiceHeaderId ", nativeQuery = true)
+    public void updateProcessStatusId (
+            @Param(value = "supplierInvoiceHeaderId") Long supplierInvoiceHeaderId,
+            @Param(value = "processedStatusId") Long processedStatusId );
 }

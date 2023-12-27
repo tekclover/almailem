@@ -1,7 +1,6 @@
 package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
-import com.almailem.ams.api.connector.controller.exception.BadRequestException;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.stockreceipt.*;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Slf4j
@@ -56,21 +54,24 @@ public class StockReceiptService {
         return stockReceipts;
     }
 
-    public StockReceiptHeader updateProcessedInboundOrder(String receiptNumber) {
-        StockReceiptHeader dbInboundOrder = stockReceiptHeaderRepo.findTopByReceiptNoOrderByOrderReceivedOnDesc(receiptNumber);
+    public StockReceiptHeader updateProcessedInboundOrder(Long stockReceiptHeaderId, String companyCode, String branchCode, String receiptNumber, Long processedStatusId) {
+        StockReceiptHeader dbInboundOrder =
+                stockReceiptHeaderRepo.findTopByStockReceiptHeaderIdAndCompanyCodeAndBranchCodeAndReceiptNoOrderByOrderReceivedOnDesc(
+                        stockReceiptHeaderId, companyCode, branchCode, receiptNumber);
+
         log.info("orderId : " + receiptNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
-            dbInboundOrder.setProcessedStatusId(10L);
-            dbInboundOrder.setOrderProcessedOn(new Date());
-            StockReceiptHeader inboundOrder = stockReceiptHeaderRepo.save(dbInboundOrder);
-            return inboundOrder;
+//            dbInboundOrder.setProcessedStatusId(10L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+//            StockReceiptHeader inboundOrder = stockReceiptHeaderRepo.save(dbInboundOrder);
+//            return inboundOrder;
+            stockReceiptHeaderRepo.updateProcessStatusId(dbInboundOrder.getStockReceiptHeaderId(), processedStatusId);
         }
         return dbInboundOrder;
     }
 
     /**
-     *
      * @param stockReceipt
      * @return
      */

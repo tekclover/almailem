@@ -22,10 +22,19 @@ public interface PickListHeaderRepository extends JpaRepository<PickListHeader, 
 
     PickListHeader findTopByPickListNoOrderByOrderReceivedOnDesc(String asnNumber);
 
+//    @Modifying(clearAutomatically = true)
+//    @Query(value = "UPDATE PICKLISTHEADER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
+//            + " WHERE PickListNo = :pickListNo ", nativeQuery = true)
+//    public void updateProcessStatusId (
+//            @Param(value = "pickListNo") String pickListNo,
+//            @Param(value = "date") Date date);
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE PICKLISTHEADER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
-            + " WHERE PickListNo = :pickListNo ", nativeQuery = true)
+    @Query(value = "UPDATE PICKLISTHEADER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE PickListHeaderId = :pickListHeaderId ", nativeQuery = true)
     public void updateProcessStatusId (
-            @Param(value = "pickListNo") String pickListNo,
-            @Param(value = "date") Date date);
+            @Param(value = "pickListHeaderId") Long PickListHeaderId,
+            @Param(value = "processedStatusId") Long processedStatusId);
+
+    PickListHeader findTopByPickListHeaderIdAndCompanyCodeAndBranchCodeAndPickListNoOrderByOrderReceivedOnDesc(
+            Long pickListHeaderId, String companyCode, String branchCode, String pickListNo);
 }

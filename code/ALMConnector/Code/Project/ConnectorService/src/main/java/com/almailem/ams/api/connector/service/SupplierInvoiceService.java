@@ -54,18 +54,21 @@ public class SupplierInvoiceService {
 
     /**
      *
-     * @param asnNumber
+     * @param supplierInvoiceNo
      * @return
      */
-    public SupplierInvoiceHeader updateProcessedInboundOrder(String asnNumber) {
-        SupplierInvoiceHeader dbInboundOrder = supplierInvoiceHeaderRepository.findTopBySupplierInvoiceNoOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
+    public SupplierInvoiceHeader updateProcessedInboundOrder(Long supplierInvoiceHeaderId, String companyCode, String branchCode, String supplierInvoiceNo,Long processedStatusId) {
+        SupplierInvoiceHeader dbInboundOrder =
+                supplierInvoiceHeaderRepository.findTopBySupplierInvoiceHeaderIdAndCompanyCodeAndBranchCodeAndSupplierInvoiceNoOrderByOrderReceivedOnDesc(
+                        supplierInvoiceHeaderId, companyCode, branchCode, supplierInvoiceNo);
+        log.info("orderId : " + supplierInvoiceNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
-            dbInboundOrder.setProcessedStatusId(10L);
-            dbInboundOrder.setOrderProcessedOn(new Date());
-            SupplierInvoiceHeader inboundOrder = supplierInvoiceHeaderRepository.save(dbInboundOrder);
-            return inboundOrder;
+//            dbInboundOrder.setProcessedStatusId(10L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+//            SupplierInvoiceHeader inboundOrder = supplierInvoiceHeaderRepository.save(dbInboundOrder);
+//            return inboundOrder;
+            supplierInvoiceHeaderRepository.updateProcessStatusId(dbInboundOrder.getSupplierInvoiceHeaderId(), processedStatusId);
         }
         return dbInboundOrder;
     }

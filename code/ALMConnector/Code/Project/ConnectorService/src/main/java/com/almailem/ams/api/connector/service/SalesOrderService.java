@@ -63,25 +63,30 @@ public class SalesOrderService {
 
     /**
      *
-     * @param asnNumber
+     * @param pickListHeaderId
+     * @param companyCode
+     * @param branchCode
+     * @param pickListNo
+     * @param processedStatusId
      * @return
      */
-    public PickListHeader updateProcessedInboundOrder(String asnNumber) {
-        PickListHeader dbInboundOrder = pickListHeaderRepository.findTopByPickListNoOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
+    public PickListHeader updateProcessedInboundOrder(Long pickListHeaderId, String companyCode,
+                                                      String branchCode, String pickListNo, Long processedStatusId) {
+        PickListHeader dbInboundOrder =
+                pickListHeaderRepository.findTopByPickListHeaderIdAndCompanyCodeAndBranchCodeAndPickListNoOrderByOrderReceivedOnDesc(
+                pickListHeaderId, companyCode, branchCode, pickListNo);
+        log.info("orderId : " + pickListNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
-            dbInboundOrder.setProcessedStatusId(10L);
-            dbInboundOrder.setOrderProcessedOn(new Date());
+//            dbInboundOrder.setProcessedStatusId(10L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
 //            PickListHeader inboundOrder = pickListHeaderRepository.save(dbInboundOrder);
-            pickListHeaderRepository.updateProcessStatusId(dbInboundOrder.getPickListNo(), new Date());
-            return null;
+            pickListHeaderRepository.updateProcessStatusId(dbInboundOrder.getPickListHeaderId(), processedStatusId);
         }
         return dbInboundOrder;
     }
 
     /**
-     *
      * @param salesOrder
      * @return
      */

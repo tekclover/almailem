@@ -53,33 +53,36 @@ public class InterWarehouseTransferInService {
         return transferIns;
     }
 
-    public void updateProcessedInboundOrder(String asnNumber) {
-        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
+//    public void updateProcessedInboundOrder(String asnNumber) {
+//        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
+//        log.info("orderId : " + asnNumber);
+//        log.info("dbInboundOrder : " + dbInboundOrder);
+//        if (dbInboundOrder != null) {
+//            dbInboundOrder.setProcessedStatusId(10L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+////            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
+//            transferInHeaderRepository.updateProcessStatusId(asnNumber, new Date());
+////            return null;
+//        }
+////        return dbInboundOrder;
+//    }
+
+    public TransferInHeader updateProcessedInboundOrder(Long transferInHeaderId, String companyCode, String branchCode, String transferOrderNo, Long processedStatusId){
+        TransferInHeader dbInboundOrder =
+                transferInHeaderRepository.findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoOrderByOrderReceivedOnDesc(
+                        transferInHeaderId, companyCode, branchCode, transferOrderNo);
+        log.info("orderId : " + transferOrderNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
-            dbInboundOrder.setProcessedStatusId(10L);
-            dbInboundOrder.setOrderProcessedOn(new Date());
-//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
-            transferInHeaderRepository.updateProcessStatusId(asnNumber, new Date());
-//            return null;
+//            dbInboundOrder.setProcessedStatusId(10L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+//            SupplierInvoiceHeader inboundOrder = supplierInvoiceHeaderRepository.save(dbInboundOrder);
+//            return inboundOrder;
+            transferInHeaderRepository.updateProcessStatusId(dbInboundOrder.getTransferInHeaderId(), processedStatusId);
         }
-//        return dbInboundOrder;
+        return dbInboundOrder;
     }
 
-    public void updatefailureProcessedInboundOrder(String asnNumber) {
-        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
-        log.info("dbInboundOrder : " + dbInboundOrder);
-        if (dbInboundOrder != null) {
-//            dbInboundOrder.setProcessedStatusId(100L);
-//            dbInboundOrder.setOrderProcessedOn(new Date());
-//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
-            transferInHeaderRepository.updatefailureProcessStatusId(asnNumber);
-//            return null;
-        }
-//        return dbInboundOrder;
-    }
 
     /**
      *

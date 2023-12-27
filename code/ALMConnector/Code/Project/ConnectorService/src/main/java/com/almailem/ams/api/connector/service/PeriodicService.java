@@ -4,6 +4,7 @@ import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.periodic.PeriodicHeader;
 import com.almailem.ams.api.connector.model.periodic.PeriodicLine;
+import com.almailem.ams.api.connector.model.perpetual.PerpetualHeader;
 import com.almailem.ams.api.connector.model.perpetual.PerpetualLine;
 import com.almailem.ams.api.connector.model.wms.Periodic;
 import com.almailem.ams.api.connector.model.wms.UpdateStockCountLine;
@@ -61,15 +62,37 @@ public class PeriodicService {
         return periodic;
     }
 
-    public void updateProcessedPeriodicOrder(String cycleCountNo) {
-        PeriodicHeader dbOrder = periodicHeaderRepo.findTopByCycleCountNoOrderByOrderReceivedOnDesc(cycleCountNo);
-        log.info("orderId: " + cycleCountNo);
-        log.info("dbPeriodicOrder: " + dbOrder);
-        if (dbOrder != null) {
-            dbOrder.setProcessedStatusId(10L);
-            dbOrder.setOrderProcessedOn(new Date());
-            periodicHeaderRepo.updateProcessStatusId(cycleCountNo, new Date());
+//    public void updateProcessedPeriodicOrder(String cycleCountNo) {
+//        PeriodicHeader dbOrder = periodicHeaderRepo.findTopByCycleCountNoOrderByOrderReceivedOnDesc(cycleCountNo);
+//        log.info("orderId: " + cycleCountNo);
+//        log.info("dbPeriodicOrder: " + dbOrder);
+//        if (dbOrder != null) {
+//            dbOrder.setProcessedStatusId(10L);
+//            dbOrder.setOrderProcessedOn(new Date());
+//            periodicHeaderRepo.updateProcessStatusId(cycleCountNo, new Date());
+//        }
+//    }
+
+    /**
+     *
+     * @param periodicHeaderId
+     * @param companyCode
+     * @param branchCode
+     * @param cycleCountNo
+     * @param processedStatusId
+     * @return
+     */
+    public PeriodicHeader updateProcessedPeriodicOrder(Long periodicHeaderId, String companyCode,
+                                                         String branchCode, String cycleCountNo, Long processedStatusId) {
+        PeriodicHeader dbInboundOrder =
+                periodicHeaderRepo.findTopByPeriodicHeaderIdAndCompanyCodeAndBranchCodeAndCycleCountNoOrderByOrderReceivedOnDesc(
+                        periodicHeaderId, companyCode, branchCode, cycleCountNo);
+        log.info("orderId : " + cycleCountNo);
+        log.info("dbInboundOrder : " + dbInboundOrder);
+        if (dbInboundOrder != null) {
+            periodicHeaderRepo.updateProcessStatusId(dbInboundOrder.getPeriodicHeaderId(), processedStatusId);
         }
+        return dbInboundOrder;
     }
 
     public WarehouseApiResponse postPeriodicOrder(Periodic periodic) {

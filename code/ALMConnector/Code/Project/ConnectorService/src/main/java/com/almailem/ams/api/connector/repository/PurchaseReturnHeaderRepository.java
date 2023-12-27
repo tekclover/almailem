@@ -21,12 +21,22 @@ public interface PurchaseReturnHeaderRepository extends JpaRepository<PurchaseRe
 
     PurchaseReturnHeader findByReturnOrderNo(String poNumber);
 
+//    @Modifying(clearAutomatically = true)
+//    @Query(value = "UPDATE PURCHASERETURNHEADER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
+//            + " WHERE ReturnorderNo = :returnOrderNo ", nativeQuery = true)
+//    public void updateProcessStatusId(
+//            @Param(value = "returnOrderNo") String returnOrderNo,
+//            @Param(value = "date") Date date);
+
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE PURCHASERETURNHEADER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
-            + " WHERE ReturnorderNo = :returnOrderNo ", nativeQuery = true)
-    public void updateProcessStatusId(
-            @Param(value = "returnOrderNo") String returnOrderNo,
-            @Param(value = "date") Date date);
+    @Query(value = "UPDATE PURCHASERETURNHEADER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE PurchaseReturnHeaderId = :purchaseReturnHeaderId ", nativeQuery = true)
+    public void updateProcessStatusId (
+            @Param(value = "purchaseReturnHeaderId") Long purchaseReturnHeaderId,
+            @Param(value = "processedStatusId") Long processedStatusId );
 
     PurchaseReturnHeader findTopByReturnOrderNoOrderByOrderReceivedOnDesc(String returnOrderNo);
+
+    PurchaseReturnHeader findTopByPurchaseReturnHeaderIdAndCompanyCodeAndBranchCodeAndReturnOrderNoOrderByOrderReceivedOnDesc(
+            Long purchaseReturnHeaderId, String companyCode, String branchCode, String returnOrderNo);
 }

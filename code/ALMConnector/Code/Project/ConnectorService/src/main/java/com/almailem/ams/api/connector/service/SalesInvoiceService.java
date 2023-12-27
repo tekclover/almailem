@@ -53,19 +53,25 @@ public class SalesInvoiceService {
 
     /**
      *
-     * @param asnNumber
+     * @param salesInvoiceId
+     * @param companyCode
+     * @param branchCode
+     * @param salesInvoiceNumber
+     * @param processedStatusId
      * @return
      */
-    public SalesInvoice updateProcessedOutboundOrder(String asnNumber) {
-        SalesInvoice dbOutboundOrder = salesInvoiceRepository.findTopBySalesInvoiceNumberOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
+    public SalesInvoice updateProcessedOutboundOrder(Long salesInvoiceId, String companyCode, String branchCode,
+                                                     String salesInvoiceNumber, Long processedStatusId) {
+        SalesInvoice dbOutboundOrder =
+                salesInvoiceRepository.findTopBySalesInvoiceIdAndCompanyCodeAndBranchCodeAndSalesInvoiceNumberOrderByOrderReceivedOnDesc(
+                salesInvoiceId, companyCode, branchCode, salesInvoiceNumber);
+        log.info("orderId : " + salesInvoiceNumber);
         log.info("dbOutboundOrder : " + dbOutboundOrder);
         if (dbOutboundOrder != null) {
-            dbOutboundOrder.setProcessedStatusId(10L);
-            dbOutboundOrder.setOrderProcessedOn(new Date());
+//            dbOutboundOrder.setProcessedStatusId(10L);
+//            dbOutboundOrder.setOrderProcessedOn(new Date());
 //            SalesInvoice OutboundOrder = salesInvoiceRepository.save(dbOutboundOrder);
-            salesInvoiceRepository.updateProcessStatusId(dbOutboundOrder.getSalesInvoiceNumber(),new Date());
-            return dbOutboundOrder;
+            salesInvoiceRepository.updateProcessStatusId(dbOutboundOrder.getSalesInvoiceId(), processedStatusId);
         }
         return dbOutboundOrder;
     }

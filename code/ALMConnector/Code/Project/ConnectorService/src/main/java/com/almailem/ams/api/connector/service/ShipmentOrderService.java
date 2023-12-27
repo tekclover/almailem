@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -61,27 +60,29 @@ public class ShipmentOrderService {
         return transferOuts;
     }
 
-    public void updateProcessedOutboundOrder(String transferOrderNumber) {
-        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
-        log.info("orderId: " + transferOrderNumber);
-        log.info("SO Order: " + dbObOrder);
-        if (dbObOrder != null) {
-            dbObOrder.setProcessedStatusId(10L);
-            dbObOrder.setOrderProcessedOn(new Date());
-            transferOutHeaderRepository.updateProcessStatusId(transferOrderNumber, new Date());
+    public TransferOutHeader updateProcessedOutboundOrder(Long transferOutHeaderId, String companyCode,
+                                                             String branchCode, String transferOrderNumber, Long processedStatusId) {
+        TransferOutHeader dbInboundOrder =
+                transferOutHeaderRepository.findTopByTransferOutHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNumberOrderByOrderReceivedOnDesc(
+                        transferOutHeaderId, companyCode, branchCode, transferOrderNumber);
+        log.info("orderId : " + transferOrderNumber);
+        log.info("dbInboundOrder : " + dbInboundOrder);
+        if (dbInboundOrder != null) {
+            transferOutHeaderRepository.updateProcessStatusId(dbInboundOrder.getTransferOutHeaderId(), processedStatusId);
         }
+        return dbInboundOrder;
     }
 
-    public void updateFailedProcessedOutboundOrder(String transferOrderNumber) {
-        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
-        log.info("orderId: " + transferOrderNumber);
-        log.info("SO Order: " + dbObOrder);
-        if (dbObOrder != null) {
-//            dbObOrder.setProcessedStatusId(100L);
-//            dbObOrder.setOrderProcessedOn(new Date());
-            transferOutHeaderRepository.updatefailureProcessStatusId(transferOrderNumber);
-        }
-    }
+//    public void updateFailedProcessedOutboundOrder(String transferOrderNumber) {
+//        TransferOutHeader dbObOrder = transferOutHeaderRepository.findTopByTransferOrderNumberOrderByOrderReceivedOnDesc(transferOrderNumber);
+//        log.info("orderId: " + transferOrderNumber);
+//        log.info("SO Order: " + dbObOrder);
+//        if (dbObOrder != null) {
+////            dbObOrder.setProcessedStatusId(100L);
+////            dbObOrder.setOrderProcessedOn(new Date());
+//            transferOutHeaderRepository.updatefailureProcessStatusId(transferOrderNumber);
+//        }
+//    }
 
     public WarehouseApiResponse postShipmentOrder(ShipmentOrder shipmentOrder) {
         AuthToken authToken = authTokenService.getTransactionServiceAuthToken();

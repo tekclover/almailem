@@ -20,9 +20,19 @@ public interface PeriodicHeaderRepository extends JpaRepository<PeriodicHeader, 
 
     PeriodicHeader findTopByCycleCountNoOrderByOrderReceivedOnDesc(String cycleCountNo);
 
+//    @Modifying(clearAutomatically = true)
+//    @Query(value = "UPDATE PERIODICHEADER set processedStatusId = 10, orderProcessedOn = :date \r\n"
+//            + " WHERE CycleCountNo = :cycleCountNo ", nativeQuery = true)
+//    void updateProcessStatusId(@Param(value = "cycleCountNo") String cycleCountNo,
+//                               @Param(value = "date") Date date);
+
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE PERIODICHEADER set processedStatusId = 10, orderProcessedOn = :date \r\n"
-            + " WHERE CycleCountNo = :cycleCountNo ", nativeQuery = true)
-    void updateProcessStatusId(@Param(value = "cycleCountNo") String cycleCountNo,
-                               @Param(value = "date") Date date);
+    @Query(value = "UPDATE PERIODICHEADER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE PeriodicHeaderId = :periodicHeaderId ", nativeQuery = true)
+    public void updateProcessStatusId (
+            @Param(value = "periodicHeaderId") Long periodicHeaderId,
+            @Param(value = "processedStatusId") Long processedStatusId);
+
+    PeriodicHeader findTopByPeriodicHeaderIdAndCompanyCodeAndBranchCodeAndCycleCountNoOrderByOrderReceivedOnDesc(
+            Long periodicHeaderId, String companyCode, String branchCode, String cycleCountNo);
 }

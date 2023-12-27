@@ -29,4 +29,6 @@ public interface PerpetualLineRepository extends JpaRepository<PerpetualLine, St
             @Param(value = "cycleCountNo") String cycleCountNo,
             @Param(value = "itemCode") String itemCode,
             @Param(value = "manufacturerName") String manufacturerName);
+
+    PerpetualLine findByCycleCountNoAndItemCodeAndManufacturerName(String cycleCountNo, String itemCode, String manufacturerName);
 }

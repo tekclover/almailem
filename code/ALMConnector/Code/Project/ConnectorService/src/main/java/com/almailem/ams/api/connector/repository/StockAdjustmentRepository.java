@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -26,5 +25,7 @@ public interface StockAdjustmentRepository extends JpaRepository<StockAdjustment
     void updateProcessStatusId(@Param(value = "stockAdjustmentId") Long stockAdjustmentId,
                                @Param(value = "processedStatusId") Long processedStatusId);
 
-    StockAdjustment findTopByStockAdjustmentIdAndItemCodeAndProcessedStatusIdOrderByOrderReceivedOnDesc(Long stockAdjustmentId, String itemCode, Long processStatusId);
+    StockAdjustment findTopByStockAdjustmentIdAndCompanyCodeAndBranchCodeAndItemCodeOrderByDateOfAdjustmentDesc(
+            Long stockAdjustmentId, String companyCode, String branchCode, String itemCode);
+
 }

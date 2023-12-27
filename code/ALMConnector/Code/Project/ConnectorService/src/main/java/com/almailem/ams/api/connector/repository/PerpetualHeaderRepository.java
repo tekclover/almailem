@@ -19,10 +19,19 @@ public interface PerpetualHeaderRepository extends JpaRepository<PerpetualHeader
 
     PerpetualHeader findTopByCycleCountNoOrderByOrderReceivedOnDesc(String cycleCountNo);
 
-    @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE PERPETUALHEADER set processedStatusId = 10, orderProcessedOn = :date \r\n"
-            + " WHERE CycleCountNo = :cycleCountNo ", nativeQuery = true)
-    void updateProcessStatusId(@Param(value = "cycleCountNo") String cycleCountNo,
-                               @Param(value = "date") Date date);
+//    @Modifying(clearAutomatically = true)
+//    @Query(value = "UPDATE PERPETUALHEADER set processedStatusId = 10, orderProcessedOn = :date \r\n"
+//            + " WHERE CycleCountNo = :cycleCountNo ", nativeQuery = true)
+//    void updateProcessStatusId(@Param(value = "cycleCountNo") String cycleCountNo,
+//                               @Param(value = "date") Date date);
 
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE PERPETUALHEADER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE PerpetualHeaderId = :perpetualHeaderId ", nativeQuery = true)
+    public void updateProcessStatusId (
+            @Param(value = "perpetualHeaderId") Long perpetualHeaderId,
+            @Param(value = "processedStatusId") Long processedStatusId);
+
+    PerpetualHeader findTopByPerpetualHeaderIdAndCompanyCodeAndBranchCodeAndCycleCountNoOrderByOrderReceivedOnDesc(
+            Long perpetualHeaderId, String companyCode, String branchCode, String cycleCountNo);
 }

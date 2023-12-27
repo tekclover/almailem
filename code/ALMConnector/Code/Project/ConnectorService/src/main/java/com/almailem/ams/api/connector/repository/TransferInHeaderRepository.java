@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -18,18 +17,28 @@ public interface TransferInHeaderRepository extends JpaRepository<TransferInHead
     TransferInHeader findByTransferOrderNo(String asnNumber);
 
     List<TransferInHeader> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
-    @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE TRANSFERINHEADER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
-            + " WHERE TransferOrderNo = :transferOrderNo ", nativeQuery = true)
-    public void updateProcessStatusId (
-            @Param(value = "transferOrderNo") String transferOrderNo,
-            @Param(value = "date") Date date);
+//    @Modifying(clearAutomatically = true)
+//    @Query(value = "UPDATE TRANSFERINHEADER set processedStatusId = 10, orderProcessedOn = :date  \r\n"
+//            + " WHERE TransferOrderNo = :transferOrderNo ", nativeQuery = true)
+//    public void updateProcessStatusId (
+//            @Param(value = "transferOrderNo") String transferOrderNo,
+//            @Param(value = "date") Date date);
 
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE TRANSFERINHEADER set processedStatusId = 100, orderProcessedOn = getdate()  \r\n"
-            + " WHERE TransferOrderNo = :transferOrderNo ", nativeQuery = true)
-    public void updatefailureProcessStatusId (
-            @Param(value = "transferOrderNo") String transferOrderNo);
+    @Query(value = "UPDATE TRANSFERINHEADER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE TransferInHeaderId = :transferInHeaderId ", nativeQuery = true)
+    public void updateProcessStatusId (
+            @Param(value = "transferInHeaderId") Long transferInHeaderId,
+            @Param(value = "processedStatusId") Long processedStatusId );
+
+//    @Modifying(clearAutomatically = true)
+//    @Query(value = "UPDATE TRANSFERINHEADER set processedStatusId = 100, orderProcessedOn = getdate()  \r\n"
+//            + " WHERE TransferOrderNo = :transferOrderNo ", nativeQuery = true)
+//    public void updatefailureProcessStatusId (
+//            @Param(value = "transferOrderNo") String transferOrderNo);
 
     TransferInHeader findTopByTransferOrderNoOrderByOrderReceivedOnDesc(String asnNumber);
+
+    TransferInHeader findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoOrderByOrderReceivedOnDesc(
+            Long transferInHeaderId, String sourceCompanyCode, String sourceBranchCode, String transferOrderNo);
 }

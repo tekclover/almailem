@@ -53,36 +53,49 @@ public class B2BTransferInService {
         return headerRepoAll;
     }
 
-    public void updateProcessedInboundOrder(String asnNumber) {
-        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
+//    public void updateProcessedInboundOrder(String asnNumber) {
+//        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
+//        log.info("orderId : " + asnNumber);
+//        log.info("dbInboundOrder : " + dbInboundOrder);
+//        if (dbInboundOrder != null) {
+//            dbInboundOrder.setProcessedStatusId(10L);
+//            dbInboundOrder.setOrderProcessedOn(new Date());
+//            transferInHeaderRepository.updateProcessStatusId(asnNumber,new Date());
+////            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
+////            return inboundOrder;
+//        }
+////        return dbInboundOrder;
+//    }
+
+    public TransferInHeader updateProcessedInboundOrder(Long transferInHeaderId, String sourceCompanyCode,
+                                                        String sourceBranchCode, String transferOrderNo, Long processedStatusId) {
+        TransferInHeader dbInboundOrder =
+                transferInHeaderRepository.findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoOrderByOrderReceivedOnDesc(
+                        transferInHeaderId, sourceCompanyCode, sourceBranchCode, transferOrderNo);
+        log.info("orderId : " + transferOrderNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
-            dbInboundOrder.setProcessedStatusId(10L);
-            dbInboundOrder.setOrderProcessedOn(new Date());
-            transferInHeaderRepository.updateProcessStatusId(asnNumber,new Date());
-//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
-//            return inboundOrder;
+            transferInHeaderRepository.updateProcessStatusId(dbInboundOrder.getTransferInHeaderId(), processedStatusId);
         }
-//        return dbInboundOrder;
+        return dbInboundOrder;
     }
 
-    public void updatefailureProcessedInboundOrder(String asnNumber) {
-        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
-        log.info("orderId : " + asnNumber);
-        log.info("dbInboundOrder : " + dbInboundOrder);
-        if (dbInboundOrder != null) {
-//            dbInboundOrder.setProcessedStatusId(100L);
-//            dbInboundOrder.setOrderProcessedOn(new Date());
-            transferInHeaderRepository.updatefailureProcessStatusId(asnNumber);
-//            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
-//            return inboundOrder;
-        }
-//        return dbInboundOrder;
-    }
+
+//    public void updatefailureProcessedInboundOrder(String asnNumber) {
+//        TransferInHeader dbInboundOrder = transferInHeaderRepository.findTopByTransferOrderNoOrderByOrderReceivedOnDesc(asnNumber);
+//        log.info("orderId : " + asnNumber);
+//        log.info("dbInboundOrder : " + dbInboundOrder);
+//        if (dbInboundOrder != null) {
+////            dbInboundOrder.setProcessedStatusId(100L);
+////            dbInboundOrder.setOrderProcessedOn(new Date());
+//            transferInHeaderRepository.updatefailureProcessStatusId(asnNumber);
+////            TransferInHeader inboundOrder = transferInHeaderRepository.save(dbInboundOrder);
+////            return inboundOrder;
+//        }
+////        return dbInboundOrder;
+//    }
 
     /**
-     *
      * @param b2bTransferIn
      * @return
      */

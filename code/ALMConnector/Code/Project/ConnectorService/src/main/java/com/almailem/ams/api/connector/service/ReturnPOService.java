@@ -3,6 +3,7 @@ package com.almailem.ams.api.connector.service;
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.purchasereturn.PurchaseReturnHeader;
+import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
 import com.almailem.ams.api.connector.model.wms.ReturnPO;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.PurchaseReturnHeaderRepository;
@@ -61,22 +62,35 @@ public class ReturnPOService {
         return purchaseReturns;
     }
 
-    /**
-     * @param returnOrderNo
-     * @return
-     */
-    public void updateProcessedOutboundOrder(String returnOrderNo) {
-        PurchaseReturnHeader dbObOrder = purchaseReturnHeaderRepository.findTopByReturnOrderNoOrderByOrderReceivedOnDesc(returnOrderNo);
-        log.info("orderId: " + returnOrderNo);
-        log.info("dbOutboundOrder: " + dbObOrder);
-        if (dbObOrder != null) {
-            dbObOrder.setProcessedStatusId(10L);
-            dbObOrder.setOrderProcessedOn(new Date());
-//            PurchaseReturnHeader obOrder = purchaseReturnHeaderRepository.save(dbObOrder);
-            purchaseReturnHeaderRepository.updateProcessStatusId(returnOrderNo,new Date());
-//            return null;
+//    /**
+//     * @param returnOrderNo
+//     * @return
+//     */
+//    public void updateProcessedOutboundOrder(String returnOrderNo) {
+//        PurchaseReturnHeader dbObOrder = purchaseReturnHeaderRepository.findTopByReturnOrderNoOrderByOrderReceivedOnDesc(returnOrderNo);
+//        log.info("orderId: " + returnOrderNo);
+//        log.info("dbOutboundOrder: " + dbObOrder);
+//        if (dbObOrder != null) {
+//            dbObOrder.setProcessedStatusId(10L);
+//            dbObOrder.setOrderProcessedOn(new Date());
+////            PurchaseReturnHeader obOrder = purchaseReturnHeaderRepository.save(dbObOrder);
+//            purchaseReturnHeaderRepository.updateProcessStatusId(returnOrderNo,new Date());
+////            return null;
+//        }
+////        return dbObOrder;
+//    }
+
+    public PurchaseReturnHeader updateProcessedOutboundOrder(Long purchaseReturnHeaderId, String companyCode,
+                                                             String branchCode, String returnOrderNo, Long processedStatusId) {
+        PurchaseReturnHeader dbInboundOrder =
+                purchaseReturnHeaderRepository.findTopByPurchaseReturnHeaderIdAndCompanyCodeAndBranchCodeAndReturnOrderNoOrderByOrderReceivedOnDesc(
+                        purchaseReturnHeaderId, companyCode, branchCode, returnOrderNo);
+        log.info("orderId : " + returnOrderNo);
+        log.info("dbInboundOrder : " + dbInboundOrder);
+        if (dbInboundOrder != null) {
+            purchaseReturnHeaderRepository.updateProcessStatusId(dbInboundOrder.getPurchaseReturnHeaderId(), processedStatusId);
         }
-//        return dbObOrder;
+        return dbInboundOrder;
     }
 
     public WarehouseApiResponse postReturnPOV2(ReturnPO returnPO) {

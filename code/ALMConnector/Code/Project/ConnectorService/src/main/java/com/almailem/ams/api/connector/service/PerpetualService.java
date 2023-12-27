@@ -4,6 +4,7 @@ import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.perpetual.PerpetualHeader;
 import com.almailem.ams.api.connector.model.perpetual.PerpetualLine;
+import com.almailem.ams.api.connector.model.picklist.PickListHeader;
 import com.almailem.ams.api.connector.model.wms.Perpetual;
 import com.almailem.ams.api.connector.model.wms.UpdateStockCountLine;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
@@ -60,15 +61,37 @@ public class PerpetualService {
         return perpetuals;
     }
 
-    public void updateProcessedPerpetualOrder(String cycleCountNo) {
-        PerpetualHeader dbOrder = perpetualHeaderRepo.findTopByCycleCountNoOrderByOrderReceivedOnDesc(cycleCountNo);
-        log.info("orderId: " + cycleCountNo);
-        log.info("dbPerpetualOrder: " + dbOrder);
-        if (dbOrder != null) {
-            dbOrder.setProcessedStatusId(10L);
-            dbOrder.setOrderProcessedOn(new Date());
-            perpetualHeaderRepo.updateProcessStatusId(cycleCountNo, new Date());
+    //    public void updateProcessedPerpetualOrder(String cycleCountNo) {
+//        PerpetualHeader dbOrder = perpetualHeaderRepo.findTopByCycleCountNoOrderByOrderReceivedOnDesc(cycleCountNo);
+//        log.info("orderId: " + cycleCountNo);
+//        log.info("dbPerpetualOrder: " + dbOrder);
+//        if (dbOrder != null) {
+//            dbOrder.setProcessedStatusId(10L);
+//            dbOrder.setOrderProcessedOn(new Date());
+//            perpetualHeaderRepo.updateProcessStatusId(cycleCountNo, new Date());
+//        }
+//    }
+
+    /**
+     *
+     * @param perpetualHeaderId
+     * @param companyCode
+     * @param branchCode
+     * @param cycleCountNo
+     * @param processedStatusId
+     * @return
+     */
+    public PerpetualHeader updateProcessedPerpetualOrder(Long perpetualHeaderId, String companyCode,
+                                                      String branchCode, String cycleCountNo, Long processedStatusId) {
+        PerpetualHeader dbInboundOrder =
+                perpetualHeaderRepo.findTopByPerpetualHeaderIdAndCompanyCodeAndBranchCodeAndCycleCountNoOrderByOrderReceivedOnDesc(
+                        perpetualHeaderId, companyCode, branchCode, cycleCountNo);
+        log.info("orderId : " + cycleCountNo);
+        log.info("dbInboundOrder : " + dbInboundOrder);
+        if (dbInboundOrder != null) {
+            perpetualHeaderRepo.updateProcessStatusId(dbInboundOrder.getPerpetualHeaderId(), processedStatusId);
         }
+        return dbInboundOrder;
     }
 
     /**
@@ -80,7 +103,7 @@ public class PerpetualService {
             log.info("Perpertual Lines to be Updated:" + updateStockCountLines);
             List<String> statusList = new ArrayList<>();
             for (UpdateStockCountLine dbPerpetualLine : updateStockCountLines) {
-                PerpetualLine updatePplCountedQty = perpetualLineRepository.findByCycleCountNoAndItemCodeAndManufacturerCode(
+                PerpetualLine updatePplCountedQty = perpetualLineRepository.findByCycleCountNoAndItemCodeAndManufacturerName(
                         dbPerpetualLine.getCycleCountNo(),
                         dbPerpetualLine.getItemCode(),
                         dbPerpetualLine.getManufacturerName());

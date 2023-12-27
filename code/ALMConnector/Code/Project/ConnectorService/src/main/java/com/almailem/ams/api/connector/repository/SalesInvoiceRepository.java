@@ -21,10 +21,20 @@ public interface SalesInvoiceRepository extends JpaRepository<SalesInvoice, Stri
 
     SalesInvoice findTopBySalesInvoiceNumberOrderByOrderReceivedOnDesc(String asnNumber);
 
+//    @Modifying(clearAutomatically = true)
+//    @Query(value = "UPDATE SALESINVOICE set processedStatusId = 10, orderProcessedOn = :date  \r\n"
+//            + " WHERE salesInvoiceNumber = :salesInvoiceNumber ", nativeQuery = true)
+//    public void updateProcessStatusId (
+//            @Param(value = "salesInvoiceNumber") String salesInvoiceNumber,
+//            @Param(value = "date") Date date);
+
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE SALESINVOICE set processedStatusId = 10, orderProcessedOn = :date  \r\n"
-            + " WHERE salesInvoiceNumber = :salesInvoiceNumber ", nativeQuery = true)
+    @Query(value = "UPDATE SALESINVOICE set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
+            + " WHERE Salesinvoiceid = :salesInvoiceId ", nativeQuery = true)
     public void updateProcessStatusId (
-            @Param(value = "salesInvoiceNumber") String salesInvoiceNumber,
-            @Param(value = "date") Date date);
+            @Param(value = "salesInvoiceId") Long salesInvoiceId,
+            @Param(value = "processedStatusId") Long processedStatusId);
+
+    SalesInvoice findTopBySalesInvoiceIdAndCompanyCodeAndBranchCodeAndSalesInvoiceNumberOrderByOrderReceivedOnDesc(
+            Long salesInvoiceId, String companyCode, String branchCode, String salesInvoiceNumber);
 }
