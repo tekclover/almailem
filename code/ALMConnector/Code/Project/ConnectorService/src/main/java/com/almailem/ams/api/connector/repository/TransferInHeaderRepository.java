@@ -39,6 +39,10 @@ public interface TransferInHeaderRepository extends JpaRepository<TransferInHead
 
     TransferInHeader findTopByTransferOrderNoOrderByOrderReceivedOnDesc(String asnNumber);
 
-    TransferInHeader findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoOrderByOrderReceivedOnDesc(
-            Long transferInHeaderId, String sourceCompanyCode, String sourceBranchCode, String transferOrderNo);
+    TransferInHeader findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoAndProcessedStatusIdOrderByOrderReceivedOn(
+            Long transferInHeaderId, String sourceCompanyCode, String sourceBranchCode, String transferOrderNo , Long processedStatusId);
+
+    @Query(value = "select * \n" +
+            "from TRANSFERINHEADER where Transferinheaderid = :transferInHeaderId ",nativeQuery = true)
+    public TransferInHeader getTransferInHeader(@Param(value = "transferInHeaderId") Long transferInHeaderId);
 }

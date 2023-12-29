@@ -22,14 +22,14 @@ public class PeriodicLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PeriodicLineId")
+    @Column(name = "Periodiclineid")
     private Long periodicLineId;
 
-    @Column(name = "PeriodicHeaderId")
+    @Column(name = "Periodicheaderid")
     private Long periodicHeaderId;
 
     @NotBlank(message = "Cycle Count No is mandatory")
-    @Column(name = "CycleCountNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Cyclecountno", columnDefinition = "nvarchar(50)", nullable = false)
     private String cycleCountNo;
 
     @NotNull(message = "line NO Of Each Item Code is mandatory")
@@ -44,27 +44,27 @@ public class PeriodicLine {
     private String itemDescription;
 
     @NotBlank(message = "Unit of Measure is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Unitofmeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Name is mandatory")
-    @Column(name = "ManufacturerName", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturername", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerName;
 
     @NotNull(message = "FrozenQty is mandatory")
-    @Column(name = "FrozenQty")
+    @Column(name = "Frozenqty")
     private Double frozenQty;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
-    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(20)")
+    @Column(name = "Is_cancelled", columnDefinition = "nvarchar(20)")
     private String isCancelled;
 
-    @Column(name = "CountedQty")
+    @Column(name = "Countedqty")
     private Double countedQty;
 }

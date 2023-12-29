@@ -22,14 +22,14 @@ public class PickListLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PickListLineId")
+    @Column(name = "Picklistlineid")
     private Long pickListLineId;
 
-    @Column(name = "PickListHeaderId")
+    @Column(name = "Picklistheaderid")
     private Long pickListHeaderId;
 
     @NotBlank(message = "Sales Order No is mandatory")
-    @Column(name = "SalesOrderNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Salesorderno", columnDefinition = "nvarchar(50)", nullable = false)
     private String salesOrderNo;
 
     @NotBlank(message = "Pick List No is mandatory")
@@ -49,15 +49,15 @@ public class PickListLine {
     private Double pickListQty;
 
     @NotBlank(message = "Unit of Measure is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Unitofmeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturershortname", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
@@ -66,13 +66,13 @@ public class PickListLine {
     @Column(name = "Pickedqty")
     private Double pickedQty;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
-    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_cancelled", columnDefinition = "nvarchar(10)")
     private String isCancelled;
 
-    @Column(name = "IS_ALL_PICKED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_all_picked", columnDefinition = "nvarchar(10)")
     private String isAllPicked;
 
     @NotNull(message = "Line Number of Each Item is mandatory")

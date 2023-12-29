@@ -19,46 +19,47 @@ public class TransferInHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TransferInHeaderId")
+    @Column(name = "Transferinheaderid")
     private Long transferInHeaderId;
 
     @NotBlank(message = "SourceCompanyCode is mandatory")
-    @Column(name = "SourceCompanyCode", columnDefinition = "nvarchar(25)", nullable = false)
+    @Column(name = "Sourcecompanycode", columnDefinition = "nvarchar(25)", nullable = false)
     private String sourceCompanyCode;
 
     @NotBlank(message = "TargetCompanyCode is mandatory")
-    @Column(name = "TargetCompanyCode", columnDefinition = "nvarchar(25)", nullable = false)
+    @Column(name = "Targetcompanycode", columnDefinition = "nvarchar(25)", nullable = false)
     private String targetCompanyCode;
 
     @NotBlank(message = "TransferOrderNo is mandatory")
-    @Column(name = "TransferOrderNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Transferorderno", columnDefinition = "nvarchar(50)", nullable = false)
     private String transferOrderNo;
 
     @NotBlank(message = "SourceBranchCode is mandatory")
-    @Column(name = "SourceBranchCode", columnDefinition = "nvarchar(25)", nullable = false)
+    @Column(name = "Sourcebranchcode", columnDefinition = "nvarchar(25)", nullable = false)
     private String sourceBranchCode;
 
     @NotBlank(message = "TargetBranchCode is mandatory")
-    @Column(name = "TargetBranchcode", columnDefinition = "nvarchar(25)", nullable = false)
+    @Column(name = "Targetbranchcode", columnDefinition = "nvarchar(25)", nullable = false)
     private String targetBranchCode;
 
     @NotNull(message = "TransferOrder Date is mandatory")
-    @Column(name = "transferOrderdate")
+    @Column(name = "Transferorderdate")
     private Date transferOrderDate;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
     @Column(name = "Updatedon")
     private Date updatedOn;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
+    @Column(name = "Processedstatusid", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
 
-    @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
+    @Column(name = "Orderreceivedon", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
 
+    @Column(name = "Orderprocessedon")
     private Date orderProcessedOn;
 
     @OneToMany(mappedBy = "transferInHeaderId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

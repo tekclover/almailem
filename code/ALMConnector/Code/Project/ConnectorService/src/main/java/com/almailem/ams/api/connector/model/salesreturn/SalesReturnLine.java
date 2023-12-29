@@ -23,14 +23,14 @@ public class SalesReturnLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SalesReturnLineId")
+    @Column(name = "Salesreturnlineid")
     private Long salesReturnLineId;
 
-    @Column(name = "SalesReturnHeaderId")
+    @Column(name = "Salesreturnheaderid")
     private Long salesReturnHeaderId;
 
     @NotNull(message = "Line No of Each Item is mandatory")
-    @Column(name = "LineNoofeachitem")
+    @Column(name = "Linenoofeachitem")
     private Long lineNoOfEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
@@ -42,21 +42,21 @@ public class SalesReturnLine {
     private String itemDescription;
 
     @NotBlank(message = "Reference Invoice No is mandatory")
-    @Column(name = "ReferenceInvoiceNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Referenceinvoiceno", columnDefinition = "nvarchar(50)", nullable = false)
     private String referenceInvoiceNo;
 
     @Column(name = "Sourcebranchcode", columnDefinition = "nvarchar(50)")
     private String sourceBranchCode;
 
-    @Column(name = "SupplierPartNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "Supplierpartno", columnDefinition = "nvarchar(50)")
     private String supplierPartNo;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturershortname", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @NotNull(message = "Return Order Date is mandatory")
-    @Column(name = "ReturnorderDate")
+    @Column(name = "Returnorderdate")
     private Date returnOrderDate;
 
     @NotNull(message = "Return Qty is mandatory")
@@ -64,25 +64,25 @@ public class SalesReturnLine {
     private Double returnQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Unitofmeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
-    @Column(name = "NoofPacks")
+    @Column(name = "Noofpacks")
     private Long noOfPacks;
 
-    @Column(name = "CountryofOrigin", columnDefinition = "nvarchar(250)")
+    @Column(name = "Countryoforigin", columnDefinition = "nvarchar(250)")
     private String countryOfOrigin;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
-    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_cancelled", columnDefinition = "nvarchar(10)")
     private String isCancelled;
 }

@@ -22,18 +22,18 @@ public class TransferInLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TransferInLineId")
+    @Column(name = "Transferinlineid")
     private Long transferInLineId;
 
-    @Column(name = "TransferInHeaderId")
+    @Column(name = "Transferinheaderid")
     private Long transferInHeaderId;
 
     @NotBlank(message = "TransferOrderNo is mandatory")
-    @Column(name = "TransferOrderNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Transferorderno", columnDefinition = "nvarchar(50)", nullable = false)
     private String transferOrderNo;
 
     @NotNull(message = "Line No for Each Item is mandatory")
-    @Column(name = "LineNoofeachitem")
+    @Column(name = "Linenoofeachitem")
     private Long lineNoOfEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
@@ -49,20 +49,20 @@ public class TransferInLine {
     private Double transferQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Unitofmeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturershortname", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 }

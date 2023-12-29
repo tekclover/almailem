@@ -19,11 +19,11 @@ public class PurchaseReturnHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PurchaseReturnHeaderId")
+    @Column(name = "Purchasereturnheaderid")
     private Long purchaseReturnHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Companycode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
@@ -31,7 +31,7 @@ public class PurchaseReturnHeader {
     private String branchCode;
 
     @NotBlank(message = "Return Order No is mandatory")
-    @Column(name = "ReturnorderNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Returnorderno", columnDefinition = "nvarchar(50)", nullable = false)
     private String returnOrderNo;
 
     @NotNull(message = "Return Order Date is mandatory")
@@ -41,22 +41,23 @@ public class PurchaseReturnHeader {
 //    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)")
 //    private String supplierInvoiceNo;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
     @Column(name = "Updatedon")
     private Date updatedOn;
 
-    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_cancelled", columnDefinition = "nvarchar(10)")
     private String isCancelled;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
+    @Column(name = "Processedstatusid", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
 
-    @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
+    @Column(name = "Orderreceivedon", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
 
+    @Column(name = "Orderprocessedon")
     private Date orderProcessedOn;
 
 

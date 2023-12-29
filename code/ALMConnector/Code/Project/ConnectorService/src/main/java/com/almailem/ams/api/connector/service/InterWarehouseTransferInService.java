@@ -68,9 +68,10 @@ public class InterWarehouseTransferInService {
 //    }
 
     public TransferInHeader updateProcessedInboundOrder(Long transferInHeaderId, String companyCode, String branchCode, String transferOrderNo, Long processedStatusId){
-        TransferInHeader dbInboundOrder =
-                transferInHeaderRepository.findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoOrderByOrderReceivedOnDesc(
-                        transferInHeaderId, companyCode, branchCode, transferOrderNo);
+//        TransferInHeader dbInboundOrder =
+//                transferInHeaderRepository.findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoAndProcessedStatusIdOrderByOrderReceivedOn(
+//                        transferInHeaderId, companyCode, branchCode, transferOrderNo, 0L);
+        TransferInHeader dbInboundOrder = transferInHeaderRepository.getTransferInHeader(transferInHeaderId);
         log.info("orderId : " + transferOrderNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {

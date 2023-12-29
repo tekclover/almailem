@@ -69,9 +69,10 @@ public class B2BTransferInService {
 
     public TransferInHeader updateProcessedInboundOrder(Long transferInHeaderId, String sourceCompanyCode,
                                                         String sourceBranchCode, String transferOrderNo, Long processedStatusId) {
-        TransferInHeader dbInboundOrder =
-                transferInHeaderRepository.findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoOrderByOrderReceivedOnDesc(
-                        transferInHeaderId, sourceCompanyCode, sourceBranchCode, transferOrderNo);
+//        TransferInHeader dbInboundOrder =
+//                transferInHeaderRepository.findTopByTransferInHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNoAndProcessedStatusIdOrderByOrderReceivedOn(
+//                        transferInHeaderId, sourceCompanyCode, sourceBranchCode, transferOrderNo, 0L);
+        TransferInHeader dbInboundOrder = transferInHeaderRepository.getTransferInHeader(transferInHeaderId);
         log.info("orderId : " + transferOrderNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {

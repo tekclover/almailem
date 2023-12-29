@@ -18,14 +18,14 @@ public class SupplierInvoiceLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SupplierInvoiceLineId")
+    @Column(name = "Supplierinvoicelineid")
     private Long supplierInvoiceLineId;
 
-    @Column(name = "SupplierInvoiceHeaderId")
+    @Column(name = "Supplierinvoiceheaderid")
     private Long supplierInvoiceHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(25)", nullable = false)
+    @Column(name = "Companycode", columnDefinition = "nvarchar(25)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
@@ -33,11 +33,11 @@ public class SupplierInvoiceLine {
     private String branchCode;
 
     @NotBlank(message = "Supplier Invoice No is mandatory")
-    @Column(name = "SupplierInvoiceNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Supplierinvoiceno", columnDefinition = "nvarchar(50)", nullable = false)
     private String supplierInvoiceNo;
 
     @NotNull(message = "Line No for each item is mandatory")
-    @Column(name = "LineNoforeachitem")
+    @Column(name = "Linenoforeachitem")
     private Long lineNoForEachItem;
 
     @NotBlank(message = "Item Code is mandatory")
@@ -45,21 +45,21 @@ public class SupplierInvoiceLine {
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)", nullable = false)
+    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)", nullable = false)
     private String itemDescription;
 
-    @Column(name = "ContainerNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "Containerno", columnDefinition = "nvarchar(50)")
     private String containerNo;
 
     @NotBlank(message = "Supplier Code is mandatory")
     @Column(name = "Suppliercode", columnDefinition = "nvarchar(50)", nullable = false)
     private String supplierCode;
 
-    @Column(name = "SupplierPartNo", columnDefinition = "nvarchar(50)")
+    @Column(name = "Supplierpartno", columnDefinition = "nvarchar(50)")
     private String supplierPartNo;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturershortname", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
@@ -67,7 +67,7 @@ public class SupplierInvoiceLine {
     private String manufacturerCode;
 
     @NotBlank(message = "Purchase Order No is mandatory")
-    @Column(name = "PurchaseorderNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Purchaseorderno", columnDefinition = "nvarchar(50)", nullable = false)
     private String purchaseOrderNo;
 
     @NotNull(message = "Invoice Date is mandatory")
@@ -75,14 +75,14 @@ public class SupplierInvoiceLine {
     private Date invoiceDate;
 
     @NotNull(message = "Invoice Qty is mandatory")
-    @Column(name = "InvoiceQty")
+    @Column(name = "Invoiceqty")
     private Double invoiceQty;
 
     @NotBlank(message = "Unit Of Measure is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Unitofmeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
-    @Column(name = "SupplierName", columnDefinition = "nvarchar(250)")
+    @Column(name = "Suppliername", columnDefinition = "nvarchar(250)")
     private String supplierName;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
@@ -91,15 +91,15 @@ public class SupplierInvoiceLine {
     @Column(name = "Receiveddate")
     private Date receivedDate;
 
-    @Column(name = "ReceivedQty")
+    @Column(name = "Receivedqty")
     private Double receivedQty;
 
     @Column(name = "Receivedby", columnDefinition = "nvarchar(50)")
     private String receivedBy;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
-    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_cancelled", columnDefinition = "nvarchar(10)")
     private String isCancelled;
 }

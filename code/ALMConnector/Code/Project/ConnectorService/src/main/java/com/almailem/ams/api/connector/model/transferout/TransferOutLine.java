@@ -22,14 +22,14 @@ public class TransferOutLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TransferOutLineId")
+    @Column(name = "Transferoutlineid")
     private Long transferOutLineId;
 
-    @Column(name = "TransferOutHeaderId")
+    @Column(name = "Transferoutheaderid")
     private Long transferOutHeaderId;
 
     @NotBlank(message = "Transfer Order Number is mandatory")
-    @Column(name = "TransferOrdernumber", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Transferordernumber", columnDefinition = "nvarchar(50)", nullable = false)
     private String transferOrderNumber;
 
     @NotNull(message = "Line Number of Each Item is mandatory")
@@ -41,7 +41,7 @@ public class TransferOutLine {
     private String itemCode;
 
     @NotBlank(message = "Item Description is mandatory")
-    @Column(name = "ItemDescription", columnDefinition = "nvarchar(500)", nullable = false)
+    @Column(name = "Itemdescription", columnDefinition = "nvarchar(500)", nullable = false)
     private String itemDescription;
 
     @NotNull(message = "Transfer Order Qty is mandatory")
@@ -49,20 +49,20 @@ public class TransferOutLine {
     private Double transferOrderQty;
 
     @NotBlank(message = "UOM is mandatory")
-    @Column(name = "UnitofMeasure", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Unitofmeasure", columnDefinition = "nvarchar(50)", nullable = false)
     private String unitOfMeasure;
 
     @NotBlank(message = "Manufacturer Code is mandatory")
-    @Column(name = "ManufacturerCode", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturercode", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerCode;
 
     @NotBlank(message = "Manufacturer Short Name is mandatory")
-    @Column(name = "ManufacturershortName", columnDefinition = "nvarchar(200)", nullable = false)
+    @Column(name = "Manufacturershortname", columnDefinition = "nvarchar(200)", nullable = false)
     private String manufacturerShortName;
 
     @Column(name = "Manufacturerfullname", columnDefinition = "nvarchar(250)")
     private String manufacturerFullName;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 }

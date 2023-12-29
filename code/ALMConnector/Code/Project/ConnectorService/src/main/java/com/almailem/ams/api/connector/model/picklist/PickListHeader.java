@@ -19,11 +19,11 @@ public class PickListHeader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PickListHeaderId")
+    @Column(name = "Picklistheaderid")
     private Long pickListHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Companycode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @NotBlank(message = "Branch Code is mandatory")
@@ -31,36 +31,37 @@ public class PickListHeader {
     private String branchCode;
 
     @NotBlank(message = "Sales Order No is mandatory")
-    @Column(name = "SalesorderNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Salesorderno", columnDefinition = "nvarchar(50)", nullable = false)
     private String salesOrderNo;
 
     @Column(name = "Tokennumber", columnDefinition = "nvarchar(50)")
     private String tokenNumber;
 
     @NotBlank(message = "Pick List No is mandatory")
-    @Column(name = "PickListNo", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Picklistno", columnDefinition = "nvarchar(50)", nullable = false)
     private String pickListNo;
 
     @NotNull(message = "Pick List Date is mandatory")
-    @Column(name = "PickListdate")
+    @Column(name = "Picklistdate")
     private Date pickListdate;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
     @Column(name = "Updatedon")
     private Date updatedOn;
 
-    @Column(name = "IS_CANCELLED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_cancelled", columnDefinition = "nvarchar(10)")
     private String isCancelled;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
+    @Column(name = "Processedstatusid", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
 
-    @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
+    @Column(name = "Orderreceivedon", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
 
+    @Column(name = "Orderprocessedon")
     private Date orderProcessedOn;
 
 

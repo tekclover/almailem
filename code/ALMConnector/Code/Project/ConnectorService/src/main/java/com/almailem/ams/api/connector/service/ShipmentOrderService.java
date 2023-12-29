@@ -62,9 +62,10 @@ public class ShipmentOrderService {
 
     public TransferOutHeader updateProcessedOutboundOrder(Long transferOutHeaderId, String companyCode,
                                                              String branchCode, String transferOrderNumber, Long processedStatusId) {
-        TransferOutHeader dbInboundOrder =
-                transferOutHeaderRepository.findTopByTransferOutHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNumberOrderByOrderReceivedOnDesc(
-                        transferOutHeaderId, companyCode, branchCode, transferOrderNumber);
+//        TransferOutHeader dbInboundOrder =
+//                transferOutHeaderRepository.findTopByTransferOutHeaderIdAndSourceCompanyCodeAndSourceBranchCodeAndTransferOrderNumberOrderByOrderReceivedOnDesc(
+//                        transferOutHeaderId, companyCode, branchCode, transferOrderNumber);
+        TransferOutHeader dbInboundOrder = transferOutHeaderRepository.getTransferOutHeader(transferOutHeaderId);
         log.info("orderId : " + transferOrderNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {

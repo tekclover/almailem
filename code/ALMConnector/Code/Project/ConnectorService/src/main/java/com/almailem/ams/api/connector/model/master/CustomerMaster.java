@@ -23,11 +23,11 @@ public class CustomerMaster {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CustomerMasterId")
+    @Column(name = "Customermasterid")
     private Long customerMasterId;
 
     @NotBlank(message = "Company Code is mandatory")
-    @Column(name = "CompanyCode", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Companycode", columnDefinition = "nvarchar(50)", nullable = false)
     private String companyCode;
 
     @Column(name = "Branchcode", columnDefinition = "nvarchar(50)")
@@ -38,52 +38,53 @@ public class CustomerMaster {
     private String customerCode;
 
     @NotBlank(message = "Customer Name is mandatory")
-    @Column(name = "CustomerName", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Customername", columnDefinition = "nvarchar(50)", nullable = false)
     private String customerName;
 
     @NotBlank(message = "HomeAddress1 is mandatory")
-    @Column(name = "HomeAddress1", columnDefinition = "nvarchar(3999)", nullable = false)
+    @Column(name = "Homeaddress1", columnDefinition = "nvarchar(3999)", nullable = false)
     private String homeAddress1;
 
-    @Column(name = "HomeAddress2", columnDefinition = "nvarchar(3999)")
+    @Column(name = "Homeaddress2", columnDefinition = "nvarchar(3999)")
     private String homeAddress2;
 
-    @Column(name = "HomeTelNumber", columnDefinition = "nvarchar(500)")
+    @Column(name = "Hometelnumber", columnDefinition = "nvarchar(500)")
     private String homeTelNumber;
 
-    @Column(name = "CivilIDNumber", columnDefinition = "nvarchar(200)")
+    @Column(name = "Civilidnumber", columnDefinition = "nvarchar(200)")
     private String civilIdNumber;
 
-    @Column(name = "MobileNumber", columnDefinition = "nvarchar(200)")
+    @Column(name = "Mobilenumber", columnDefinition = "nvarchar(200)")
     private String mobileNumber;
 
     @NotBlank(message = "Created Username is mandatory")
-    @Column(name = "CreatedUsername", columnDefinition = "nvarchar(50)", nullable = false)
+    @Column(name = "Createdusername", columnDefinition = "nvarchar(50)", nullable = false)
     private String createdUsername;
 
     @NotNull(message = "Customer Creation Date is mandatory")
     @Column(name = "Customercreationdate")
     private Date customerCreationDate;
 
-    @Column(name = "IS_NEW", columnDefinition = "nvarchar(20)", nullable = false)
+    @Column(name = "Is_new", columnDefinition = "nvarchar(20)", nullable = false)
     private String isNew;
 
-    @Column(name = "IS_UPDATE", columnDefinition = "nvarchar(20)", nullable = false)
+    @Column(name = "Is_update", columnDefinition = "nvarchar(20)", nullable = false)
     private String isUpdate;
 
-    @Column(name = "IS_COMPLETED", columnDefinition = "nvarchar(10)")
+    @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
 
     @Column(name = "Updatedon")
     private Date updatedOn;
 
     //ProcessedStatusIdOrderByOrderReceivedOn
-    @Column(name = "processedStatusId", columnDefinition = "bigint default'0'")
+    @Column(name = "Processedstatusid", columnDefinition = "bigint default'0'")
     private Long processedStatusId = 0L;
 
-    @Column(name = "orderReceivedOn", columnDefinition = "datetime2 default getdate()")
+    @Column(name = "Orderreceivedon", columnDefinition = "datetime2 default getdate()")
     private Date orderReceivedOn;
 
+    @Column(name = "Orderprocessedon")
     private Date orderProcessedOn;
 //    private String remarks;
 }
