@@ -5,6 +5,10 @@ import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.supplierinvoice.*;
 import com.almailem.ams.api.connector.model.wms.*;
 import com.almailem.ams.api.connector.repository.SupplierInvoiceHeaderRepository;
+import com.almailem.ams.api.connector.repository.SupplierInvoiceLineRepository;
+import com.almailem.ams.api.connector.repository.specification.SupplierInvoiceHeaderSpecification;
+import com.almailem.ams.api.connector.repository.specification.SupplierInvoiceLineSpecification;
+import com.almailem.ams.api.connector.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -21,6 +26,9 @@ public class SupplierInvoiceService {
 
     @Autowired
     private SupplierInvoiceHeaderRepository supplierInvoiceHeaderRepository;
+
+    @Autowired
+    private SupplierInvoiceLineRepository supplierInvoiceLineRepository;
 
     @Autowired
     private AuthTokenService authTokenService;
@@ -59,8 +67,9 @@ public class SupplierInvoiceService {
      */
     public SupplierInvoiceHeader updateProcessedInboundOrder(Long supplierInvoiceHeaderId, String companyCode, String branchCode, String supplierInvoiceNo,Long processedStatusId) {
         SupplierInvoiceHeader dbInboundOrder =
-                supplierInvoiceHeaderRepository.findTopBySupplierInvoiceHeaderIdAndCompanyCodeAndBranchCodeAndSupplierInvoiceNoOrderByOrderReceivedOnDesc(
-                        supplierInvoiceHeaderId, companyCode, branchCode, supplierInvoiceNo);
+                supplierInvoiceHeaderRepository.getSupplierInvoiceHeader(supplierInvoiceHeaderId);
+//                        findTopBySupplierInvoiceHeaderIdAndCompanyCodeAndBranchCodeAndSupplierInvoiceNoOrderByOrderReceivedOnDesc(
+//                        supplierInvoiceHeaderId, companyCode, branchCode, supplierInvoiceNo);
         log.info("orderId : " + supplierInvoiceNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
@@ -90,6 +99,42 @@ public class SupplierInvoiceService {
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result : " + result.getStatusCode());
         return result.getBody();
+    }
+
+
+    //Find
+    public List<SupplierInvoiceHeader> findSupplierInvoiceHeader(SearchSupplierInvoiceHeader searchSupplierInvoiceHeader) throws ParseException {
+
+
+        if (searchSupplierInvoiceHeader.getFromOrderProcessedOn() != null && searchSupplierInvoiceHeader.getToOrderProcessedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(searchSupplierInvoiceHeader.getFromOrderProcessedOn(), searchSupplierInvoiceHeader.getToOrderProcessedOn());
+            searchSupplierInvoiceHeader.setFromOrderProcessedOn(dates[0]);
+            searchSupplierInvoiceHeader.setToOrderProcessedOn(dates[1]);
+        }
+        if (searchSupplierInvoiceHeader.getFromOrderReceivedOn() != null && searchSupplierInvoiceHeader.getToOrderReceivedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(searchSupplierInvoiceHeader.getFromOrderReceivedOn(), searchSupplierInvoiceHeader.getToOrderReceivedOn());
+            searchSupplierInvoiceHeader.setFromOrderReceivedOn(dates[0]);
+            searchSupplierInvoiceHeader.setToOrderReceivedOn(dates[1]);
+        }
+
+        SupplierInvoiceHeaderSpecification spec = new SupplierInvoiceHeaderSpecification(searchSupplierInvoiceHeader);
+        List<SupplierInvoiceHeader> results = supplierInvoiceHeaderRepository.findAll(spec);
+        return results;
+
+    }
+    public List<SupplierInvoiceLine> findSupplierInvoiceLine(SearchSupplierInvoiceLine searchSupplierInvoiceLine) throws ParseException {
+
+        if (searchSupplierInvoiceLine.getFromInvoiceDate() != null && searchSupplierInvoiceLine.getToInvoiceDate() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(searchSupplierInvoiceLine.getFromInvoiceDate(), searchSupplierInvoiceLine.getToInvoiceDate());
+            searchSupplierInvoiceLine.setFromInvoiceDate(dates[0]);
+            searchSupplierInvoiceLine.setToInvoiceDate(dates[1]);
+        }
+
+
+        SupplierInvoiceLineSpecification spec = new SupplierInvoiceLineSpecification(searchSupplierInvoiceLine);
+        List<SupplierInvoiceLine> results = supplierInvoiceLineRepository.findAll(spec);
+        return results;
+
     }
 
 }

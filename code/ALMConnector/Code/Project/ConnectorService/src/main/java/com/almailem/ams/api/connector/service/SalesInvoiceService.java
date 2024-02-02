@@ -2,18 +2,26 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
+import com.almailem.ams.api.connector.model.salesinvoice.FindSalesInvoice;
 import com.almailem.ams.api.connector.model.salesinvoice.SalesInvoice;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.SalesInvoiceRepository;
+import com.almailem.ams.api.connector.repository.specification.SalesInvoiceSpecification;
+import com.almailem.ams.api.connector.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
+import java.text.ParseException;
 
 @Service
 @Slf4j
@@ -63,8 +71,9 @@ public class SalesInvoiceService {
     public SalesInvoice updateProcessedOutboundOrder(Long salesInvoiceId, String companyCode, String branchCode,
                                                      String salesInvoiceNumber, Long processedStatusId) {
         SalesInvoice dbOutboundOrder =
-                salesInvoiceRepository.findTopBySalesInvoiceIdAndCompanyCodeAndBranchCodeAndSalesInvoiceNumberOrderByOrderReceivedOnDesc(
-                salesInvoiceId, companyCode, branchCode, salesInvoiceNumber);
+                salesInvoiceRepository.getSalesInvoice(salesInvoiceId);
+//                        findTopBySalesInvoiceIdAndCompanyCodeAndBranchCodeAndSalesInvoiceNumberOrderByOrderReceivedOnDesc(
+//                salesInvoiceId, companyCode, branchCode, salesInvoiceNumber);
         log.info("orderId : " + salesInvoiceNumber);
         log.info("dbOutboundOrder : " + dbOutboundOrder);
         if (dbOutboundOrder != null) {
@@ -94,4 +103,25 @@ public class SalesInvoiceService {
         log.info("result : " + result.getStatusCode());
         return result.getBody();
     }
+
+    // Find SalesInvoice
+    public List<SalesInvoice> findSalesInvoice(FindSalesInvoice findSalesInvoice) throws ParseException {
+
+        if (findSalesInvoice.getFromOrderProcessedOn() != null && findSalesInvoice.getToOrderProcessedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(findSalesInvoice.getFromOrderProcessedOn(), findSalesInvoice.getToOrderProcessedOn());
+            findSalesInvoice.setFromOrderProcessedOn(dates[0]);
+            findSalesInvoice.setToOrderProcessedOn(dates[1]);
+        }
+        if (findSalesInvoice.getFromOrderReceivedOn() != null && findSalesInvoice.getToOrderReceivedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(findSalesInvoice.getFromOrderReceivedOn(), findSalesInvoice.getToOrderReceivedOn());
+            findSalesInvoice.setFromOrderReceivedOn(dates[0]);
+            findSalesInvoice.setToOrderReceivedOn(dates[1]);
+        }
+
+
+        SalesInvoiceSpecification spec = new SalesInvoiceSpecification(findSalesInvoice);
+        List<SalesInvoice> results = salesInvoiceRepository.findAll(spec);
+        return results;
+    }
+
 }

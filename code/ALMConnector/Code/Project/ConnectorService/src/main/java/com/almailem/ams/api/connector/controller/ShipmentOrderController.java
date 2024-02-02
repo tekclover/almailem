@@ -1,6 +1,9 @@
 package com.almailem.ams.api.connector.controller;
 
+import com.almailem.ams.api.connector.model.transferout.FindTransferOutHeader;
+import com.almailem.ams.api.connector.model.transferout.FindTransferOutLine;
 import com.almailem.ams.api.connector.model.transferout.TransferOutHeader;
+import com.almailem.ams.api.connector.model.transferout.TransferOutLine;
 import com.almailem.ams.api.connector.service.ShipmentOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Slf4j
@@ -35,4 +37,20 @@ public class ShipmentOrderController {
         List<TransferOutHeader> transferOuts = soV2Service.getAllSoV2Details();
         return new ResponseEntity<>(transferOuts, HttpStatus.OK);
     }
+
+    // Find ShipmentOrder
+    @ApiOperation(response = TransferOutHeader.class, value = "Find ShipmentOrder") // label for Swagger
+    @PostMapping("/findShipmentOrder")
+    public ResponseEntity<?> findShipmentOrder(@RequestBody FindTransferOutHeader findTransferOutHeader) throws ParseException {
+        List<TransferOutHeader> transferOutHeaders = soV2Service.findShipmentOrder(findTransferOutHeader);
+        return new ResponseEntity<>(transferOutHeaders, HttpStatus.OK);
+    }
+
+    @ApiOperation(response = TransferOutLine.class, value = "Find ShipmentOrderLine") // label for Swagger
+    @PostMapping("/findShipmentOrderLine")
+    public ResponseEntity<?> findShipmentOrderLine(@RequestBody FindTransferOutLine findTransferOutLine) throws ParseException {
+        List<TransferOutLine> transferOutLines = soV2Service.findShipmentOrderLine(findTransferOutLine);
+        return new ResponseEntity<>(transferOutLines, HttpStatus.OK);
+    }
+
 }

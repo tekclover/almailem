@@ -25,6 +25,10 @@ public interface StockAdjustmentRepository extends JpaRepository<StockAdjustment
     void updateProcessStatusId(@Param(value = "stockAdjustmentId") Long stockAdjustmentId,
                                @Param(value = "processedStatusId") Long processedStatusId);
 
+    @Query(value = "select * \n" +
+            "from STOCKADJUSTMENT where Stockadjustmentid = :stockAdjustmentId ",nativeQuery = true)
+    public StockAdjustment getStockAdjustment(@Param(value = "stockAdjustmentId") Long stockAdjustmentId);
+
     StockAdjustment findTopByStockAdjustmentIdAndCompanyCodeAndBranchCodeAndItemCodeOrderByDateOfAdjustmentDesc(
             Long stockAdjustmentId, String companyCode, String branchCode, String itemCode);
 

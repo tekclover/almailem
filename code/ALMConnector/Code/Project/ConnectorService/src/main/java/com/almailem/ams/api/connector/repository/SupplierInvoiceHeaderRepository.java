@@ -2,6 +2,7 @@ package com.almailem.ams.api.connector.repository;
 
 import com.almailem.ams.api.connector.model.supplierinvoice.SupplierInvoiceHeader;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface SupplierInvoiceHeaderRepository extends JpaRepository<SupplierInvoiceHeader, String> {
+public interface SupplierInvoiceHeaderRepository extends JpaRepository<SupplierInvoiceHeader, String>, JpaSpecificationExecutor<SupplierInvoiceHeader> {
 
     List<SupplierInvoiceHeader> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
 
@@ -27,4 +28,8 @@ public interface SupplierInvoiceHeaderRepository extends JpaRepository<SupplierI
     public void updateProcessStatusId (
             @Param(value = "supplierInvoiceHeaderId") Long supplierInvoiceHeaderId,
             @Param(value = "processedStatusId") Long processedStatusId );
+
+    @Query(value = "select * \n" +
+            "from SUPPLIERINVOICEHEADER where Supplierinvoiceheaderid = :supplierInvoiceHeaderId ",nativeQuery = true)
+    public SupplierInvoiceHeader getSupplierInvoiceHeader(@Param(value = "supplierInvoiceHeaderId") Long supplierInvoiceHeaderId);
 }

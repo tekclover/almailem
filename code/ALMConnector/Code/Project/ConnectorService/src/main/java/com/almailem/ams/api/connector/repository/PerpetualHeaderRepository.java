@@ -25,6 +25,10 @@ public interface PerpetualHeaderRepository extends JpaRepository<PerpetualHeader
 //    void updateProcessStatusId(@Param(value = "cycleCountNo") String cycleCountNo,
 //                               @Param(value = "date") Date date);
 
+    @Query(value = "select * \n" +
+            "from PERPETUALHEADER where Perpetualheaderid = :perpetualHeaderId ",nativeQuery = true)
+    public PerpetualHeader getPerpetualHeader(@Param(value = "perpetualHeaderId") Long perpetualHeaderId);
+
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE PERPETUALHEADER set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
             + " WHERE PerpetualHeaderId = :perpetualHeaderId ", nativeQuery = true)

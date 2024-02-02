@@ -33,6 +33,10 @@ public interface PeriodicHeaderRepository extends JpaRepository<PeriodicHeader, 
             @Param(value = "periodicHeaderId") Long periodicHeaderId,
             @Param(value = "processedStatusId") Long processedStatusId);
 
+    @Query(value = "select * \n" +
+            "from PERIODICHEADER where Periodicheaderid = :periodicHeaderId ",nativeQuery = true)
+    public PeriodicHeader getPeriodicHeader(@Param(value = "periodicHeaderId") Long periodicHeaderId);
+
     PeriodicHeader findTopByPeriodicHeaderIdAndCompanyCodeAndBranchCodeAndCycleCountNoOrderByOrderReceivedOnDesc(
             Long periodicHeaderId, String companyCode, String branchCode, String cycleCountNo);
 }

@@ -1,7 +1,10 @@
 package com.almailem.ams.api.connector.controller;
 
 
+import com.almailem.ams.api.connector.model.salesreturn.FindSalesReturnHeader;
+import com.almailem.ams.api.connector.model.salesreturn.FindSalesReturnLine;
 import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
+import com.almailem.ams.api.connector.model.salesreturn.SalesReturnLine;
 import com.almailem.ams.api.connector.repository.SalesReturnHeaderRepository;
 import com.almailem.ams.api.connector.service.SalesReturnService;
 import io.swagger.annotations.Api;
@@ -14,9 +17,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Slf4j
@@ -35,6 +41,21 @@ public class SalesReturnController {
     public ResponseEntity<?> getAll(){
       List<SalesReturnHeader> salesReturnHeaderRepositoryList = salesReturnService.getAllSalesReturnHeader();
       return new ResponseEntity<>(salesReturnHeaderRepositoryList, HttpStatus.OK);
+    }
+
+    // Find SalesReturnHeader
+    @ApiOperation(response = SalesReturnHeader.class, value = "Find Sales Return Header") // label for Swagger
+    @PostMapping("/findsalesreturnheader")
+    public ResponseEntity<?> searchSalesReturnHeader(@RequestBody FindSalesReturnHeader findSalesReturnHeader) throws ParseException {
+        List<SalesReturnHeader> salesReturnHeaderList = salesReturnService.findSalesReturnHeader(findSalesReturnHeader);
+        return new ResponseEntity<>(salesReturnHeaderList, HttpStatus.OK);
+    }
+
+    @ApiOperation(response = SalesReturnLine.class, value = "Find Sales Return Line") // label for Swagger
+    @PostMapping("/findsalesreturnline")
+    public ResponseEntity<?> searchSalesReturnLine(@RequestBody FindSalesReturnLine findSalesReturnLine) throws ParseException {
+        List<SalesReturnLine> salesReturnLineList = salesReturnService.findSalesReturnLine(findSalesReturnLine);
+        return new ResponseEntity<>(salesReturnLineList, HttpStatus.OK);
     }
 
 }

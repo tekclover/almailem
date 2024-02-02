@@ -20,6 +20,10 @@ public interface PickListHeaderRepository extends JpaRepository<PickListHeader, 
 
     PickListHeader findByPickListNo(String asnNumber);
 
+    @Query(value = "select * \n" +
+            "from PICKLISTHEADER where Picklistheaderid = :pickListHeaderId ",nativeQuery = true)
+    public PickListHeader getPickListHeader(@Param(value = "pickListHeaderId") Long pickListHeaderId);
+
     PickListHeader findTopByPickListNoOrderByOrderReceivedOnDesc(String asnNumber);
 
 //    @Modifying(clearAutomatically = true)

@@ -3,10 +3,17 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
+import com.almailem.ams.api.connector.model.salesreturn.FindSalesReturnHeader;
+import com.almailem.ams.api.connector.model.salesreturn.FindSalesReturnLine;
 import com.almailem.ams.api.connector.model.salesreturn.SalesReturnHeader;
+import com.almailem.ams.api.connector.model.salesreturn.SalesReturnLine;
 import com.almailem.ams.api.connector.model.wms.SaleOrderReturn;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.SalesReturnHeaderRepository;
+import com.almailem.ams.api.connector.repository.SalesReturnLineRepository;
+import com.almailem.ams.api.connector.repository.specification.SalesReturnHeaderSpecification;
+import com.almailem.ams.api.connector.repository.specification.SalesReturnLineSpecification;
+import com.almailem.ams.api.connector.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -15,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -23,6 +31,9 @@ public class SalesReturnService {
 
     @Autowired
     private SalesReturnHeaderRepository salesReturnHeaderRepository;
+
+    @Autowired
+    private SalesReturnLineRepository salesReturnLineRepository;
 
     @Autowired
     private AuthTokenService authTokenService;
@@ -55,8 +66,9 @@ public class SalesReturnService {
     public SalesReturnHeader updateProcessedInboundOrder(Long salesReturnHeaderId, String companyCode,
                                                          String branchCode, String returnOrderNo, Long processedStatusId) {
         SalesReturnHeader dbInboundOrder =
-                salesReturnHeaderRepository.findTopBySalesReturnHeaderIdAndCompanyCodeAndBranchCodeAndReturnOrderNoOrderByOrderReceivedOnDesc(
-                salesReturnHeaderId, companyCode, branchCode, returnOrderNo);
+                salesReturnHeaderRepository.getSalesReturnHeader(salesReturnHeaderId);
+//                        findTopBySalesReturnHeaderIdAndCompanyCodeAndBranchCodeAndReturnOrderNoOrderByOrderReceivedOnDesc(
+//                salesReturnHeaderId, companyCode, branchCode, returnOrderNo);
         log.info("orderId : " + returnOrderNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
@@ -87,6 +99,39 @@ public class SalesReturnService {
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result : " + result.getStatusCode());
         return result.getBody();
+    }
+
+    // Find SalesReturnHeader
+    public List<SalesReturnHeader> findSalesReturnHeader(FindSalesReturnHeader findSalesReturnHeader) throws ParseException {
+
+        if (findSalesReturnHeader.getFromOrderProcessedOn() != null && findSalesReturnHeader.getToOrderProcessedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(findSalesReturnHeader.getFromOrderProcessedOn(), findSalesReturnHeader.getToOrderProcessedOn());
+            findSalesReturnHeader.setFromOrderProcessedOn(dates[0]);
+            findSalesReturnHeader.setToOrderProcessedOn(dates[1]);
+        }
+        if (findSalesReturnHeader.getFromOrderReceivedOn() != null && findSalesReturnHeader.getToOrderReceivedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(findSalesReturnHeader.getFromOrderReceivedOn(), findSalesReturnHeader.getToOrderReceivedOn());
+            findSalesReturnHeader.setFromOrderReceivedOn(dates[0]);
+            findSalesReturnHeader.setToOrderReceivedOn(dates[1]);
+        }
+
+
+        SalesReturnHeaderSpecification spec = new SalesReturnHeaderSpecification(findSalesReturnHeader);
+        List<SalesReturnHeader> results = salesReturnHeaderRepository.findAll(spec);
+        return results;
+    }
+
+    public List<SalesReturnLine> findSalesReturnLine(FindSalesReturnLine findSalesReturnLine) throws ParseException {
+
+        if (findSalesReturnLine.getFromReturnOrderDate() != null && findSalesReturnLine.getToReturnOrderDate() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(findSalesReturnLine.getFromReturnOrderDate(), findSalesReturnLine.getToReturnOrderDate());
+            findSalesReturnLine.setFromReturnOrderDate(dates[0]);
+            findSalesReturnLine.setToReturnOrderDate(dates[1]);
+        }
+
+        SalesReturnLineSpecification spec = new SalesReturnLineSpecification(findSalesReturnLine);
+        List<SalesReturnLine> results = salesReturnLineRepository.findAll(spec);
+        return results;
     }
 
 }

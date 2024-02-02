@@ -2,9 +2,16 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
-import com.almailem.ams.api.connector.model.stockreceipt.*;
+import com.almailem.ams.api.connector.model.stockreceipt.SearchStockReceiptHeader;
+import com.almailem.ams.api.connector.model.stockreceipt.SearchStockReceiptLine;
+import com.almailem.ams.api.connector.model.stockreceipt.StockReceiptHeader;
+import com.almailem.ams.api.connector.model.stockreceipt.StockReceiptLine;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.StockReceiptHeaderRepository;
+import com.almailem.ams.api.connector.repository.StockReceiptLineRepository;
+import com.almailem.ams.api.connector.repository.specification.StockReceiptHeaderSpecification;
+import com.almailem.ams.api.connector.repository.specification.StockReceiptLineSpecification;
+import com.almailem.ams.api.connector.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -13,7 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.*;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -21,6 +32,9 @@ public class StockReceiptService {
 
     @Autowired
     StockReceiptHeaderRepository stockReceiptHeaderRepo;
+
+    @Autowired
+    StockReceiptLineRepository stockReceiptLineRepo;
 
     @Autowired
     private AuthTokenService authTokenService;
@@ -56,8 +70,9 @@ public class StockReceiptService {
 
     public StockReceiptHeader updateProcessedInboundOrder(Long stockReceiptHeaderId, String companyCode, String branchCode, String receiptNumber, Long processedStatusId) {
         StockReceiptHeader dbInboundOrder =
-                stockReceiptHeaderRepo.findTopByStockReceiptHeaderIdAndCompanyCodeAndBranchCodeAndReceiptNoOrderByOrderReceivedOnDesc(
-                        stockReceiptHeaderId, companyCode, branchCode, receiptNumber);
+                stockReceiptHeaderRepo.getStockReceiptHeader(stockReceiptHeaderId);
+//                        findTopByStockReceiptHeaderIdAndCompanyCodeAndBranchCodeAndReceiptNoOrderByOrderReceivedOnDesc(
+//                        stockReceiptHeaderId, companyCode, branchCode, receiptNumber);
 
         log.info("orderId : " + receiptNumber);
         log.info("dbInboundOrder : " + dbInboundOrder);
@@ -88,6 +103,40 @@ public class StockReceiptService {
                 getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, WarehouseApiResponse.class);
         log.info("result : " + result.getStatusCode());
         return result.getBody();
+    }
+
+    public List<StockReceiptHeader> findStockReceiptHeader(SearchStockReceiptHeader searchStockReceiptHeader) throws ParseException {
+
+
+        if (searchStockReceiptHeader.getFromOrderProcessedOn() != null && searchStockReceiptHeader.getToOrderProcessedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(searchStockReceiptHeader.getFromOrderProcessedOn(), searchStockReceiptHeader.getToOrderProcessedOn());
+            searchStockReceiptHeader.setFromOrderProcessedOn(dates[0]);
+            searchStockReceiptHeader.setToOrderProcessedOn(dates[1]);
+        }
+        if (searchStockReceiptHeader.getFromOrderReceivedOn() != null && searchStockReceiptHeader.getToOrderReceivedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(searchStockReceiptHeader.getFromOrderReceivedOn(), searchStockReceiptHeader.getToOrderReceivedOn());
+            searchStockReceiptHeader.setFromOrderReceivedOn(dates[0]);
+            searchStockReceiptHeader.setToOrderReceivedOn(dates[1]);
+        }
+
+
+        StockReceiptHeaderSpecification spec = new StockReceiptHeaderSpecification(searchStockReceiptHeader);
+        List<StockReceiptHeader> results = stockReceiptHeaderRepo.findAll(spec);
+        return results;
+    }
+
+    public List<StockReceiptLine> findStockReceiptLine(SearchStockReceiptLine searchStockReceiptLine) throws ParseException {
+
+
+        if (searchStockReceiptLine.getFromReceiptDate() != null && searchStockReceiptLine.getToReceiptDate() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(searchStockReceiptLine.getFromReceiptDate(), searchStockReceiptLine.getToReceiptDate());
+            searchStockReceiptLine.setFromReceiptDate(dates[0]);
+            searchStockReceiptLine.setToReceiptDate(dates[1]);
+        }
+
+        StockReceiptLineSpecification spec = new StockReceiptLineSpecification(searchStockReceiptLine);
+        List<StockReceiptLine> results = stockReceiptLineRepo.findAll(spec);
+        return results;
     }
 
 }

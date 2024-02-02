@@ -34,6 +34,10 @@ public interface ItemMasterRepository extends JpaRepository<ItemMaster, String>,
             @Param(value = "itemMasterId") Long itemMasterId,
             @Param(value = "processedStatusId") Long processedStatusId );
 
+    @Query(value = "select * \n" +
+            "from ITEMMASTER where Itemmasterid = :itemMasterId ",nativeQuery = true)
+    public ItemMaster getItemMaster(@Param(value = "itemMasterId") Long itemMasterId);
+
     List<ItemMaster> findTopByProcessedStatusIdOrderByOrderReceivedOn(long l);
 
     ItemMaster findTopByCompanyCodeAndBranchCodeAndItemCodeAndManufacturerShortNameOrderByOrderReceivedOnDesc(

@@ -20,7 +20,7 @@ public class PickListHeader {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Picklistheaderid")
-    private Long pickListHeaderId;
+        private Long pickListHeaderId;
 
     @NotBlank(message = "Company Code is mandatory")
     @Column(name = "Companycode", columnDefinition = "nvarchar(50)", nullable = false)

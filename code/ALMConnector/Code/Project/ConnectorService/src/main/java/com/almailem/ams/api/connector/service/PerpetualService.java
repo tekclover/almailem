@@ -2,14 +2,18 @@ package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
 import com.almailem.ams.api.connector.model.auth.AuthToken;
+import com.almailem.ams.api.connector.model.perpetual.FindPerpetualHeader;
+import com.almailem.ams.api.connector.model.perpetual.FindPerpetualLine;
 import com.almailem.ams.api.connector.model.perpetual.PerpetualHeader;
 import com.almailem.ams.api.connector.model.perpetual.PerpetualLine;
-import com.almailem.ams.api.connector.model.picklist.PickListHeader;
 import com.almailem.ams.api.connector.model.wms.Perpetual;
 import com.almailem.ams.api.connector.model.wms.UpdateStockCountLine;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.PerpetualHeaderRepository;
 import com.almailem.ams.api.connector.repository.PerpetualLineRepository;
+import com.almailem.ams.api.connector.repository.specification.PerpetualHeaderSpecification;
+import com.almailem.ams.api.connector.repository.specification.PerpetualLineSpecification;
+import com.almailem.ams.api.connector.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.text.ParseException;
 import java.util.*;
 
 @Slf4j
@@ -84,8 +89,9 @@ public class PerpetualService {
     public PerpetualHeader updateProcessedPerpetualOrder(Long perpetualHeaderId, String companyCode,
                                                       String branchCode, String cycleCountNo, Long processedStatusId) {
         PerpetualHeader dbInboundOrder =
-                perpetualHeaderRepo.findTopByPerpetualHeaderIdAndCompanyCodeAndBranchCodeAndCycleCountNoOrderByOrderReceivedOnDesc(
-                        perpetualHeaderId, companyCode, branchCode, cycleCountNo);
+                perpetualHeaderRepo.getPerpetualHeader(perpetualHeaderId);
+//                        findTopByPerpetualHeaderIdAndCompanyCodeAndBranchCodeAndCycleCountNoOrderByOrderReceivedOnDesc(
+//                        perpetualHeaderId, companyCode, branchCode, cycleCountNo);
         log.info("orderId : " + cycleCountNo);
         log.info("dbInboundOrder : " + dbInboundOrder);
         if (dbInboundOrder != null) {
@@ -164,4 +170,32 @@ public class PerpetualService {
         log.info("result: " + result.getStatusCode());
         return result.getBody();
     }
+
+    // Find PerpetualHeader
+    public List<PerpetualHeader> findPerpetualHeader(FindPerpetualHeader findPerpetualHeader) throws ParseException {
+
+        if (findPerpetualHeader.getFromOrderProcessedOn() != null && findPerpetualHeader.getToOrderProcessedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(findPerpetualHeader.getFromOrderProcessedOn(), findPerpetualHeader.getToOrderProcessedOn());
+            findPerpetualHeader.setFromOrderProcessedOn(dates[0]);
+            findPerpetualHeader.setToOrderProcessedOn(dates[1]);
+        }
+        if (findPerpetualHeader.getFromOrderReceivedOn() != null && findPerpetualHeader.getToOrderReceivedOn() != null) {
+            Date[] dates = DateUtils.addTimeToDatesForSearch(findPerpetualHeader.getFromOrderReceivedOn(), findPerpetualHeader.getToOrderReceivedOn());
+            findPerpetualHeader.setFromOrderReceivedOn(dates[0]);
+            findPerpetualHeader.setToOrderReceivedOn(dates[1]);
+        }
+
+        PerpetualHeaderSpecification spec = new PerpetualHeaderSpecification(findPerpetualHeader);
+        List<PerpetualHeader> results = perpetualHeaderRepo.findAll(spec);
+        return results;
+    }
+
+    // Find PerpetualLine
+    public List<PerpetualLine> findPerpetualLine(FindPerpetualLine findPerpetualLine) throws ParseException {
+
+        PerpetualLineSpecification spec = new PerpetualLineSpecification(findPerpetualLine);
+        List<PerpetualLine> results = perpetualLineRepository.findAll(spec);
+        return results;
+    }
+
 }

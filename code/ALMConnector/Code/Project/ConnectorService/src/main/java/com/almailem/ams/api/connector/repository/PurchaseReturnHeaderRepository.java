@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -34,6 +33,10 @@ public interface PurchaseReturnHeaderRepository extends JpaRepository<PurchaseRe
     public void updateProcessStatusId (
             @Param(value = "purchaseReturnHeaderId") Long purchaseReturnHeaderId,
             @Param(value = "processedStatusId") Long processedStatusId );
+
+    @Query(value = "select * \n" +
+            "from PURCHASERETURNHEADER where Purchasereturnheaderid = :purchaseReturnHeaderId ",nativeQuery = true)
+    public PurchaseReturnHeader getPurchaseReturnHeader(@Param(value = "purchaseReturnHeaderId") Long purchaseReturnHeaderId);
 
     PurchaseReturnHeader findTopByReturnOrderNoOrderByOrderReceivedOnDesc(String returnOrderNo);
 

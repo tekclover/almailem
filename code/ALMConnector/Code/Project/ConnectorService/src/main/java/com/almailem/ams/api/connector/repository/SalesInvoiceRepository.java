@@ -2,6 +2,7 @@ package com.almailem.ams.api.connector.repository;
 
 import com.almailem.ams.api.connector.model.salesinvoice.SalesInvoice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface SalesInvoiceRepository extends JpaRepository<SalesInvoice, String> {
+public interface SalesInvoiceRepository extends JpaRepository<SalesInvoice, String>, JpaSpecificationExecutor<SalesInvoice> {
 
     List<SalesInvoice> findTopByProcessedStatusIdOrderByOrderReceivedOn(Long l);
 
@@ -27,6 +28,10 @@ public interface SalesInvoiceRepository extends JpaRepository<SalesInvoice, Stri
 //    public void updateProcessStatusId (
 //            @Param(value = "salesInvoiceNumber") String salesInvoiceNumber,
 //            @Param(value = "date") Date date);
+
+    @Query(value = "select * \n" +
+            "from SALESINVOICE where Salesinvoiceid = :salesInvoiceId ",nativeQuery = true)
+    public SalesInvoice getSalesInvoice(@Param(value = "salesInvoiceId") Long salesInvoiceId);
 
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE SALESINVOICE set processedStatusId = :processedStatusId, orderProcessedOn = getdate()  \r\n"
