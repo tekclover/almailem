@@ -41,7 +41,8 @@ public class StockAdjustment {
     @Column(name = "Dateofadjustment")
     private Date dateOfAdjustment;
 
-    @Column(name = "Is_cyclecount", columnDefinition = "nvarchar(10)", nullable = false)
+//    @Column(name = "Is_cyclecount", columnDefinition = "nvarchar(10)", nullable = false)
+    @Column(name = "Is_cyclecount", columnDefinition = "nvarchar(10)")
     private String isCycleCount;
 
     @Column(name = "Is_damage", columnDefinition = "nvarchar(10)", nullable = false)
@@ -73,8 +74,8 @@ public class StockAdjustment {
     @Column(name = "Remarks", columnDefinition = "nvarchar(250)")
     private String remarks;
 
-    @Column(name = "Amsreferenceno", columnDefinition = "nvarchar(50)")
-    private String amsReferenceNo;
+//    @Column(name = "Amsreferenceno", columnDefinition = "nvarchar(50)")
+//    private String amsReferenceNo;
 
     @Column(name = "Is_completed", columnDefinition = "nvarchar(10)")
     private String isCompleted;
