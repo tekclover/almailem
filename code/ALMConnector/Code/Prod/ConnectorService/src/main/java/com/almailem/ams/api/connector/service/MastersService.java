@@ -1,11 +1,14 @@
 package com.almailem.ams.api.connector.service;
 
 import com.almailem.ams.api.connector.config.PropertiesConfig;
+import com.almailem.ams.api.connector.controller.exception.BadRequestException;
+import com.almailem.ams.api.connector.model.auth.AuthToken;
 import com.almailem.ams.api.connector.model.dto.AuditLog;
 import com.almailem.ams.api.connector.model.master.CustomerMaster;
 import com.almailem.ams.api.connector.model.master.ItemMaster;
 import com.almailem.ams.api.connector.model.wms.Customer;
 import com.almailem.ams.api.connector.model.wms.Item;
+import com.almailem.ams.api.connector.model.wms.OrderCancelInput;
 import com.almailem.ams.api.connector.model.wms.WarehouseApiResponse;
 import com.almailem.ams.api.connector.repository.CustomerMasterRepository;
 import com.almailem.ams.api.connector.repository.ItemMasterRepository;
@@ -44,6 +47,9 @@ public class MastersService {
     @Autowired
     AuthTokenService authTokenService;
 
+    @Autowired
+    MastersService mastersService;
+
 
     //-------------------------------------------------------------------------------------------
     List<Item> itemMasterList = null;
@@ -53,6 +59,10 @@ public class MastersService {
     static CopyOnWriteArrayList<Customer> spCMList = null;                // Customer Master List
 
     //==========================================================================================================================
+
+    private String getMasterServiceApiUrl() {
+        return propertiesConfig.getMastersServiceUrl();
+    }
 
     private RestTemplate getRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
@@ -142,7 +152,34 @@ public class MastersService {
                     // Updating the Processed Status
                     itemMasterService.updateProcessedItemMaster(inbound.getMiddlewareId(), inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getManufacturerName(), inbound.getSku(), 100L);
                     itemMasterList.remove(inbound);
-                    throw new RuntimeException(e);
+                    //============================================================================================
+                    //Sending Failed Details through Mail
+                    OrderCancelInput inboundOrderCancelInput = new OrderCancelInput();
+                    inboundOrderCancelInput.setCompanyCodeId(inbound.getCompanyCode());
+                    inboundOrderCancelInput.setPlantId(inbound.getBranchCode());
+                    inboundOrderCancelInput.setRefDocNumber(inbound.getSku());
+                    inboundOrderCancelInput.setReferenceField2(inbound.getManufacturerName());
+                    inboundOrderCancelInput.setReferenceField1("ITEMMASTER");
+                    String errorDesc = null;
+                    try {
+                        if(e.toString().contains("message")) {
+                            errorDesc = e.toString().substring(e.toString().indexOf("message") + 9);
+                            errorDesc = errorDesc.replaceAll("}]", "");
+                        }
+                        if(e.toString().contains("DataIntegrityViolationException") || e.toString().contains("ConstraintViolationException")) {
+                            errorDesc = "Null Pointer Exception";
+                        }
+                        if(e.toString().contains("BadRequestException")){
+                            errorDesc = e.toString().substring(e.toString().indexOf("BadRequestException:") + 20);
+                        }
+                    } catch (Exception ex) {
+                        throw new BadRequestException("ErrorDesc Extract Error" + ex);
+                    }
+                    inboundOrderCancelInput.setRemarks(errorDesc);
+
+                    mastersService.sendMail(inboundOrderCancelInput);
+                    //============================================================================================
+                    throw new BadRequestException("Exception :" + e);
                 }
             }
         }
@@ -205,10 +242,60 @@ public class MastersService {
                     customerMasterService.updateProcessedCustomMaster(inbound.getMiddlewareId(), inbound.getCompanyCode(), inbound.getBranchCode(), inbound.getPartnerCode(), 100L);
 //                    supplierInvoiceService.createInboundIntegrationLog(inbound);
                     customerMasterList.remove(inbound);
-                    throw new RuntimeException(e);
+                    //============================================================================================
+                    //Sending Failed Details through Mail
+                    OrderCancelInput inboundOrderCancelInput = new OrderCancelInput();
+                    inboundOrderCancelInput.setCompanyCodeId(inbound.getCompanyCode());
+                    inboundOrderCancelInput.setPlantId(inbound.getBranchCode());
+                    inboundOrderCancelInput.setRefDocNumber(inbound.getPartnerCode());
+                    inboundOrderCancelInput.setReferenceField1("CUSTOMERMASTER");
+                    String errorDesc = null;
+                    try {
+                        if(e.toString().contains("message")) {
+                            errorDesc = e.toString().substring(e.toString().indexOf("message") + 9);
+                            errorDesc = errorDesc.replaceAll("}]", "");
+                        }
+                        if(e.toString().contains("DataIntegrityViolationException") || e.toString().contains("ConstraintViolationException")) {
+                            errorDesc = "Null Pointer Exception";
+                        }
+                        if(e.toString().contains("BadRequestException")){
+                            errorDesc = e.toString().substring(e.toString().indexOf("BadRequestException:") + 20);
+                        }
+                    } catch (Exception ex) {
+                        throw new BadRequestException("ErrorDesc Extract Error" + ex);
+                    }
+                    inboundOrderCancelInput.setRemarks(errorDesc);
+
+                    mastersService.sendMail(inboundOrderCancelInput);
+                    //============================================================================================
+                    throw new BadRequestException("Exception :" + e);
                 }
             }
         }
         return null;
     }
+
+    //==========================================================Email===================================================
+    // Send EMail
+    public String sendMail(OrderCancelInput inboundOrderCancelInput) {
+        try {
+            AuthToken authTokenForMasterService = authTokenService.getMastersServiceAuthToken();
+            String authToken = authTokenForMasterService.getAccess_token();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            headers.add("User-Agent", "Classic WMS's RestTemplate");
+            headers.add("Authorization", "Bearer " + authToken);
+            UriComponentsBuilder builder =
+                    UriComponentsBuilder.fromHttpUrl(getMasterServiceApiUrl() + "email/sendMail");
+            HttpEntity<?> entity = new HttpEntity<>(inboundOrderCancelInput, headers);
+            ResponseEntity<String> result =
+                    getRestTemplate().exchange(builder.toUriString(), HttpMethod.POST, entity, String.class);
+            return result.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestException(e.getLocalizedMessage());
+        }
+    }
+
+
 }
